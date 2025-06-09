@@ -1,7 +1,14 @@
+import Aside from "../components/Dashboard/Aside";
+import GridForm from "../components/Dashboard/GridForm";
+import Navbar from "../components/Dashboard/Navbar";
+
 const DashboardPage = () => {
   return (
-    <div>Welcome a dashboard</div>
-  )
-}
+    <>
+      <Navbar />
+      <Aside />
+    </>
+  );
+};
 
-export default DashboardPage
+export default DashboardPage;
