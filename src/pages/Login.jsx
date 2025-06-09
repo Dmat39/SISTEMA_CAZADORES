@@ -1,5 +1,5 @@
-import { useNavigate, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+// import { useNavigate, Navigate } from "react-router-dom";
+// import { useSelector } from "react-redux";
 // import { useLogin } from "../hooks/Login/useLogin";
 import LoginForm from "../components/Login/LoginForm";
 
@@ -18,11 +18,11 @@ const LoginPage = () => {
   //   }
   // };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative bg-[url(/public/imagen-municipalidad-sjl.jpg)]">
+    <div class="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative bg-[url(/public/imagen-municipalidad-sjl.jpg)]">
       {/* Capa de Opacidad negra */}
-      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div class="absolute inset-0 bg-black opacity-50"></div>
       {/* Panel Centrado */}
-      <div className="relative z-10 w-96">
+      <div class="relative z-10 w-96">
         <LoginForm />
       </div>
     </div>

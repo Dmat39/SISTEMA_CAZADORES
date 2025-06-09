@@ -1,12 +1,9 @@
-import Aside from "../components/Dashboard/Aside";
-import GridForm from "../components/Dashboard/GridForm";
-import Navbar from "../components/Dashboard/Navbar";
+import Main from "../components/Dashboard/Main";
 
 const DashboardPage = () => {
   return (
     <>
-      <Navbar />
-      <Aside />
+      <Main />
     </>
   );
 };
