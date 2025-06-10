@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import {  FaUserGroup } from "react-icons/fa6";
 import { MdDashboard } from "react-icons/md";
 
-const SidebarSupervisor = () => {
+const SidebarAdmin = () => {
   return (
     <aside
       id="logo-sidebar"
@@ -29,4 +29,4 @@ const SidebarSupervisor = () => {
   );
 };
 
-export default SidebarSupervisor;
+export default SidebarAdmin;

@@ -1,12 +1,12 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+import SidebarSupervisor from "../components/Supervisors/Sidebar";
 import Navbar from "../components/Navbar";
 
-const DashboardLayout = () => {
+const DashboardLayoutSupervisor = () => {
   return (
     <>
       {/* Sidebar */}
-      <Sidebar />
+      <SidebarSupervisor />
       {/* Contenido principal */}
       <Navbar />
       <main class="flex-1 overflow-y-auto">
@@ -16,4 +16,4 @@ const DashboardLayout = () => {
   );
 };
 
-export default DashboardLayout;
+export default DashboardLayoutSupervisor;

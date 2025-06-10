@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import {  FaUserGroup } from "react-icons/fa6";
 import { MdDashboard } from "react-icons/md";
 
-const SidebarSupervisor = () => {
+const SidebarOperador = () => {
   return (
     <aside
       id="logo-sidebar"
@@ -12,15 +12,15 @@ const SidebarSupervisor = () => {
       <div className="h-full px-3 py-4 pb-4 overflow-y-auto bg-white">
         <ul className="space-y-3 font-medium">
           <li>
-            <NavLink to="/dashboard" end className="flex items-center p-2 text-gray-900 rounded-md dark:text-white hover:bg-[#32A3B5] group transition-all ease-in-out duration-300">
+            <NavLink to="/dashboard/operador" end className="flex items-center p-2 text-gray-900 rounded-md dark:text-white hover:bg-[#32A3B5] group transition-all ease-in-out duration-300">
               <MdDashboard className="w-5 h-5 text-gray-400 group-hover:text-white"/>
               <span class="ms-3 text-[#737791] group-hover:text-white">Dashboard</span>
             </NavLink>
           </li>
           <li>
-            <NavLink to="/dashboard/admin" end className="flex items-center p-2 text-gray-900 rounded-md dark:text-white hover:bg-[#32A3B5] group transition-all ease-in-out duration-300">
+            <NavLink to="/dashboard/operador/incidencias" end className="flex items-center p-2 text-gray-900 rounded-md dark:text-white hover:bg-[#32A3B5] group transition-all ease-in-out duration-300">
               <FaUserGroup className="w-5 h-5 text-gray-400 group-hover:text-white"/>
-              <span className="ms-3 text-[#737791] group-hover:text-white">Admin</span>
+              <span className="ms-3 text-[#737791] group-hover:text-white">Incidencia</span>
             </NavLink>
           </li>
         </ul>
@@ -29,4 +29,4 @@ const SidebarSupervisor = () => {
   );
 };
 
-export default SidebarSupervisor;
+export default SidebarOperador;
