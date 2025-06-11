@@ -9,7 +9,7 @@ const DashboardLayoutOperador = () => {
       <SidebarOperador />
       {/* Contenido principal */}
       <Navbar />
-      <main class="flex-1 overflow-y-auto">
+      <main class="flex-1 overflow-y-auto sm:ml-60 pt-20">
         <Outlet />
       </main>
     </>

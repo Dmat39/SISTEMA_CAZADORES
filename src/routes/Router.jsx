@@ -5,19 +5,20 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashboardLayoutAdmin from "../layouts/DashboardLayoutAdmin";
 import DashboardLayoutSupervisor from "../layouts/DashboardLayoutSupervisor";
 import DashboardLayoutOperador from "../layouts/DashboardLayoutOperador";
-// LOGIN
+
+// PAGES LOGIN
 import LoginPage from "../pages/Login";
 // NO AUTORIZADO PAGE
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import NotFoundPage from "../pages/NotFoundPage";
-// ADMIN PAGE
+// PAGES ADMIN
 import DashboardAdmin from "../pages/Admin/Dashboard";
 import SupervisorsAdmin from "../pages/Admin/Supervisors";
-// SUPERVISOR PAGE
+// PAGES SUPERVISOR
 import DashboardSupervisor from "../pages/Supervisors/Dashboard";
 import OperadoresPage from "../pages/Supervisors/Operadores";
 import ReportesSupervisor from "../pages/Supervisors/Reportes";
-// OPERADOR PAGE
+// PAGES OPERADOR
 import DashboardOperador from "../pages/Operador/Dashboard";
 import IncidenciaOperador from "../pages/Operador/Incidencia";
 import IncidenciaDetalle from "../pages/Operador/Detalle";
@@ -35,22 +36,22 @@ export default function Router() {
 
         {/* Rutas Protegidas - Admin */}
         <Route element={<DashboardLayoutAdmin />}>
-          <Route path="/dashboard" element={<DashboardAdmin />} />
-          <Route path="/dashboard/supervisors" element={<SupervisorsAdmin />} />
+          <Route path="/dashboard" element={<PrivateRoute requiredRole="admin">  <DashboardAdmin /></PrivateRoute>} />
+          <Route path="/dashboard/supervisors" element={<PrivateRoute requiredRole="admin"><SupervisorsAdmin /></PrivateRoute>} />
         </Route>
 
         {/* Rutas Protegidas - Supervisor */}
         <Route element={<DashboardLayoutSupervisor />}>
-          <Route path="/dashboard/supervisors" element={<DashboardSupervisor />} />
-          <Route path="/dashboard/supervisors/operadores" element={<OperadoresPage />} />
-          <Route path="/dashboard/supervisors/reportes" element={<ReportesSupervisor />} />
+          <Route path="/dashboard/supervisors" element={<PrivateRoute requiredRole="supervisor"><DashboardSupervisor /></PrivateRoute>} />
+          <Route path="/dashboard/supervisors/operadores" element={<PrivateRoute requiredRole="supervisor"><OperadoresPage /></PrivateRoute>} />
+          <Route path="/dashboard/supervisors/reportes" element={<PrivateRoute requiredRole="supervisor"> <ReportesSupervisor /></PrivateRoute>} />
         </Route>
 
         {/* Rutas Protegidas - Operador */}
         <Route element={<DashboardLayoutOperador />}>
-          <Route path="/dashboard/operador" element={<DashboardOperador />} />
-          <Route path="/dashboard/operador/incidencias" element={<IncidenciaOperador />} />
-          <Route path="/dashboard/operador/incidencias/detalle" element={<IncidenciaDetalle />} />
+          <Route path="/dashboard/operador" element={<PrivateRoute requiredRole="operator"><DashboardOperador /></PrivateRoute>} />
+          <Route path="/dashboard/operador/incidencias" element={<PrivateRoute requiredRole="operator"><IncidenciaOperador /></PrivateRoute>} />
+          <Route path="/dashboard/operador/incidencias/detalle" element={<PrivateRoute requiredRole="operator"><IncidenciaDetalle /></PrivateRoute>} />
         </Route>
 
         {/* Página 404 personalizada */}

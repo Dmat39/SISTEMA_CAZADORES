@@ -50,6 +50,7 @@ export default function LoginForm({ onSubmit, loading }) {
 
         <div className="relative">
           <input
+            name="password"
             type={showPassword ? "text" : "password"}
             placeholder="Contraseña"
             value={password}
@@ -74,8 +75,7 @@ export default function LoginForm({ onSubmit, loading }) {
           onClick={handleSubmit}
           className="w-full cursor-pointer bg-gradient-to-r bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-6 rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:ring-4 focus:ring-green-300 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
         >
-          Iniciar Sesión
-          {/* {loading ? (
+          {loading ? (
             <div className="flex items-center justify-center">
               <svg
                 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -101,7 +101,7 @@ export default function LoginForm({ onSubmit, loading }) {
             </div>
           ) : (
             "Iniciar Sesión"
-          )} */}
+          )}
         </button>
       </div>
     </div>

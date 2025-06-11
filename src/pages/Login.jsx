@@ -1,29 +1,39 @@
-// import { useNavigate, Navigate } from "react-router-dom";
-// import { useSelector } from "react-redux";
-// import { useLogin } from "../hooks/Login/useLogin";
+import { useNavigate, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import useLogin  from "../hooks/Login/useLogin";
 import LoginForm from "../components/Login/LoginForm";
 
 const LoginPage = () => {
-  // const { handleLogin, loading, error } = useLogin();
-  // const navigate = useNavigate();
+  const { handleLogin, loading, error } = useLogin();
+  const navigate = useNavigate();
+  const authorized = useSelector((state) => state.auth.authorized);
 
-  // const authorized = useSelector((state) => state.auth.authorized);
+  if (authorized) return <Navigate to="/dashboard" />;
 
-  // if (authorized) return <Navigate to="/dashboard" />;
+  const onSubmit = async (credentials) => {
+    const result = await handleLogin(credentials);
+    if (result.success) {
+      const redirectPath = 
+        result.role === "admin"
+        ? "/dashboard" 
+        : result.role === "supervisor"
+        ? "/dashboard/supervisor"
+        : "/dashboard/operador";
+        navigate(redirectPath);
+        console.log('Redirigiendo a:', redirectPath); // Depuración
+    } else {
+      console.log('Login falló, no se redirige:', error);
+    }
+  };
 
-  // const onSubmit = async (credentials) => {
-  //   const result = await handleLogin(credentials);
-  //   if (result) {
-  //     navigate("/dashboard");
-  //   }
-  // };
   return (
-    <div class="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative bg-[url(/public/imagen-municipalidad-sjl.jpg)]">
+    <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative bg-[url(/public/imagen-municipalidad-sjl.jpg)]">
       {/* Capa de Opacidad negra */}
-      <div class="absolute inset-0 bg-black opacity-50"></div>
+      <div className="absolute inset-0 bg-black opacity-50"></div>
       {/* Panel Centrado */}
-      <div class="relative z-10 w-96">
-        <LoginForm />
+      <div className="relative z-10 w-96">
+        <LoginForm onSubmit={onSubmit} loading={loading} />
+        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
       </div>
     </div>
   );

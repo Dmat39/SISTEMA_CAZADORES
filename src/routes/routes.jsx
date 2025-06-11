@@ -14,7 +14,7 @@ export default function Router() {
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         {/* Ruta protegida */}
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );
