@@ -42,16 +42,16 @@ export default function Router() {
 
         {/* Rutas Protegidas - Supervisor */}
         <Route element={<DashboardLayoutSupervisor />}>
-          <Route path="/dashboard/supervisors" element={<PrivateRoute requiredRole="supervisor"><DashboardSupervisor /></PrivateRoute>} />
-          <Route path="/dashboard/supervisors/operadores" element={<PrivateRoute requiredRole="supervisor"><OperadoresPage /></PrivateRoute>} />
-          <Route path="/dashboard/supervisors/reportes" element={<PrivateRoute requiredRole="supervisor"> <ReportesSupervisor /></PrivateRoute>} />
+          <Route path="/dashboard/supervisor" element={<PrivateRoute requiredRole="supervisor"><DashboardSupervisor /></PrivateRoute>} />
+          <Route path="/dashboard/supervisor/operadores" element={<PrivateRoute requiredRole="supervisor"><OperadoresPage /></PrivateRoute>} />
+          <Route path="/dashboard/supervisor/reportes" element={<PrivateRoute requiredRole="supervisor"> <ReportesSupervisor /></PrivateRoute>} />
         </Route>
 
         {/* Rutas Protegidas - Operador */}
         <Route element={<DashboardLayoutOperador />}>
           <Route path="/dashboard/operador" element={<PrivateRoute requiredRole="operator"><DashboardOperador /></PrivateRoute>} />
-          <Route path="/dashboard/operador/incidencias" element={<PrivateRoute requiredRole="operator"><IncidenciaOperador /></PrivateRoute>} />
-          <Route path="/dashboard/operador/incidencias/detalle" element={<PrivateRoute requiredRole="operator"><IncidenciaDetalle /></PrivateRoute>} />
+          <Route path="/dashboard/operador/incidencia" element={<PrivateRoute requiredRole="operator"><IncidenciaOperador /></PrivateRoute>} />
+          <Route path="/dashboard/operador/incidencia/:code" element={<PrivateRoute requiredRole="operator"><IncidenciaDetalle /></PrivateRoute>} />
         </Route>
 
         {/* Página 404 personalizada */}

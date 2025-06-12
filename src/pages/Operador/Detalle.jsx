@@ -1,9 +1,9 @@
-import DetalleIncidencia from "../../components/Operador/DetalleIncidencia"
+import IncidenciaDetalles from "../../components/Operador/IncidenciaDetalles"
 
 const IncidenciaDetalle = () => {
   return (
     <>
-      <DetalleIncidencia />
+      <IncidenciaDetalles />
     </>
   )
 }

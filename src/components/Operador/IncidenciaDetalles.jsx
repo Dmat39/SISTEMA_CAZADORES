@@ -1,8 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-
 import { Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import {
   ArrowLeftIcon,
   CalendarDaysIcon,
@@ -18,43 +15,25 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import dayjs from "dayjs";
 
-const DetalleIncidencia = () => {
+const IncidenciaDetalles = () => {
   const navigate = useNavigate();
-  const {id} = useParams();
-  const [incidencia, setIncidencia] = useState(null);
-  const [registros, setRegistros] = useState([]);
+  const { code } = useParams();
+  const location = useLocation();
+  const { state } = location;
 
-  useEffect(() => {
-    //Obtener incidencia especifica
-    const incidencias = JSON.parse(localStorage.getItem('incidencias') || '[]');
-    const encontrada = incidencias.find(inc => inc.id === Number(id));
-
-    if(encontrada) {
-      setIncidencia(encontrada);
-
-      //Obtener registros relacionados
-      const registrosIncidencia = JSON.parse(localStorage.getItem('registros') || '[]').filter(reg => reg.incidenciaId === Number(id));
-      setRegistros(registrosIncidencia);
-    }
-  }, [id]);
-
-
-  if(!incidencia) {
-    return <div className="text-center flex flex-col items-center justify-center h-screen max-h-96">Cargando...</div>;
-  }
-
-  //Formatear fechas
-  const fechaIncidente = new Date(incidencia.fecha);
-  const fechaRegistro = new Date(incidencia.fechaRegistro);
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+  // Valores de respaldo si el estado no está disponible
+  const incidence = state || {
+    name: "Sin título",
+    date: "2025-06-10T00:00:00Z",
+    description: "Sin descripción",
+    createdAt: "2025-06-10T00:00:00Z",
   };
+
+  //Analizar la fecha y la hora de la cadena ISO 8601 combinada
+  const incidentDate = dayjs(incidence.date);
+  const createdAtDate = dayjs(incidence.createdAt);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -83,7 +62,7 @@ const DetalleIncidencia = () => {
                   </div>
                   <div className="block mr-10">
                     <h1 className="mb-3 text-[26px] flex flex-row items-center text-gray-900 font-semibold">
-                      {incidencia.titulo} {" "}
+                      {incidence.name}{" "}
                       <span className="text-sm ml-2 text-blue-900 font-medium bg-blue-100 px-2.5 py-1 rounded-full">
                         En Proceso
                       </span>
@@ -92,20 +71,20 @@ const DetalleIncidencia = () => {
                       <div className="flex flex-row items-center space-x-1">
                         <CalendarDaysIcon className="h-5 w-5 text-gray-500" />
                         <span className="text-base text-gray-600">
-                          Fecha: {formatDate(fechaIncidente)}
+                          Fecha: {incidentDate.format("YYYY-MM-DD")}
                         </span>
                       </div>
                       <div className="flex flex-row items-center space-x-1">
                         <ClockIcon className="h-5 w-5 text-gray-500" />
                         <span className="text-base text-gray-600">
-                          Hora: {incidencia.hora}
+                          Hora: {incidentDate.format('HH:mm')}
                         </span>
                       </div>
                     </div>
                     <div className="flex flex-row items-center space-x-1">
                       <InformationCircleIcon className="h-5 w-5 text-gray-500" />
                       <span className="text-base text-gray-600">
-                        Creado el {fechaRegistro.toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'})}
+                        Creado el {createdAtDate.format("D MMMM YYYY")}
                       </span>
                     </div>
                   </div>
@@ -273,17 +252,15 @@ const DetalleIncidencia = () => {
                 
 
                 {/* Descripcion de la Incidencia */}
-                
-                {incidencia.descripcion && (
                   <div className="bg-gray-100 px-4 py-6 rounded-lg">
                     <h2 className="text-black text-lg font-semibold mb-3">
                       Descripción
                     </h2>
                     <p className="font-normal">
-                      {incidencia.descripcion}
+                        {incidence.description || "Sin descripción"}
                     </p>
                   </div>
-                )}
+               
                 <div className="mt-7">
                   <h2 className="text-black text-lg font-semibold mb-3">
                     Registros (1)
@@ -352,4 +329,4 @@ const DetalleIncidencia = () => {
   );
 };
 
-export default DetalleIncidencia;
+export default IncidenciaDetalles;
