@@ -6,10 +6,11 @@ const DashboardLayoutSupervisor = () => {
   return (
     <>
       {/* Sidebar */}
-      <SidebarSupervisor />
+      {/* <SidebarSupervisor /> */}
       {/* Contenido principal */}
       <Navbar />
-      <main class="flex-1 overflow-y-auto">
+      {/* <main className="flex-1 overflow-y-auto m-10"> */}
+      <main className="pt-16 h-100 overflow-y-auto">
         <Outlet />
       </main>
     </>
