@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 
 // Variable global para almacenar el token
 let globalToken = null;
@@ -8,12 +7,6 @@ let globalToken = null;
 export const setToken = (token) => {
   globalToken = token;
 }
-
-// Hook personalizado para actualizar el token desde Redux
-export const useApiConfig = () => {
-  const token = useSelector((state) => state.auth.token);
-  return { token };
-};
 
 // Configuración base para la API principal
 const config = axios.create({
@@ -41,7 +34,7 @@ const addAuthToken = (config) => {
 
 // Aplicar interceptors a ambas configuraciones
 config.interceptors.request.use(addAuthToken, error => Promise.reject(error));
-incidenceConfig.interceptors.request.use(addAuthToken, error => Promise.reject(error));
+incidenceConfig.interceptors.request.use(error => Promise.reject(error));
 
 // Exportar ambas configuraciones
 export const mainApi = config;

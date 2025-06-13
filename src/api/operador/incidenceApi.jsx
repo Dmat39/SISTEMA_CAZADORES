@@ -26,6 +26,7 @@ export const createIncidenceApi = async (incidenceData) => {
 export const getAllIncidencesApi = async () => {
   try {
     const response = await mainApi.get('/incidence/all');
+    console.log("Estoy aqui denuevo");
     return response.data;
   } catch (error) {
     console.log("Error fetching incidences:", error);

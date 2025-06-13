@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Modal, Button } from "@mui/material";
 import {
@@ -13,9 +13,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { getAllIncidencesApi, incidenceApi } from "../../api/operador/incidenceApi";
-import { useSelector } from "react-redux";
-import { setToken } from "../../api/config";
+import { getAllIncidencesApi, createIncidenceApi } from "../../api/operador/incidenceApi";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
@@ -36,23 +34,23 @@ const Main = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { token } = useSelector((state) => state.auth);
+  const fetched = useRef(false);
+  
   useEffect(() => {
-    if (token) {
-      setToken(token); // Update the global token in config.jsx
-      fetchIncidences();
-    }
-  }, [token]);
+    if (fetched.current) return;
+    fetched.current = true;
 
-  // Fetch incidencias al montar el component
-  const fetchIncidences = async () => {
-    try {
+    const fetchIncidences = async () => {
+      try {
         const response = await getAllIncidencesApi();
         setIncidences(response.data || []);
       } catch (error) {
-        console.error("Error fetching incidences:", error);
+        console.error("Error al obtener los incidentes:", error);
       }
     };
+
+    fetchIncidences();
+  }, []);
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -87,7 +85,7 @@ const Main = () => {
           date: combinedDateTime,
         };
 
-        const response = await incidenceApi(incidenceData);
+        const response = await createIncidenceApi(incidenceData);
         console.log("Incidence created:", response);
         // Generar codigo o URL dinamico
 
@@ -110,7 +108,6 @@ const Main = () => {
         });
 
         setOpenModal(false);
-        await fetchIncidences();
     } catch (error) {
       setError(error.message || "Error al crear la incidencia.");
     } finally {
