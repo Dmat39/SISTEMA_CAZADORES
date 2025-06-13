@@ -22,3 +22,24 @@ export const getAllSupervisorApi = async () => {
     throw error.response ? error.response.data : new Error('Failed to fetch supervisors');
   }
 }
+
+
+export const deleteSupervisorApi = async ( id) => {
+  try {
+    const response = await config.delete(`/supervisor/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching supervisors:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch supervisors');
+  }
+}
+
+export const updateSupervisorApi = async (payload,  id) => {
+  try {
+    const response = await config.patch(`/supervisor/update/${id}` , payload);
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching supervisors:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch supervisors');
+  }
+}

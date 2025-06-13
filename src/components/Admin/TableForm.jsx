@@ -1,16 +1,13 @@
 import React from 'react';
+import Icon from '@mdi/react';
+import { icons } from '../../plugins/IconLibrary.js'; // Ajusta la ruta si es necesario
 
-const TableForm = () => {
-    const data = [
-        { name: 'Carlos Pérez', email: 'carlos@example.com', role: 'Supervisor' },
-        { name: 'Ana Torres', email: 'ana@example.com', role: 'Supervisor' },
-    ];
+const TableForm = ({ data = [], onEdit, onDelete }) => {
 
-    const columns = ['Nombre', 'Correo', 'Rol'];
+    const columns = ['Nombre', 'Apellido', 'Teléfono', 'Usuario', 'Rol', 'Acciones'];
 
     return (
-        <div className="p-6">
-
+        <div className="pt-6">
             <div className="overflow-x-auto shadow rounded-lg">
                 <table className="min-w-full divide-y divide-gray-200 bg-white">
                     <thead className="bg-gray-100">
@@ -27,10 +24,27 @@ const TableForm = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                     {data.map((item, idx) => (
-                        <tr key={idx} className="hover:bg-gray-50">
+                        <tr key={item.id || idx} className="hover:bg-gray-50">
                             <td className="px-6 py-4 text-sm text-gray-800">{item.name}</td>
-                            <td className="px-6 py-4 text-sm text-gray-800">{item.email}</td>
-                            <td className="px-6 py-4 text-sm text-gray-800">{item.role}</td>
+                            <td className="px-6 py-4 text-sm text-gray-800">{item.lastname}</td>
+                            <td className="px-6 py-4 text-sm text-gray-800">{item.phone}</td>
+                            <td className="px-6 py-4 text-sm text-gray-800">{item.user?.username || '—'}</td>
+                            <td className="px-6 py-4 text-sm text-gray-800">{item.user?.role || '—'}</td>
+                            <td className="px-6 py-4 text-sm text-gray-800 flex space-x-2">
+                                <button
+                                    onClick={() => {
+                                        onEdit?.(item);
+                                    }}
+                                    title="Editar"
+                                >
+                                    <Icon path={icons.edit} size={1} className="text-blue-600 hover:text-blue-800" />
+                                </button>
+
+                                <button onClick={() => { ;
+                                    onDelete?.(item)}} title="Eliminar">
+                                    <Icon path={icons.delete} size={1} className="text-red-600 hover:text-red-800" />
+                                </button>
+                            </td>
                         </tr>
                     ))}
                     </tbody>
