@@ -37,106 +37,98 @@ export default function OperatorForm({ onSubmit, loading = false, initialData = 
     };
 
     return (
-        <div >
-            <form
-                onSubmit={handleSubmit}
-                className="w-full px-6 py-8 bg-white rounded-2xl shadow-xl border border-gray-100 space-y-5"
-            >
-                <h2 className="text-2xl font-bold text-center text-emerald-700">Crear Operador</h2>
-                <h2 className="text-base/7 font-semibold text-gray-900 mb-1">Nombre</h2>
-                <div className="space-y-5">
-                    <div className="relative">
-                        <input
-                            name="name"
-                            value={form.name}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 
-                            focus:border-green-400 outline-none transition-all duration-300 placeholder-gray-400 text-gray-700"
-                            required
-                            disabled={loading}
-                        />
-                    </div>
+        <form
+            onSubmit={handleSubmit}
+        >
+            <div className="grid gap-4 mb-4 grid-cols-2">
+                <div className="col-span-2">
+                    <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
+                    Nombre *
+                    </label>
+                    <input
+                    type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
+                    placeholder="Ingresa el nombre del operador"
+                    required
+                    />
                 </div>
-
-                <h2 className="text-base/7 font-semibold text-gray-900 mb-1">Apellidos</h2>
-                <div className="space-y-5">
-                    <div className="relative">
-                        <input
-                            name="lastname"
-                            value={form.lastname}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 
-                            focus:border-green-400 outline-none transition-all duration-300 placeholder-gray-400 text-gray-700"
-                            required
-                            disabled={loading}
-                        />
-                    </div>
+                <div className="col-span-2">
+                    <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
+                    Apellidos *
+                    </label>
+                    <input
+                    type="text"
+                    name="lastname"
+                    value={form.lastname}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
+                    placeholder="Ingresa el apellido del operador"
+                    required
+                    />
                 </div>
-
-                <h2 className="text-base/7 font-semibold text-gray-900 mb-1">Celular</h2>
-                <div className="space-y-5">
-                    <div className="relative">
-                        <input
-                            name="phone"
-                            value={form.phone}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 
-                            focus:border-green-400 outline-none transition-all duration-300 placeholder-gray-400 text-gray-700"
-                            required
-                            pattern="\d{9}"
-                            title="El número debe tener exactamente 9 dígitos"
-                            disabled={loading}
-                        />
-                    </div>
+                <div className="col-span-2">
+                    <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
+                    Celular *
+                    </label>
+                    <input
+                    type="text"
+                    name="phone"
+                    value={form.phone}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
+                    placeholder="Ingresa el celular del operador"
+                    required
+                    />
                 </div>
-
-                <h2 className="text-base/7 font-semibold text-gray-900 mb-1">DNI</h2>
-                <div className="space-y-5">
-                    <div className="relative">
-                        <input
-                            name="dni"
-                            value={form.dni}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 
-                            focus:border-green-400 outline-none transition-all duration-300 placeholder-gray-400 text-gray-700"
-                            required
-                            pattern="\d{8}"
-                            title="El dni debe tener exactamente 8 dígitos"
-                            disabled={loading}
-                        />
-                    </div>
+                <div className="col-span-2">
+                    <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
+                    DNI *
+                    </label>
+                    <input
+                    type="text"
+                    name="dni"
+                    value={form.dni}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
+                    placeholder="Ingresa el dni del operador"
+                    required
+                    />
                 </div>
-
-                <h2 className="text-base/7 font-semibold text-gray-900 mb-1">Usuario</h2>
-                <div className="space-y-5">
+                <div className="col-span-2">
+                    <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
+                        Usuario *
+                    </label>
                     <div className="relative">
                         <input
-                            name="username"
-                            value={form.username}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 
-                            focus:border-green-400 outline-none transition-all duration-300 placeholder-gray-400 text-gray-700"
-                            required
-                            disabled={loading}
+                        type="text"
+                        name="username"
+                        value={form.username}
+                        onChange={handleChange}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
+                        placeholder="Ingresa el nuevo usuario del operador"
+                        required
                         />
                         <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
                             <FaRegUser className="w-5 h-5 text-gray-400" />
                         </div>
                     </div>
                 </div>
-
-                <h2 className="text-base/7 font-semibold text-gray-900 mb-1">Contraseña</h2>
-                <div className="space-y-5">
+                <div className="col-span-2">
+                    <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
+                        Contraseña *
+                    </label>
                     <div className="relative">
                         <input
-                            name="password"
-                            type= {showPassword ? "text" : "password"}
-                            value={form.password}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 
-                            focus:border-green-400 outline-none transition-all duration-300 placeholder-gray-400 text-gray-700"
-                            required
-                            disabled={loading}
+                        type= {showPassword ? "text" : "password"}
+                        name="password"
+                        value={form.password}
+                        onChange={handleChange}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
+                        placeholder="Ingresa la nueva contraseña del operador"
+                        required
                         />
                         <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
                             <button type="button" onClick={togglePasswordVisibility} className="focus:outline-none cursor-pointer">
@@ -150,39 +142,39 @@ export default function OperatorForm({ onSubmit, loading = false, initialData = 
                         </div>
                     </div>
                 </div>
-                <button
-                className="w-full cursor-pointer bg-gradient-to-r bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-6 rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:ring-4 focus:ring-green-300 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                disabled={loading}
+            </div>
+            <button
+            className="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-4 float-end"
+            disabled={loading}
+            >
+            {loading ? (
+                <div className="flex items-center justify-center">
+                <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
                 >
-                {loading ? (
-                    <div className="flex items-center justify-center">
-                    <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                    >
-                        <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        ></circle>
-                        <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                    </svg>
-                    Guardando...
-                    </div>
-                ) : (
-                    "Guardar operador"
-                )}
-                </button>
-            </form>
-        </div>
+                    <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    ></circle>
+                    <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                </svg>
+                Guardando...
+                </div>
+            ) : (
+                "Guardar operador"
+            )}
+            </button>
+        </form>
     );
 }
