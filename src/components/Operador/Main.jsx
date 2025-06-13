@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Modal, Button } from "@mui/material";
 import {
@@ -13,106 +13,135 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { getAllIncidencesApi, incidenceApi } from "../../api/operador/incidenceApi";
-import { useSelector } from "react-redux";
-import { setToken } from "../../api/config";
+import { getAllIncidencesApi, createIncidenceApi } from "../../api/operador/incidenceApi";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
 // Extend Day.js with UTC plugin
 dayjs.extend(utc);
 
-// Función para generar dynamic code URL
-const generateIncidenceCode = () => {
-  const year = dayjs().year().toString().slice(0);
-  const randomDigits = Math.floor(10000 + Math.random() * 90000).toString();
-  return `C${year}${randomDigits}`;
-};
-
 const Main = () => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(null);
-  const [time, setTime] = useState(null);
+  const [formData, setFormData] = useState({
+    code : "",
+    name : "",
+    description: "",
+    date: null,
+    time: null,
+  });
   const [error, setError] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [incidences, setIncidences] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { token } = useSelector((state) => state.auth);
+  const fetched = useRef(false);
+  
   useEffect(() => {
-    if (token) {
-      setToken(token); // Update the global token in config.jsx
-    }
-    // Fetch incidencias al montar el component
+    if (fetched.current) return;
+    fetched.current = true;
+
     const fetchIncidences = async () => {
       try {
         const response = await getAllIncidencesApi();
         setIncidences(response.data || []);
       } catch (error) {
-        console.error("Error fetching incidences:", error);
+        console.error("Error al obtener los incidentes:", error);
       }
     };
+
     fetchIncidences();
-  }, [token]);
+  }, []);
+
+  const handleChange = (e) => {
+    const {name, value} = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-    if (!name || !date || !time) {
+    const { code, name, description, date, time} = formData;
+
+    if (!code || !name || !date || !time) {
       setError("Por favor, completa todos los campos obligatorios (*)");
+      setLoading(false);
       return;
     }
 
-    // Combinar dia y fecha en cadena ISO 8601
-    const combinedDateTime = dayjs
-      .utc()
-      .set("year", date.year())
-      .set("month", date.month())
-      .set("date", date.date())
-      .set("hour", time.hour())
-      .set("minute", time.minute())
-      .set("second", time.second())
-      .format("YYYY-MM-DDTHH:mm:ss[Z]");
-
-    const incidenceData = {
-      name,
-      description: description || "",
-      date: combinedDateTime,
-    };
-
     try {
-      const response = await incidenceApi(incidenceData);
-      console.log("Incidence created:", response);
-      // Generar codigo o URL dinamico
-      const incidenceCode = generateIncidenceCode();
-
-      // Navegar a la otra pantalla generada por el codigo
-      navigate(`/dashboard/operador/incidencia/${incidenceCode}`, {
-        state: {
+      // Combinar dia y fecha en cadena ISO 8601
+      const combinedDateTime = dayjs(date)
+        .set("hour", time.hour())
+        .set("minute", time.minute())
+        .set("second", time.second())
+        .format("YYYY-MM-DDTHH:mm:ss[Z]");
+      
+        const incidenceData = {
+          code,
           name,
-          date: combinedDateTime,
           description: description || "",
-          createdAt: response.data.createdAt || dayjs().utc().format("YYYY-MM-DDTHH:mm:ss[Z]"),
-        },
-      });
-      // Reset form and close modal
-      setName("");
-      setDescription("");
-      setDate(null);
-      setTime(null);
-      setError(null);
-      setOpenModal(false); // Cierra el modal después de crear
+          date: combinedDateTime,
+        };
+
+        const response = await createIncidenceApi(incidenceData);
+        console.log("Incidence created:", response);
+        // Generar codigo o URL dinamico
+
+        // Navegar a la otra pantalla generada por el codigo
+        navigate(`/dashboard/operador/incidencia/${code}`, {
+          state: {
+            ...response.data,
+            date: combinedDateTime,
+            createdAt: response.data.createdAt || dayjs().utc().format("YYYY-MM-DDTHH:mm:ss[Z]"),
+          },
+        });
+
+        // Reset form and update list
+        setFormData({
+          code: "",
+          name: "",
+          description: "",
+          date: null,
+          time: null
+        });
+
+        setOpenModal(false);
     } catch (error) {
       setError(error.message || "Error al crear la incidencia.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleOpenModal = () => setOpenModal(true);
+  const handleOpenModal = () => {
+    //Generar codigo al abrir el modal
+    const year = dayjs().year().toString().slice(-2);
+    const randomDigits = Math.floor(1000 + Math.random() * 9000).toString();
+    const newCode = `INC${year}${randomDigits}`;
+    
+
+    setFormData(prev => ({
+      ...prev,
+      code: newCode
+    }));
+    setOpenModal(true);
+  };
+
   const handleCloseModal = () => {
     setError(null);
     setOpenModal(false);
   };
+
+  const formatStatus = (status) => {
+    const statusMap = {
+      process: { text: "En Proceso", color: "bg-blue-100 text-blue-900"},
+      resolved: { text: "Completado", color: "bg-green-100 text-green-900"},
+      cancelled: { text: "Rechazado", color: "bg-red-100 text-red-900"},
+    };
+    return statusMap[status] || { text: status, color: "bg-gray-100 text-gray-900"}
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -127,7 +156,7 @@ const Main = () => {
             width: "100%",
           }}
         >
-          <Box className="bg-white p-6 w-full max-w-full max-h-fit mx-7 my-5">
+          <Box className="bg-white p-6 w-full max-w-full max-h-fit mx-7 my-5 rounded-lg">
             {/* Encabezado */}
             <div className="flex flex-row pb-5 items-center justify-between border-b-1 border-gray-200">
               <div className="block">
@@ -151,11 +180,7 @@ const Main = () => {
               onClose={handleCloseModal}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              sx={{ display: "flex", alignItems: "center", justifyContent: "center",}}
             >
               <Box
                 sx={{
@@ -196,14 +221,30 @@ const Main = () => {
                   <div class="grid gap-4 mb-4 grid-cols-2">
                     <div class="col-span-2">
                       <label htmlFor="name" class="block mb-2 text-sm font-medium text-gray-900">
+                        Código *
+                      </label>
+                      <input
+                        type="text"
+                        name="code"
+                        id="code"
+                        value={formData.code}
+                        onChange={handleChange}
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
+                        placeholder="Ingresa el código de incidencia"
+                        required
+                        readOnly
+                      />
+                    </div>
+                    <div class="col-span-2">
+                      <label htmlFor="name" class="block mb-2 text-sm font-medium text-gray-900">
                         Título *
                       </label>
                       <input
                         type="text"
-                        name="titulo"
+                        name="name"
                         id="titulo"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        value={formData.name}
+                        onChange={handleChange}
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
                         placeholder="Ingresa el título de la incidencia"
                         required
@@ -214,11 +255,10 @@ const Main = () => {
                         Fecha del Incidente *
                       </label>
                       <DatePicker
-                        value={date}
-                        onChange={(newData) => setDate(newData)}
+                        value={formData.date}
+                        onChange={(newDate) => setFormData(prev => ({ ...prev, date: newDate}))}
                         format="DD/MM/YYYY"
                         class="focus:ring-gray-600 focus:border-gray-600 w-full readOnly"
-                        
                       />
                     </div>
                     <div className="col-span-2 sm:col-span-1">
@@ -226,8 +266,8 @@ const Main = () => {
                         Hora del Incidente *
                       </label>
                       <TimePicker
-                        value={time}
-                        onChange={(newTime) => setTime(newTime)}
+                        value={formData.time}
+                        onChange={(newTime) => setFormData(prev => ({ ...prev, time: newTime}))}
                         class="rounded-lg bg-gray-50 border border-gray-300 text-sm w-full readOnly"
                       />
                     </div>
@@ -237,9 +277,10 @@ const Main = () => {
                       </label>
                       <textarea
                         id="message"
+                        name="description"
                         rows="4"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        value={formData.description}
+                        onChange={handleChange}
                         class="block p-2.5 w-full text-[16px] text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-gray-500 focus:border-gray-500 hover:border-gray-900"
                         placeholder="Descripción opcional..."
                       ></textarea>
@@ -257,176 +298,73 @@ const Main = () => {
                     <Button
                       type="submit"
                       class="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                      disabled={loading}
                     >
-                      Crear Incidencia
+                      {loading ? "Creando..." : "Crear Incidencia"}
                     </Button>
                   </div>
                 </form>
               </Box>
             </Modal>
 
-            <div className="flex flex-col justify-start max-w-full h-150 px-4 mt-10">
+            <div className="flex flex-col justify-start max-w-full px-4 mt-10">
               <div className="mb-8">
                 <h2 className="text-2xl text-gray-900 font-semibold mb-1">Todas las incidencias</h2>
-                <span className="text-gray-600">3 incidencias registradas</span>
+                <span className="text-gray-600">{incidences.length} incidencias registradas</span>
               </div>
 
-              <div className="flex flex-row items-center justify-between">
-                {/* items incidencia 1 */}
-                <div className="border-1 border-gray-300 rounded-lg px-7 py-6 w-md">
-                  <div className="flex flex-row items-start justify-between mb-3">
-                    <h3 className="text-[21px] line-clamp-2 text-gray-900 font-semibold w-58">
-                      Cámara desactivada en entrada principal
-                    </h3>
-                    <div className="flex flex-row items-center gap-1">
-                      <span className="rounded-full border-1 px-2.5 bg-gray-100 border-gray-300 text-[14px] font-medium">
-                        2
-                      </span>
-                      <span className="text-[14px] ml-2 text-blue-900 font-medium bg-blue-100 px-3.5 py-1 rounded-full">
-                        En Proceso
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-[15px] text-gray-700 mb-3 line-clamp-3">
-                      Se detectó que la cámara ubicada en la entrada principal,
-                      dejó de transmitir video desde las 04:15 am. Se presume
-                      posible corte de energía dadawdajdpoawdjopawjdawodawdjowdo
-                    </p>
-                    <div className="flex flex-row items-center gap-4 border-b-1 border-b-gray-200 pb-2">
-                      <div className="flex flex-row items-center space-x-1">
-                        <CalendarDaysIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] text-gray-600">
-                          2025-06-10
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {incidences.map((incidence) => {
+                  const statusInfo = formatStatus(incidence.status);
+                  const incidentDate = dayjs(incidence.date);
+                  const isPM = incidentDate.hour() >= 12;
+                  
+                  return (
+                    <div key={incidence.id} className="border border-gray-300 rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex flex-row items-start justify-between mb-3">
+                        <h3 className="text-xl line-clamp-2 text-gray-900 font-semibold w-72">
+                          {incidence.name}
+                        </h3>
+                        <span className={`text-sm font-medium px-3 py-1 rounded-full ${statusInfo.color}`}>
+                          {statusInfo.text}
                         </span>
                       </div>
-                      <div className="flex flex-row items-center justify-center space-x-1">
-                        <ClockIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] pb-0.5 text-gray-600">
-                          15:15 p.m
-                        </span>
-                      </div>
-                    </div>
-                    <div className="pt-2 flex flex-row items-center justify-between">
-                      <div className="flex flex-row items-center space-x-1 space-y-1">
-                        <DocumentTextIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] text-gray-600">
-                          2 registros
-                        </span>
-                      </div>
-                      <div className="flex flex-row items-center space-x-1">
-                        <CameraIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] text-gray-600">
-                          con imágenes
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* items incidencia 2 */}
-                <div className="border-1 border-gray-300 rounded-lg px-7 py-6 w-md">
-                  <div className="flex flex-row items-start justify-between mb-3">
-                    <h3 className="text-[21px] line-clamp-2 text-gray-900 font-semibold w-58">
-                      Movimiento sospechoso en área de central
-                    </h3>
-                    <div className="flex flex-row items-center gap-1">
-                      <span className="rounded-full border-1 px-2.5 bg-gray-100 border-gray-300 text-[14px] font-medium">
-                        1
-                      </span>
-                      <span className="text-[14px] ml-2 text-red-900 font-medium bg-red-100 px-3.5 py-1 rounded-full">
-                        Rechazado
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-[15px] text-gray-700 mb-3 line-clamp-3">
-                      Se detectó actividad inusual en el área de estacionamiento para,
-                      dejó de transmitir video desde las 04:15 am. Se presume
-                      posible corte de energía dadawdajdpoawdjopawjdawodawdjowdo
-                    </p>
-                    <div className="flex flex-row items-center gap-4 border-b-1 border-b-gray-200 pb-2">
-                      <div className="flex flex-row items-center space-x-1">
-                        <CalendarDaysIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] text-gray-600">
-                          2025-06-09
-                        </span>
-                      </div>
-                      <div className="flex flex-row items-center justify-center space-x-1">
-                        <ClockIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] pb-0.5 text-gray-600">
-                          10:45 p.m
-                        </span>
+                      <div>
+                        <p className="text-gray-700 mb-3 line-clamp-3">
+                          {incidence.description || "No hay descripción"}
+                        </p>
+                        <div className="flex flex-row items-center gap-4 border-b border-gray-200 pb-3">
+                          <div className="flex items-center space-x-1">
+                            <CalendarDaysIcon className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm text-gray-600">
+                              {incidentDate.format("DD/MM/YYYY")}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <ClockIcon className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm text-gray-600">
+                              {incidentDate.format("hh:mm")} {isPM ? "p.m." : "a.m."}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="pt-3 flex items-center justify-between">
+                          <div className="flex items-center space-x-1">
+                            <DocumentTextIcon className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm text-gray-600">
+                              2 Registros
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <CameraIcon className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm text-gray-600">
+                              2 Registros
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="pt-2 flex flex-row items-center justify-between">
-                      <div className="flex flex-row items-center space-x-1 space-y-1">
-                        <DocumentTextIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] text-gray-600">
-                          1 registros
-                        </span>
-                      </div>
-                      <div className="flex flex-row items-center space-x-1">
-                        <CameraIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] text-gray-600">
-                          con imágenes
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* items incidencia 3 */}
-                <div className="border-1 border-gray-300 rounded-lg px-7 py-6 w-md">
-                  <div className="flex flex-row items-start justify-between mb-3">
-                    <h3 className="text-[21px] line-clamp-2 text-gray-900 font-semibold w-58">
-                      Cámara desactivada en entrada principal
-                    </h3>
-                    <div className="flex flex-row items-center gap-1">
-                      <span className="rounded-full border-1 px-2.5 bg-gray-100 border-gray-300 text-[14px] font-medium">
-                        2
-                      </span>
-                      <span className="text-[14px] ml-2 text-green-900 font-medium bg-green-100 px-3.5 py-1 rounded-full">
-                        Completado
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-[15px] text-gray-700 mb-3 line-clamp-3">
-                      Se detectó que la cámara ubicada en la entrada principal,
-                      dejó de transmitir video desde las 04:15 am. Se presume
-                      posible corte de energía dadawdajdpoawdjopawjdawodawdjowdo
-                    </p>
-                    <div className="flex flex-row items-center gap-4 border-b-1 border-b-gray-200 pb-2">
-                      <div className="flex flex-row items-center space-x-1">
-                        <CalendarDaysIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] text-gray-600">
-                          2025-06-10
-                        </span>
-                      </div>
-                      <div className="flex flex-row items-center justify-center space-x-1">
-                        <ClockIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] pb-0.5 text-gray-600">
-                          15:15 p.m
-                        </span>
-                      </div>
-                    </div>
-                    <div className="pt-2 flex flex-row items-center justify-between">
-                      <div className="flex flex-row items-center space-x-1 space-y-1">
-                        <DocumentTextIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] text-gray-600">
-                          2 registros
-                        </span>
-                      </div>
-                      <div className="flex flex-row items-center space-x-1">
-                        <CameraIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-[13px] text-gray-600">
-                          con imágenes
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           </Box>
