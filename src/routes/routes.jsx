@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import DashboardPage from "../pages/DashboardPage";
+import { BrowserRouter, Routes, Route } from "react-router-dom";import DashboardPage from "../pages/DashboardPage";
 import LoginPage from "../pages/Login";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import PrivateRoute from "./routes/PrivateRoute";
+import DashboardAdmin from "../pages/Admin/Dashboard";
 
 export default function Router() {
   return (
@@ -14,7 +14,7 @@ export default function Router() {
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         {/* Ruta protegida */}
-        <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+        <Route path="/dashboard/admin" element={<PrivateRoute><DashboardAdmin /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );

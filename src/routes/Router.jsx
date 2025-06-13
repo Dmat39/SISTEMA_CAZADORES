@@ -36,8 +36,8 @@ export default function Router() {
 
         {/* Rutas Protegidas - Admin */}
         <Route element={<DashboardLayoutAdmin />}>
-          <Route path="/dashboard" element={<PrivateRoute requiredRole="admin">  <DashboardAdmin /></PrivateRoute>} />
-          {/* <Route path="/dashboard/supervisor" element={<PrivateRoute requiredRole="admin"><SupervisorsAdmin /></PrivateRoute>} /> */}
+          <Route path="/dashboard/admin" element={<PrivateRoute requiredRole="admin">  <DashboardAdmin /></PrivateRoute>} />
+          <Route path="/dashboard/admin/supervisor" element={<PrivateRoute requiredRole="admin"><SupervisorsAdmin /></PrivateRoute>} />
         </Route>
 
         {/* Rutas Protegidas - Supervisor */}
