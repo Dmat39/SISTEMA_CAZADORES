@@ -5,6 +5,8 @@ import App from './App.jsx';
 
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import '@mdi/font/css/materialdesignicons.min.css';
+
 import { store, persistor } from './store'; 
 
 createRoot(document.getElementById('root')).render(
