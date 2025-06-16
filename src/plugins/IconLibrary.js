@@ -4,6 +4,7 @@ import {
     mdiPlus,
     mdiEye,
     mdiAccount,
+    mdiPlusCircleOutline
 } from "@mdi/js";
 
 export const icons = {
@@ -12,4 +13,5 @@ export const icons = {
     add: mdiPlus,
     view: mdiEye,
     user: mdiAccount,
+    plus: mdiPlusCircleOutline
 };
