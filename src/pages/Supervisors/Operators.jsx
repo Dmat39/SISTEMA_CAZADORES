@@ -1,11 +1,12 @@
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'sonner';
 import Icon from '@mdi/react';
-import { mdiPlus } from '@mdi/js';
+import { icons } from '../../plugins/IconLibrary.js';
 import { addOperatorApi, deleteOperatorApi, getAllOperatorApi, updateOperatorApi } from '../../api/supervisor/OperatorService.jsx';
 import UpdateForm from '../../components/Supervisors/UpdateForm.jsx';
 import CreateForm from '../../components/Supervisors/CreateForm.jsx';
 import TableForm from '../../components/Supervisors/TableForm.jsx';
+import FirstOperator from '../../components/Supervisors/firstOperator.jsx';
 
 const OperatorsAdmin = () => {
     const [operators, setOperators] = useState([]);
@@ -106,18 +107,23 @@ const OperatorsAdmin = () => {
                         <h2 className="text-2xl font-bold">Mantenimiento de Operadores</h2>
                         <p className="text-gray-600">Gestiona y organiza todos tus operadores</p>
                     </div>
-                    <button
-                        onClick={() => setShowCreate(true)}
-                        className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
-                        type="button"
-                    >
-                        <Icon path={mdiPlus} size={1} />
-                        Agregar Operador
-                    </button>
+                    {operators.length > 0 ?(
+                        <button
+                            onClick={() => setShowCreate(true)}
+                            className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                            type="button"
+                        >
+                            <Icon path={icons.add} size={1} />
+                            Agregar Operador
+                        </button>                        
+                    ) : null}
                 </div>
-
                 <hr className='border-gray-200' />
-                <TableForm data={operators} onDelete={deleteOperator} onEdit={openModalEdit}/>
+                {operators.length > 0 ?(
+                    <TableForm data={operators} onDelete={deleteOperator} onEdit={openModalEdit}/>
+                ) : (
+                    <FirstOperator onCreate={() => setShowCreate(true)}/>
+                )}
             </div>
 
             <UpdateForm

@@ -83,6 +83,7 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
                                 value={form.phone}
                                 onChange={handleChange}
                                 pattern="\d{9}"
+                                title="El número de teléfono debe tener exactamente 9 dígitos."
                                 className="w-full border px-3 py-2 rounded mt-1"
                             />
                         </div>
@@ -95,6 +96,7 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
                                 value={form.dni}
                                 onChange={handleChange}
                                 pattern="\d{8}"
+                                title="El DNI debe tener exactamente 8 dígitos."
                                 className="w-full border px-3 py-2 rounded mt-1"
                             />
                         </div>
@@ -124,6 +126,8 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
                                     value={form.password}
                                     onChange={handleChange}
                                     className="w-full border px-3 py-2 rounded"
+                                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+                                    title="La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo."
                                 />
                                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
                                     <button type="button" onClick={togglePasswordVisibility} className="focus:outline-none cursor-pointer">
