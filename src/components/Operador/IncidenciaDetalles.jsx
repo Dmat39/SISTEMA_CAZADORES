@@ -1,370 +1,78 @@
-import { useState, useEffect } from "react";
-import { Box, Modal, Button } from "@mui/material";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import {
-  ArrowLeftIcon,
-  CalendarDaysIcon,
-  ClockIcon,
-  InformationCircleIcon,
-  CameraIcon,
-  PlusIcon,
-  CloudArrowUpIcon,
-  PlusCircleIcon,
-} from "@heroicons/react/24/outline";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
-import 'dayjs/locale/es';
-import { getIncidenceCodesApi } from "../../api/operador/incidenceApi";
+import Icon from "@mdi/react";
+import { icons } from "../../plugins/IconLibrary";
 
-const IncidenciaDetalles = () => {
-  const navigate = useNavigate();
-  const { code } = useParams();
-  const [incidence, setIncidence] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const location = useLocation();
-  const { state } = location;
-
-  useEffect(() => {
-    const fetchIncidenceData = async () => {
-      try {
-        // 1. Primero intenta cargar de localStorage
-        const savedData = localStorage.getItem(`incidence_${code}`);
-        if (savedData) {
-          setIncidence(JSON.parse(savedData));
-          return;
-        }
-
-        // 2. Si no está en localStorage, hace fetch a la API
-        const response = await getIncidenceCodesApi(code); // Necesitarás implementar esta función
-        if (response.success) {
-          setIncidence(response.data);
-          // Guarda en localStorage para futuras visitas
-          localStorage.setItem(`incidence_${code}`, JSON.stringify(response.data));
-        } else {
-          navigate('/dashboard/operador/incidencia', { replace: true });
-        }
-      } catch (error) {
-        console.error("Error fetching incidence:", error);
-        navigate('/dashboard/operador/incidencia', { replace: true });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchIncidenceData();
-  }, [code, navigate]);
-
-  // Valores de respaldo mientras carga
-  if (loading || !incidence) {
-    return <div>Cargando...</div>;
+const RegistrosList = ({ records = [] }) => {
+  if (!records.length) {
+    return <p className="text-gray-500 text-sm">No hay registros aún.</p>;
   }
 
-  // Valores de respaldo si el estado no está disponible
-  const incidenceStateDefault= state || {
-    name: "Sin título",
-    date: "2025-06-10T00:00:00Z",
-    description: "Sin descripción",
-    createdAt: "2025-06-10T00:00:00Z",
-  };
-
-  // Analizar la fecha y la hora de la cadena ISO 8601 combinada
-  const incidentDate = dayjs(incidence.date);
-  const createdAtDate = dayjs(incidence.createdAt);
-
-  const [openModal, setOpenModal] = useState(false); // Estado para controlar el modal
-
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer components={["TimePicker", "DatePicker"]}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            minHeight: "70vh",
-            width: "100%",
-          }}
-        >
-          <Box className="bg-white p-6 w-full max-w-full m-8">
-            <div className="bg-white p-6 w-full h-full">
-              <div className="flex flex-row items-start justify-baseline gap-8 border-b-1 border-gray-300 px-4 py-3 mb-8">
+    <div className="mt-8">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        Registros ({records.length})
+      </h3>
+
+      <div className="space-y-4">
+        {records.map((rec, idx) => {
+          const recordDate = dayjs(rec.date);
+          const isPM = recordDate.hour() >= 12;
+          const imagesCount = rec.images?.length || 0;
+
+          return (
+            <div
+              key={rec.id}
+              className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2 text-sm text-gray-800 font-medium">
+                  <span className="bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-semibold">
+                    #{idx + 1}
+                  </span>
+                  {rec.cameraId ? "Entrada Principal" : "Sin cámara asociada"}
+                </div>
+
+                <div className="flex gap-3 text-sm text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <Icon path={icons.calendar} size={0.7} /> {recordDate.format("YYYY-MM-DD")}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Icon path={icons.clock} size={0.7} /> {recordDate.format("HH:mm")} {isPM ? "p.m." : "a.m."}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Icon path={icons.camera} size={0.7} /> {imagesCount} imagen{imagesCount === 1 ? "" : "es"}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-sm text-gray-700 leading-relaxed mb-3">
+                {rec.description || "Sin descripción del registro."}
+              </p>
+
+              {rec.images && rec.images.length > 0 && (
                 <div>
-                  <button
-                    type="button"
-                    onClick={() => navigate(-1)}
-                    className="flex flex-row items-center justify-center gap-2.5 mt-2.5 cursor-pointer"
-                  >
-                    <ArrowLeftIcon className="h-4 w-4 text-gray-900" />
-                    <span className="text-gray-900 text-sm">Volver</span>
-                  </button>
-                </div>
-                <div className="block mr-10">
-                  <h1 className="mb-3 text-[26px] flex flex-row items-center text-gray-900 font-semibold">
-                    {incidence.name}
-                    <span className="text-sm ml-4 text-blue-900 font-medium bg-blue-100 px-2.5 py-1 rounded-full">
-                      En Proceso
-                    </span>
-                  </h1>
-                  <div className="flex flex-row items-center space-x-3.5 mb-3">
-                    <div className="flex flex-row items-center space-x-1">
-                      <CalendarDaysIcon className="h-5 w-5 text-gray-500" />
-                      <span className="text-base text-gray-600">
-                        Fecha: {incidentDate.format("YYYY-MM-DD")}
-                      </span>
-                    </div>
-                    <div className="flex flex-row items-center space-x-1">
-                      <ClockIcon className="h-5 w-5 text-gray-500" />
-                      <span className="text-base text-gray-600">
-                        Hora: {incidentDate.format("HH:mm")}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-row items-center space-x-1">
-                    <InformationCircleIcon className="h-5 w-5 text-gray-500" />
-                    <span className="text-base text-gray-600">
-                      Creado el {createdAtDate.format("D [de] MMMM [de] YYYY")}
-                    </span>
+                  <p className="text-sm font-medium text-gray-800 mb-2">Imágenes adjuntas:</p>
+                  <div className="flex flex-wrap gap-3">
+                    {rec.images.map((img) => (
+                      <div
+                        key={img.id}
+                        className="bg-gray-100 border border-gray-300 rounded-md p-2 flex flex-col items-center w-40"
+                      >
+                        <Icon path={icons.camera} size={1.2} className="text-gray-500 mb-1" />
+                        <span className="text-xs text-gray-700 text-center truncate">
+                          {img.originalName}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <button
-                  onClick={handleOpenModal} // Abre el modal
-                  className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
-                  type="button"
-                >
-                  <PlusIcon className="h-5 w-5" />
-                  Agregar Registro
-                </button>
-              </div>
-
-
-              {/* Descripción de la Incidencia */}
-              <div className="bg-gray-100 px-4 py-6 rounded-lg">
-                <h2 className="text-black text-lg font-semibold mb-3">Descripción</h2>
-                <p className="font-normal">{incidence.description || "Sin descripción"}</p>
-              </div>
-
-
-              {/* Modal con Material-UI */}
-              <Modal
-                open={openModal}
-                onClose={handleCloseModal}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Box
-                  sx={{
-                    bgcolor: "background.paper",
-                    borderRadius: 2,
-                    boxShadow: 24,
-                    p: 4,
-                    width: "100%",
-                    maxWidth: 800,
-                    maxHeight: "90vh",
-                    overflowY: "auto",
-                  }}
-                >
-                  <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-300">
-                    <div className="block">
-                      <h3 id="modal-modal-title" className="text-2xl font-semibold text-gray-900 mb-1">
-                        Nuevo Registro
-                      </h3>
-                      <span class="text-gray-600 font-normal text-sm">
-                        Agrega un nuevo registro a esta incidencia
-                      </span>
-                    </div>
-                    <Button onClick={handleCloseModal} class="text-white bg-gray-500 flex flex-row items-center justify-center hover:bg-gray-700 rounded-lg w-8 h-8 cursor-pointer">
-                      <svg
-                        class="w-3 h-3"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 14 14"
-                      >
-                        <path
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                        />
-                      </svg>
-                      <span class="sr-only">Close modal</span>
-                    </Button>
-                  </div>
-                  <form class="p-4 md:p-5">
-                    <div class="grid gap-4 mb-4 grid-cols-2">
-                      <div class="col-span-2">
-                        <label htmlFor="name" class="block mb-2 text-sm font-medium text-gray-900">
-                          Nombre de la Cámara *
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          id="name"
-                          class="bg-gray-50 border border-gray-300 text-[16px] text-gray-900 text-sm rounded-md focus:ring-gray-600  block w-full px-2.5 py-4 hover:border-gray-800 transition-all duration-100"
-                          placeholder="Ej: Entrada Principal, Estacionamiento Norte..."
-                          required
-                        />
-                      </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
-                          Fecha del Incidente *
-                        </label>
-                        <DatePicker name="fecha" className="focus:ring-gray-600 focus:border-gray-600 w-full" format="DD/MM/YYYY" />
-                      </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <label htmlFor="time" className="block mb-2 text-sm font-medium text-gray-900">
-                          Hora del Incidente *
-                        </label>
-                        <TimePicker name="hora" className="rounded-lg bg-gray-50 border border-gray-300 text-sm w-full" />
-                      </div>
-                      <div className="col-span-2">
-                        <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900">
-                          Descripción del Incidente
-                        </label>
-                        <textarea
-                          id="message"
-                          rows="4"
-                          className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300 focus:ring-gray-500 focus:border-gray-500 hover:border-gray-900"
-                          placeholder="Describe los detalles del incidente, lo que observaste, acciones tomadas..."
-                        ></textarea>
-                        <p className="text-gray-600 text-sm mt-2">
-                          Proporciona todos los detalles relevantes del incidente
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-4 border-1 border-dashed p-6 border-gray-400 w-full rounded-lg h-50 flex items-center justify-center mb-5 cursor-pointer relative hover:border-gray-800">
-                      <input
-                        id="fileInput"
-                        accept="image/jpg, image/png, image/jpeg"
-                        multiple
-                        type="file"
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          opacity: 0,
-                          cursor: "pointer",
-                        }}
-                        onChange={(e) => console.log(e.target.files)}
-                      />
-                      <div className="flex flex-col items-center justify-center text-center space-y-2">
-                        <div className="bg-gray-200 rounded-full p-2">
-                          <CloudArrowUpIcon className="w-10 h-10 text-gray-600" />
-                        </div>
-                        <div className="flex flex-col items-center justify-center">
-                          <p className="text-sm font-medium">Haz clic para subir imágenes</p>
-                          <span className="text-xs text-gray-500">PNG, JPG, JPEG hasta 10MB cada una</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex flex-row items-center justify-end gap-3">
-                      <Button
-                        type="button"
-                        onClick={handleCloseModal}
-                        class="text-gray-900 cursor-pointer border border-gray-800 hover:bg-gray-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        type="button"
-                        class="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                      >
-                        Crear Registro
-                      </Button>
-                    </div>
-                  </form>
-                </Box>
-              </Modal>         
-
-              {/* Detalle de los SubRegistros de Incidencia */}
-
-              {/* Si no hay subregistros de incidencias se mostrara este contenido */}
-              <div className="flex flex-col items-center justify-center max-w-4xl mx-auto h-150">
-              <div className="flex flex-col items-center justify-center">
-                <PlusCircleIcon className="h-18 w-18 text-gray-300 mb-2" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  No hay subregistros de incidencia
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  Comienza creando tu primer detalle de incidencia
-                </p>
-                <button
-                  onClick={handleOpenModal}
-                  className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
-                  type="button"
-                >
-                  <PlusIcon className="h-5 w-5" />
-                  Crear primer detalle
-                </button>
-              </div>
+              )}
             </div>
-              
-
-              {/* Pero si hay contenido o información de subregistros de incidencias se mostrara este contenido  */}
-              <div className="mt-7">
-                <h2 className="text-black text-lg font-semibold mb-3">Registros (1)</h2>
-                <div className="border-1 border-gray-300 rounded-lg p-6">
-                  <div className="flex flex-row items-center justify-between mb-7">
-                    <div className="flex flex-row space-x-3">
-                      <div className="rounded-full border-1 border-gray-300 px-2.5 items-center justify-center w-10">
-                        <span className="text-[14px] font-medium">#1</span>
-                      </div>
-                      <h3 className="text-[18px] font-normal font-sans">Entrada Principal</h3>
-                    </div>
-                    <div className="flex flex-row items-center gap-3">
-                      <div className="flex flex-row items-center space-x-1">
-                        <CalendarDaysIcon className="h-5 w-5 text-gray-500" />
-                        <span className="text-base text-gray-600">2025-06-10</span>
-                      </div>
-                      <div className="flex flex-row items-center space-x-1">
-                        <ClockIcon className="h-5 w-5 text-gray-500" />
-                        <span className="text-base text-gray-600">15:15 p.m</span>
-                      </div>
-                      <div className="flex flex-row items-center space-x-1">
-                        <CameraIcon className="h-5 w-5 text-gray-500" />
-                        <span className="text-base text-gray-600">2 imágenes</span>
-                      </div>
-                    </div>
-                  </div>
-                  <p>
-                    La cámara dejó de trasmitir de forma repentina. Última imagen recibida muestra a un individuo cerca del equipo.
-                  </p>
-                  <div className="mt-5">
-                    <h4 className="font-medium text-gray-900">Imágenes adjuntas:</h4>
-                    <div className="mt-3 flex flex-row items-center gap-5">
-                      <div className="flex flex-col items-center bg-gray-200 px-9 py-5 w-fit rounded-lg">
-                        <CameraIcon className="h-8 w-8 text-gray-600 mb-1" />
-                        <span className="text-sm text-gray-700">foto-subida-1.jpg</span>
-                      </div>
-                      <div className="flex flex-col items-center bg-gray-200 px-9 py-5 w-fit rounded-lg">
-                        <CameraIcon className="h-8 w-8 text-gray-600 mb-1" />
-                        <span className="text-sm text-gray-700">foto-subida-2.jpg</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Box>
-        </Box>
-      </DemoContainer>
-    </LocalizationProvider>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 
-export default IncidenciaDetalles;
+export default RegistrosList;

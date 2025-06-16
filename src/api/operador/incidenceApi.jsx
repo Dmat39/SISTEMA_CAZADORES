@@ -33,7 +33,7 @@ export const getAllIncidencesApi = async () => {
   }
 }
 
-// Función para obtener incidencia por ID
+
 export const getIncidenceByIdApi = async(id) => {
   try {
     const response = await mainApi.get(`/incidence/${id}`);

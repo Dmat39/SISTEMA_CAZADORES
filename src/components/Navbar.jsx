@@ -5,7 +5,7 @@ import { logout } from '../store/slices/authSlice';
 const Navbar = () => {
   const dispatch = useDispatch();
 
-  // Obtenemos directamente username y role desde el estado auth
+
   const { username, role } = useSelector((state) => state.auth || {});
 
   const handleLogout = () => {
