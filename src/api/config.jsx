@@ -22,6 +22,7 @@ const incidenceConfig = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 5000, 
 });
 
 
@@ -34,7 +35,7 @@ const addAuthToken = (config) => {
 
 // Aplicar interceptors a ambas configuraciones
 config.interceptors.request.use(addAuthToken, error => Promise.reject(error));
-incidenceConfig.interceptors.request.use(error => Promise.reject(error));
+incidenceConfig.interceptors.request.use(config => config, error => Promise.reject(error));
 
 // Exportar ambas configuraciones
 export const mainApi = config;

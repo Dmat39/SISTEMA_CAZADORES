@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Modal, Button } from "@mui/material";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import {
@@ -9,6 +9,7 @@ import {
   CameraIcon,
   PlusIcon,
   CloudArrowUpIcon,
+  PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -17,15 +18,53 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
 import 'dayjs/locale/es';
+import { getIncidenceCodesApi } from "../../api/operador/incidenceApi";
 
 const IncidenciaDetalles = () => {
   const navigate = useNavigate();
   const { code } = useParams();
+  const [incidence, setIncidence] = useState(null);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const { state } = location;
 
+  useEffect(() => {
+    const fetchIncidenceData = async () => {
+      try {
+        // 1. Primero intenta cargar de localStorage
+        const savedData = localStorage.getItem(`incidence_${code}`);
+        if (savedData) {
+          setIncidence(JSON.parse(savedData));
+          return;
+        }
+
+        // 2. Si no está en localStorage, hace fetch a la API
+        const response = await getIncidenceCodesApi(code); // Necesitarás implementar esta función
+        if (response.success) {
+          setIncidence(response.data);
+          // Guarda en localStorage para futuras visitas
+          localStorage.setItem(`incidence_${code}`, JSON.stringify(response.data));
+        } else {
+          navigate('/dashboard/operador/incidencia', { replace: true });
+        }
+      } catch (error) {
+        console.error("Error fetching incidence:", error);
+        navigate('/dashboard/operador/incidencia', { replace: true });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchIncidenceData();
+  }, [code, navigate]);
+
+  // Valores de respaldo mientras carga
+  if (loading || !incidence) {
+    return <div>Cargando...</div>;
+  }
+
   // Valores de respaldo si el estado no está disponible
-  const incidence = state || {
+  const incidenceStateDefault= state || {
     name: "Sin título",
     date: "2025-06-10T00:00:00Z",
     description: "Sin descripción",
@@ -103,6 +142,14 @@ const IncidenciaDetalles = () => {
                   Agregar Registro
                 </button>
               </div>
+
+
+              {/* Descripción de la Incidencia */}
+              <div className="bg-gray-100 px-4 py-6 rounded-lg">
+                <h2 className="text-black text-lg font-semibold mb-3">Descripción</h2>
+                <p className="font-normal">{incidence.description || "Sin descripción"}</p>
+              </div>
+
 
               {/* Modal con Material-UI */}
               <Modal
@@ -242,14 +289,33 @@ const IncidenciaDetalles = () => {
                     </div>
                   </form>
                 </Box>
-              </Modal>
+              </Modal>         
 
-              {/* Descripción de la Incidencia */}
-              <div className="bg-gray-100 px-4 py-6 rounded-lg">
-                <h2 className="text-black text-lg font-semibold mb-3">Descripción</h2>
-                <p className="font-normal">{incidence.description || "Sin descripción"}</p>
+              {/* Detalle de los SubRegistros de Incidencia */}
+
+              {/* Si no hay subregistros de incidencias se mostrara este contenido */}
+              <div className="flex flex-col items-center justify-center max-w-4xl mx-auto h-150">
+              <div className="flex flex-col items-center justify-center">
+                <PlusCircleIcon className="h-18 w-18 text-gray-300 mb-2" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No hay subregistros de incidencia
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Comienza creando tu primer detalle de incidencia
+                </p>
+                <button
+                  onClick={handleOpenModal}
+                  className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                  type="button"
+                >
+                  <PlusIcon className="h-5 w-5" />
+                  Crear primer detalle
+                </button>
               </div>
+            </div>
+              
 
+              {/* Pero si hay contenido o información de subregistros de incidencias se mostrara este contenido  */}
               <div className="mt-7">
                 <h2 className="text-black text-lg font-semibold mb-3">Registros (1)</h2>
                 <div className="border-1 border-gray-300 rounded-lg p-6">

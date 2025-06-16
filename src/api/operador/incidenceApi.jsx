@@ -1,13 +1,13 @@
 import { mainApi, incidenceApi } from "../config";
 
-// Función para buscar incidencias por código (usa el endpoint especifico)
-export const searchIncidencesByCode = async (searchTerm) => {
+// Función para buscar incidencias por código
+export const getIncidenceCodesApi = async () => {
   try {
-    const response = await incidenceApi.get(`/buscar_incidencias?codigo=${searchTerm}`);
+    const response = await incidenceApi.get('/buscar_incidencias');
     return response.data;
   } catch (error) {
-    console.error("Error searching incidences:", error);
-    throw error.response ? error.response.data : new Error('Failed to search incidences');
+    console.error("Error fetching incidence codes:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch incidence codes');
   }
 }
 
@@ -26,7 +26,6 @@ export const createIncidenceApi = async (incidenceData) => {
 export const getAllIncidencesApi = async () => {
   try {
     const response = await mainApi.get('/incidence/all');
-    console.log("Estoy aqui denuevo");
     return response.data;
   } catch (error) {
     console.log("Error fetching incidences:", error);
