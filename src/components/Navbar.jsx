@@ -1,4 +1,19 @@
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../store/slices/authSlice'; 
+
 const Navbar = () => {
+  const dispatch = useDispatch();
+
+  // Obtenemos directamente username y role desde el estado auth
+  const { username, role } = useSelector((state) => state.auth || {});
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.clear(); 
+    window.location.reload();
+  };
+
   return (
     <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200">
       <div className="px-3 py-3 lg:px-5 lg:pl-3">
@@ -9,7 +24,7 @@ const Navbar = () => {
               data-drawer-toggle="logo-sidebar"
               aria-controls="logo-sidebar"
               type="button"
-              className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
             >
               <span className="sr-only">Open sidebar</span>
               <svg
@@ -39,7 +54,7 @@ const Navbar = () => {
               <div>
                 <button
                   type="button"
-                  className="flex text-sm bg-gray-800 rounded-full focus:ring-4 cursor-pointer focus:ring-gray-300 dark:focus:ring-gray-600"
+                  className="flex text-sm bg-gray-800 rounded-full focus:ring-4 cursor-pointer focus:ring-gray-300"
                   aria-expanded="false"
                   data-dropdown-toggle="dropdown-user"
                 >
@@ -52,56 +67,26 @@ const Navbar = () => {
                 </button>
               </div>
               <div
-                className="z-50 hidden my-4 mt-44 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600"
+                className="z-50 hidden my-4 mt-44 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm"
                 id="dropdown-user"
               >
                 <div className="px-4 py-3" role="none">
-                  <p className="text-sm text-gray-900 dark:text-white" role="none">
-                    Neil Sims
+                  <p className="text-sm text-gray-900" role="none">
+                    {username || 'Usuario'}
                   </p>
-                  <p
-                    className="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
-                    role="none"
-                  >
-                    neil.sims@flowbite.com
+                  <p className="text-sm font-medium text-gray-900 truncate" role="none">
+                     {role || 'Desconocido'}
                   </p>
                 </div>
                 <ul className="py-1" role="none">
                   <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       role="menuitem"
                     >
-                      Dashboard
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                      role="menuitem"
-                    >
-                      Settings
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                      role="menuitem"
-                    >
-                      Earnings
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                      role="menuitem"
-                    >
-                      Sign out
-                    </a>
+                      Cerrar sesión
+                    </button>
                   </li>
                 </ul>
               </div>
