@@ -16,7 +16,7 @@ import DashboardAdmin from "../pages/Admin/Dashboard";
 import SupervisorsAdmin from "../pages/Admin/Supervisors";
 // PAGES SUPERVISOR
 import DashboardSupervisor from "../pages/Supervisors/Dashboard";
-import OperadoresPage from "../pages/Supervisors/Operadores";
+import OperatorsAdmin from "../pages/Supervisors/Operators";
 import ReportesSupervisor from "../pages/Supervisors/Reportes";
 // PAGES OPERADOR
 import DashboardOperador from "../pages/Operador/Dashboard";
@@ -24,7 +24,6 @@ import IncidenciaOperador from "../pages/Operador/Incidencia";
 import IncidenciaDetalle from "../pages/Operador/Detalle";
 
 import PrivateRoute from "../routes/PrivateRoute";
-
 
 export default function Router() {
   return (
@@ -43,7 +42,7 @@ export default function Router() {
         {/* Rutas Protegidas - Supervisor */}
         <Route element={<DashboardLayoutSupervisor />}>
           <Route path="/dashboard/supervisors" element={<PrivateRoute requiredRole="supervisor"><DashboardSupervisor /></PrivateRoute>} />
-          <Route path="/dashboard/supervisors/operadores" element={<PrivateRoute requiredRole="supervisor"><OperadoresPage /></PrivateRoute>} />
+          <Route path="/dashboard/supervisors/operadores" element={<PrivateRoute requiredRole="supervisor"><OperatorsAdmin /></PrivateRoute>} />
           <Route path="/dashboard/supervisors/reportes" element={<PrivateRoute requiredRole="supervisor"> <ReportesSupervisor /></PrivateRoute>} />
         </Route>
 
