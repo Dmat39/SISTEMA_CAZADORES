@@ -6,7 +6,7 @@ import LoginForm from "../components/Login/LoginForm";
 const LoginPage = () => {
   const { handleLogin, loading, error } = useLogin();
   const navigate = useNavigate();
-  const authorized = useSelector((state) => state.auth.authorized);
+  const authorized = useSelector((state) => state.auth?.authorized);
 
   if (authorized) return <Navigate to="/dashboard" />;
 

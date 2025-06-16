@@ -1,19 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Modal, Button } from "@mui/material";
+import { Box, Modal, Button, TextField, } from "@mui/material";
 import {
   PlusIcon,
   CalendarDaysIcon,
   ClockIcon,
   DocumentTextIcon,
   CameraIcon,
+  PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { getAllIncidencesApi, createIncidenceApi } from "../../api/operador/incidenceApi";
+import { Autocomplete, CircularProgress } from "@mui/material";
+import { getAllIncidencesApi, createIncidenceApi, getIncidenceCodesApi } from "../../api/operador/incidenceApi";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
@@ -28,14 +30,57 @@ const Main = () => {
     date: null,
     time: null,
   });
+
   const [error, setError] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [incidences, setIncidences] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [openAutocomplete, setOpenAutocomplete] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [loadingOptions, setLoadingOptions] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+
+  // Función para cargar las opciones del autocomplete
+  useEffect(() => {
+    if(!openAutocomplete) {
+      return;
+    }
+
+    setLoadingOptions(true);
+
+    const fetchOptions = async () => {
+    try {
+      const response = await getIncidenceCodesApi(inputValue);
+      
+      // Verifica que la respuesta tenga la estructura esperada
+      if (response.success && Array.isArray(response.data)) {
+        setOptions(response.data.map(item => item.codigo_incidencia));
+      } else {
+        console.error('Formato de respuesta inesperado:', response);
+        setOptions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching options:", error);
+      setOptions([]);
+      // Muestra el error al usuario si lo deseas
+      setError(`Error al buscar códigos: ${error.message}`);
+    } finally {
+      setLoadingOptions(false);
+    }
+  };
+
+    const timer = setTimeout(() => {
+      fetchOptions();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [inputValue, openAutocomplete]);
+  
   const navigate = useNavigate();
 
   const fetched = useRef(false);
-  
+
+
   useEffect(() => {
     if (fetched.current) return;
     fetched.current = true;
@@ -48,14 +93,24 @@ const Main = () => {
         console.error("Error al obtener los incidentes:", error);
       }
     };
-
     fetchIncidences();
   }, []);
 
+
   const handleChange = (e) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   }
+ 
+
+  const handleDateChange = (newDate) => {
+    setFormData(prev => ({ ...prev, date: newDate }));
+  }
+
+  const handleTimeChange = (newTime) => {
+    setFormData(prev => ({ ...prev, time: newTime }));
+  }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,28 +130,28 @@ const Main = () => {
       const combinedDateTime = dayjs(date)
         .set("hour", time.hour())
         .set("minute", time.minute())
-        .set("second", time.second())
         .format("YYYY-MM-DDTHH:mm:ss[Z]");
       
         const incidenceData = {
           code,
           name,
-          description: description || "",
+          description,
           date: combinedDateTime,
         };
 
         const response = await createIncidenceApi(incidenceData);
+
+        // Guardar en localStorage
+        localStorage.setItem(`incidence_${code}`, JSON.stringify({
+          ...response.data,
+          date: combinedDateTime,
+          createdAt: response.data.createdAt || dayjs().utc().format("YYYY-MM-DDTHH:mm:ss[Z]"),
+        }));
         console.log("Incidence created:", response);
         // Generar codigo o URL dinamico
 
         // Navegar a la otra pantalla generada por el codigo
-        navigate(`/dashboard/operador/incidencia/${code}`, {
-          state: {
-            ...response.data,
-            date: combinedDateTime,
-            createdAt: response.data.createdAt || dayjs().utc().format("YYYY-MM-DDTHH:mm:ss[Z]"),
-          },
-        });
+        navigate(`/dashboard/operador/incidencia/${code}`);
 
         // Reset form and update list
         setFormData({
@@ -106,7 +161,6 @@ const Main = () => {
           date: null,
           time: null
         });
-
         setOpenModal(false);
     } catch (error) {
       setError(error.message || "Error al crear la incidencia.");
@@ -116,15 +170,9 @@ const Main = () => {
   };
 
   const handleOpenModal = () => {
-    //Generar codigo al abrir el modal
-    const year = dayjs().year().toString().slice(-2);
-    const randomDigits = Math.floor(1000 + Math.random() * 9000).toString();
-    const newCode = `INC${year}${randomDigits}`;
-    
-
-    setFormData(prev => ({
+      setFormData(prev => ({
       ...prev,
-      code: newCode
+      code: ''
     }));
     setOpenModal(true);
   };
@@ -151,13 +199,14 @@ const Main = () => {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "start",
             minHeight: "70vh",
             width: "100%",
           }}
         >
           <Box className="bg-white p-6 w-full max-w-full max-h-fit mx-7 my-5 rounded-lg">
-            {/* Encabezado */}
+            
+            {/* Cuando no hay Incidencias o esta en 0 */}
             <div className="flex flex-row pb-5 items-center justify-between border-b-1 border-gray-200">
               <div className="block">
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">Incidencias</h1>
@@ -223,18 +272,91 @@ const Main = () => {
                       <label htmlFor="name" class="block mb-2 text-sm font-medium text-gray-900">
                         Código *
                       </label>
-                      <input
-                        type="text"
-                        name="code"
-                        id="code"
-                        value={formData.code}
-                        onChange={handleChange}
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
-                        placeholder="Ingresa el código de incidencia"
-                        required
-                        readOnly
-                      />
+                        <Autocomplete 
+                          freeSolo
+                          id="code-autocomplete"
+                          open={openAutocomplete}
+                          onOpen={() => {
+                            setOpenAutocomplete(true);
+                            setInputValue('');
+                          }}
+                          onClose={() => setOpenAutocomplete(false)}
+                          options={options}
+                          loading={loadingOptions}
+                          value={formData.code}
+                          onChange={(event, newValue) => {
+                            setFormData(prev => ({ ...prev, code: newValue || ""}));
+                          }}
+                          inputValue={inputValue}
+                          onInputChange={(event, newInputValue) => {
+                            setInputValue(newInputValue);
+                          }}
+                          filterOptions={(options, state) => {
+                            if(!state.inputValue){
+                              return options;
+                            }
+                            return options.filter(option => option.toLowerCase().includes(state.inputValue.toLowerCase()))
+                          }}
+
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              required
+                              variant="outlined"
+                              placeholder="Buscar o ingresar código"
+                              InputProps={{
+                                ...params.InputProps,
+                                  endAdornment: (
+                                    <>
+                                      {loadingOptions ? <CircularProgress color="inherit" size={20} /> : null}
+                                      {params.InputProps.endAdornment}
+                                    </>
+                                  ),
+                                className: "bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 hover:border-gray-900",
+                                style: { padding: '0.5rem', border: "none" }
+                              }}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  '& fieldset': {
+                                    borderColor: '#d1d5db',
+                                  },
+                                  '&:hover fieldset': {
+                                    borderColor: '#000000',
+                                  },
+                                  '&.Mui-focused': {
+                                    '--tw-ring-color': 'transparent',
+                                    boxShadow: 'none',
+                                    outline: 'none',
+                                  },
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#000000',
+                                  },
+                                },
+                                '& .MuiInputBase-input': {
+                                  '&:focus': {
+                                    '--tw-ring-color': 'transparent',
+                                    boxShadow: 'none',
+                                    outline: 'none',
+                                  },
+                                },
+                              }}
+                            />
+                          )}
+                          noOptionsText={
+                            loadingOptions 
+                            ? "Buscando..." 
+                            : inputValue.trim() === ''
+                              ? "Escribe para buscar códigos"
+                              : "No se encontraron coincidencias"
+                          }
+                          sx={{
+                              '& .MuiAutocomplete-popupIndicator': {
+                                color: '#6b7280', // color gris-500 para el ícono
+                              },
+                            }}
+                        />
                     </div>
+
                     <div class="col-span-2">
                       <label htmlFor="name" class="block mb-2 text-sm font-medium text-gray-900">
                         Título *
@@ -256,7 +378,7 @@ const Main = () => {
                       </label>
                       <DatePicker
                         value={formData.date}
-                        onChange={(newDate) => setFormData(prev => ({ ...prev, date: newDate}))}
+                        onChange={handleDateChange}
                         format="DD/MM/YYYY"
                         class="focus:ring-gray-600 focus:border-gray-600 w-full readOnly"
                       />
@@ -267,7 +389,7 @@ const Main = () => {
                       </label>
                       <TimePicker
                         value={formData.time}
-                        onChange={(newTime) => setFormData(prev => ({ ...prev, time: newTime}))}
+                        onChange={handleTimeChange}
                         class="rounded-lg bg-gray-50 border border-gray-300 text-sm w-full readOnly"
                       />
                     </div>
@@ -307,6 +429,31 @@ const Main = () => {
               </Box>
             </Modal>
 
+            {/* Lista de Incidencias o Estado Vacío */}
+            {/* <div className="flex flex-col items-center justify-center max-w-4xl mx-auto h-150">
+              <div className="flex flex-col items-center justify-center">
+                <PlusCircleIcon className="h-18 w-18 text-gray-300 mb-2" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No hay incidencias
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Comienza creando tu primera incidencia para organizar tus
+                  registros
+                </p>
+                <button
+                  data-modal-target="crud-modal-incidencias"
+                  data-modal-toggle="crud-modal-incidencias"
+                  className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                  type="button"
+                >
+                  <PlusIcon className="h-5 w-5" />
+                  Crear primera Incidencia
+                </button>
+              </div>
+            </div> */}
+
+            
+            {/* Lista de incidencias creadas */}
             <div className="flex flex-col justify-start max-w-full px-4 mt-10">
               <div className="mb-8">
                 <h2 className="text-2xl text-gray-900 font-semibold mb-1">Todas las incidencias</h2>
@@ -320,7 +467,7 @@ const Main = () => {
                   const isPM = incidentDate.hour() >= 12;
                   
                   return (
-                    <div key={incidence.id} className="border border-gray-300 rounded-lg p-6 hover:shadow-md transition-shadow">
+                    <div key={incidence.id} onClick={() => navigate(`/dashboard/operador/incidencia/${incidence.code}`)} className="border border-gray-300 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer">
                       <div className="flex flex-row items-start justify-between mb-3">
                         <h3 className="text-xl line-clamp-2 text-gray-900 font-semibold w-72">
                           {incidence.name}
@@ -357,7 +504,7 @@ const Main = () => {
                           <div className="flex items-center space-x-1">
                             <CameraIcon className="h-4 w-4 text-gray-500" />
                             <span className="text-sm text-gray-600">
-                              2 Registros
+                              Con imágenes
                             </span>
                           </div>
                         </div>
