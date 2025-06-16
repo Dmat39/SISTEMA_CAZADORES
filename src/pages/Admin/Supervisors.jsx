@@ -39,7 +39,7 @@ const SupervisorsAdmin = () => {
             () => (
                 <div className="flex flex-col space-y-2">
                     <p>¿Estás seguro de eliminar a <strong>{payload.name} {payload.lastname}</strong>?</p>
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-center gap-2">
                         <button
                             onClick={() => {
                                 toast.dismiss(); // cerrar manualmente
@@ -70,6 +70,7 @@ const SupervisorsAdmin = () => {
             ),
             {
                 position: "top-center",
+                className : "flex justify-center",
                 duration: 999999,
             }
         );
