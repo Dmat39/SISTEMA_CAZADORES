@@ -5,8 +5,9 @@ import { icons } from '../../plugins/IconLibrary.js';
 import { addOperatorApi, deleteOperatorApi, getAllOperatorApi, updateOperatorApi } from '../../api/supervisor/OperatorService.jsx';
 import UpdateForm from '../../components/Supervisors/UpdateForm.jsx';
 import CreateForm from '../../components/Supervisors/CreateForm.jsx';
-import TableForm from '../../components/Supervisors/TableForm.jsx';
-import FirstOperator from '../../components/Supervisors/firstOperator.jsx';
+import Loading from '../../components/Loading.jsx';
+import CreateFirstEntity from '../../components/CreateFirstEntity.jsx';
+import TableForm from '../../components/TableForm.jsx';
 
 const OperatorsAdmin = () => {
     const [operators, setOperators] = useState([]);
@@ -15,6 +16,7 @@ const OperatorsAdmin = () => {
     const [dataEdit, setDataEdit] = useState(null);
 
     const [showUpdate, setShowUpdate] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const openModalEdit = (payload) => {
         setDataEdit(payload);
@@ -23,10 +25,13 @@ const OperatorsAdmin = () => {
 
     const fetchOperators = async () => {
         try {
+            setIsLoading(true);
             const data = await getAllOperatorApi();
             setOperators(data.data);
         } catch (error) {
             toast.error(` Error al obtener los operadores: ${error.message}`);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -119,11 +124,32 @@ const OperatorsAdmin = () => {
                     ) : null}
                 </div>
                 <hr className='border-gray-200' />
-                {operators.length > 0 ?(
-                    <TableForm data={operators} onDelete={deleteOperator} onEdit={openModalEdit}/>
-                ) : (
-                    <FirstOperator onCreate={() => setShowCreate(true)}/>
-                )}
+                {isLoading ? (
+                    <Loading message= "Cargando Operadores"/>
+                ) : 
+                    operators.length > 0 ?(
+                        <TableForm
+                            data={operators}
+                            onEdit={openModalEdit}
+                            onDelete={deleteOperator}
+                            columns={[
+                                { label: 'Nombre', key: 'name' },
+                                { label: 'Apellido', key: 'lastname' },
+                                { label: 'Teléfono', key: 'phone' },
+                                { label: 'DNI', key: 'dni' },
+                                { label: 'Usuario', key: 'user.username' },
+                                { label: 'Rol', key: 'user.role' },
+                            ]}
+                        />
+
+                    ) : (
+                        <CreateFirstEntity 
+                            title="No hay operadores" 
+                            body="Comienza creando tu primer operador para organizar tus registros" 
+                            button="Crear primer operador" onCreate={() => setShowCreate(true)}
+                        />
+                    )
+                }
             </div>
 
             <UpdateForm

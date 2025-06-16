@@ -1,17 +1,16 @@
 import Icon from "@mdi/react";
-import { icons } from '../../plugins/IconLibrary.js';
+import { icons } from "../plugins/IconLibrary";
 
-const FirstOperator = ({ onCreate }) => {
+const CreateFirstEntity = ({ onCreate, title, body, button }) => {
     return (
         <div className="flex flex-col items-center justify-center max-w-4xl mx-auto h-150">
             <div className="flex flex-col items-center justify-center">
             <Icon path={icons.plus} size={2} />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No hay operadores
+                {title}
             </h3>
             <p className="text-gray-500 mb-6">
-                Comienza creando tu primer operador para organizar tus
-                registros
+                {body}
             </p>
             <button
                 onClick={onCreate}
@@ -19,10 +18,10 @@ const FirstOperator = ({ onCreate }) => {
                 type="button"
             >
                 <Icon path={icons.add} size={1} />
-                Crear primera Operador
+                {button}
             </button>
             </div>
         </div>
     );
 };
-export default FirstOperator;
+export default CreateFirstEntity;

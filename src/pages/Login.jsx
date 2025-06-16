@@ -17,7 +17,7 @@ const LoginPage = () => {
         result.role === "admin"
         ? "/dashboard" 
         : result.role === "supervisor"
-        ? "/dashboard/supervisor"
+        ? "/dashboard/supervisors"
         : "/dashboard/operador";
         navigate(redirectPath);
         console.log('Redirigiendo a:', redirectPath); // Depuración
