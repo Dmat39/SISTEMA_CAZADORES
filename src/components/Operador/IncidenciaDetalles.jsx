@@ -1,66 +1,11 @@
 import dayjs from "dayjs";
-import 'dayjs/locale/es';
-import { getIncidenceCodesApi } from "../../api/operador/incidenceApi";
+import Icon from "@mdi/react";
+import { icons } from "../../plugins/IconLibrary";
 
-const IncidenciaDetalles = () => {
-  const navigate = useNavigate();
-  const { code } = useParams();
-  const [incidence, setIncidence] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const location = useLocation();
-  const { state } = location;
-
-  useEffect(() => {
-    const fetchIncidenceData = async () => {
-      try {
-        // 1. Primero intenta cargar de localStorage
-        const savedData = localStorage.getItem(`incidence_${code}`);
-        if (savedData) {
-          setIncidence(JSON.parse(savedData));
-          return;
-        }
-
-        // 2. Si no está en localStorage, hace fetch a la API
-        const response = await getIncidenceCodesApi(code); // Necesitarás implementar esta función
-        if (response.success) {
-          setIncidence(response.data);
-          // Guarda en localStorage para futuras visitas
-          localStorage.setItem(`incidence_${code}`, JSON.stringify(response.data));
-        } else {
-          navigate('/dashboard/operador/incidencia', { replace: true });
-        }
-      } catch (error) {
-        console.error("Error fetching incidence:", error);
-        navigate('/dashboard/operador/incidencia', { replace: true });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchIncidenceData();
-  }, [code, navigate]);
-
-  // Valores de respaldo mientras carga
-  if (loading || !incidence) {
-    return <div>Cargando...</div>;
+const RegistrosList = ({ records = [] }) => {
+  if (!records.length) {
+    return <p className="text-gray-500 text-sm">No hay registros aún.</p>;
   }
-
-  // Valores de respaldo si el estado no está disponible
-  const incidenceStateDefault= state || {
-    name: "Sin título",
-    date: "2025-06-10T00:00:00Z",
-    description: "Sin descripción",
-    createdAt: "2025-06-10T00:00:00Z",
-  };
-
-  // Analizar la fecha y la hora de la cadena ISO 8601 combinada
-  const incidentDate = dayjs(incidence.date);
-  const createdAtDate = dayjs(incidence.createdAt);
-
-  const [openModal, setOpenModal] = useState(false); // Estado para controlar el modal
-
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
 
   return (
     <div className="mt-8">
@@ -79,12 +24,12 @@ const IncidenciaDetalles = () => {
               key={rec.id}
               className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm"
             >
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center gap-2 text-base text-gray-800 font-medium">
-                  <span className="bg-gray-50 border-1 leading-tight border-gray-300 text-gray-700 rounded-lg px-2 py-0.5 text-xs font-semibold">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2 text-sm text-gray-800 font-medium">
+                  <span className="bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-semibold">
                     #{idx + 1}
                   </span>
-                  {rec.cameraId ? "Entrada Principal" : "Sin cámara asociada"}
+                  {rec.camera?.name || "Sin cámara asociada"}
                 </div>
 
                 <div className="flex gap-3 text-sm text-gray-500">
@@ -100,7 +45,7 @@ const IncidenciaDetalles = () => {
                 </div>
               </div>
 
-              <p className="text-base text-gray-700 leading-relaxed mb-3">
+              <p className="text-sm text-gray-700 leading-relaxed mb-3">
                 {rec.description || "Sin descripción del registro."}
               </p>
 
