@@ -1,6 +1,7 @@
 import { mainApi, incidenceApi } from "../config";
 
 // Función para buscar incidencias por código
+// Función para buscar incidencias por código
 export const getIncidenceCodesApi = async () => {
   try {
     const response = await incidenceApi.get('/buscar_incidencias');

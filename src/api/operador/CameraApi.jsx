@@ -1,9 +1,9 @@
 import mainApi from "../config";
 
 
-export const createSubRegistroIncidenceApi = async (incidenceData) => {
+export const allCameraApi = async () => {
   try {
-    const response = await mainApi.post('/record/add', incidenceData);
+    const response = await mainApi.get('/camera/all');
     return response.data;
   } catch (error) {
     console.error("Error creating incidence:", error);

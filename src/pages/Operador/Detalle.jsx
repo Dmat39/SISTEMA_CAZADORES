@@ -1,28 +1,33 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getIncidenceByIdApi } from "../../api/operador/incidenceApi";
+import { createSubRegistroIncidenceApi } from "../../api/operador/registroIncidenceApi";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
 import dayjs from "dayjs";
 import RegistrosList from "../../components/Operador/IncidenciaDetalles";
+import CreateFormRegister from "../../components/Operador/CreateFormRegister";
+
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const IncidenciaDetalles = () => {
   const [incidencia, setIncidencia] = useState(null);
+  const [showRegistroForm, setShowRegistroForm] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchIncidencia = async () => {
     const id = localStorage.getItem("last_created_incidence_id");
     if (!id) return;
+    try {
+      const response = await getIncidenceByIdApi(id);
+      setIncidencia(response.data);
+    } catch (error) {
+      console.error("Error al obtener detalle de incidencia:", error);
+    }
+  };
 
-    const fetchIncidencia = async () => {
-      try {
-        const response = await getIncidenceByIdApi(id);
-        setIncidencia(response.data);
-      } catch (error) {
-        console.error("Error al obtener detalle de incidencia:", error);
-      }
-    };
-
+  useEffect(() => {
     fetchIncidencia();
   }, []);
 
@@ -33,6 +38,34 @@ const IncidenciaDetalles = () => {
   const formattedDate = dayjs(incidencia.date).format("YYYY-MM-DD");
   const formattedTime = dayjs(incidencia.date).format("HH:mm");
   const createdAt = dayjs(incidencia.createdAt).format("D [de] MMMM [de] YYYY");
+
+  // Emisión desde el modal -> consumir API
+  const handleRegistroSubmit = async (formData) => {
+    try {
+      console.log("FormData recibido del hijo:");
+      
+      // Verificar que es FormData
+      if (!(formData instanceof FormData)) {
+        console.error("Error: Se esperaba FormData pero se recibió:", typeof formData);
+        return;
+      }
+
+      // Debug: Mostrar contenido del FormData
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value);
+      }
+
+      // Enviar directamente el FormData al API
+      const response = await createSubRegistroIncidenceApi(formData);
+      console.log("Registro creado exitosamente:", response);
+      
+      setShowRegistroForm(false);
+      await fetchIncidencia(); // recargar para ver nuevo registro
+    } catch (err) {
+      console.error("Error al guardar el registro:", err);
+      // Opcional: mostrar notificación de error al usuario
+    }
+  };
 
   return (
     <div className="p-6">
@@ -70,7 +103,7 @@ const IncidenciaDetalles = () => {
             </span>
             <button
               className="flex items-center gap-2 text-white bg-gray-900 hover:bg-[#32A3B5] transition px-4 py-2 rounded-lg text-sm"
-              onClick={() => console.log("Agregar Registro")}
+              onClick={() => setShowRegistroForm(true)}
             >
               <Icon path={icons.plus} size={0.8} /> Agregar Registro
             </button>
@@ -88,6 +121,17 @@ const IncidenciaDetalles = () => {
         {/* Registros */}
         <RegistrosList records={incidencia.records || []} />
       </div>
+
+      {/* Formulario de Registro */}
+      {showRegistroForm && (
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <CreateFormRegister
+            incidenceId={incidencia.id}
+            onClose={() => setShowRegistroForm(false)}
+            onSubmit={handleRegistroSubmit}
+          />
+        </LocalizationProvider>
+      )}
     </div>
   );
 };

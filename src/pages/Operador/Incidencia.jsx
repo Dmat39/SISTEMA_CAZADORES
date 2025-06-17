@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
-import CreateForm from "../../components/Operador/CreateForm";
-import CardForm from "../../components/Operador/CardForm";
+import CreateFormIncidence from "../../components/Operador/CreateFormIncidence";
+import CardFormIncidence from "../../components/Operador/CardFormIncidence";
 import { useNavigate } from "react-router-dom"; // importar esto arriba
 
 import { getAllIncidencesApi, createIncidenceApi } from "../../api/operador/incidenceApi";
@@ -65,11 +65,11 @@ const handleCreateIncidencia = async (payload) => {
           </button>
         </div>
 
-        <CardForm incidencias={incidencias} />
+        <CardFormIncidence incidencias={incidencias} />
       </div>
 
       {/* Modal de creación */}
-      <CreateForm
+      <CreateFormIncidence
         open={showForm}
         onClose={() => setShowForm(false)}
         onSubmit={handleCreateIncidencia}
