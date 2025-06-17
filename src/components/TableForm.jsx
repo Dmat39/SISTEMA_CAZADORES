@@ -4,6 +4,7 @@ import { icons } from '../plugins/IconLibrary.js';
 const TableForm = ({
   data = [],
   columns = [],
+  onEditPwd,
   onEdit,
   onDelete
 }) => {
@@ -21,7 +22,7 @@ const TableForm = ({
                   {col.label}
                 </th>
               ))}
-              {(onEdit || onDelete) && (
+              {( onEditPwd || onEdit || onDelete) && (
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                   Acciones
                 </th>
@@ -39,18 +40,25 @@ const TableForm = ({
                   </td>
                 ))}
 
-                {(onEdit || onDelete) && (
-                  <td className="px-6 py-4 text-sm text-gray-800 flex space-x-2">
-                    {onEdit && (
-                      <button onClick={() => onEdit(item)} title="Editar" className="cursor-pointer">
-                        <Icon path={icons.edit} size={1} className="text-blue-600 hover:text-blue-800" />
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button onClick={() => onDelete(item)} title="Eliminar" className="cursor-pointer">
-                        <Icon path={icons.delete} size={1} className="text-red-600 hover:text-red-800" />
-                      </button>
-                    )}
+                {(onEditPwd || onEdit || onDelete) && (
+                  <td className="px-6 py-4 text-sm text-gray-800 space-x-2">
+                    <div>
+                      {onEditPwd && (
+                        <button onClick={() => onEditPwd(item)} title="Editar contraseña" className="cursor-pointer">
+                          <Icon path={icons.lockReset} size={1} className="text-black-600 hover:text-black-800"/>
+                        </button>
+                      )}
+                      {onEdit && (
+                        <button onClick={() => onEdit(item)} title="Editar" className="cursor-pointer">
+                          <Icon path={icons.edit} size={1} className="text-blue-600 hover:text-blue-800" />
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button onClick={() => onDelete(item)} title="Eliminar" className="cursor-pointer">
+                          <Icon path={icons.delete} size={1} className="text-red-600 hover:text-red-800" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 )}
               </tr>

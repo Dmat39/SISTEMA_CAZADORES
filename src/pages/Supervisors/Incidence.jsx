@@ -2,14 +2,13 @@ import {useEffect, useRef, useState} from 'react';
 import {toast} from 'sonner';
 import Icon from '@mdi/react';
 import { icons } from '../../plugins/IconLibrary.js';
-import { addOperatorApi, deleteOperatorApi, getAllOperatorApi, updateOperatorApi } from '../../api/supervisor/OperatorService.jsx';
-import UpdateForm from '../../components/Supervisors/UpdateForm.jsx';
-import CreateForm from '../../components/Supervisors/CreateForm.jsx';
 import Loading from '../../components/Loading.jsx';
 import CreateFirstEntity from '../../components/CreateFirstEntity.jsx';
 import { createIncidenceApi, deleteIncidenceApi, getAllIncidencesApi, updateIncidenceApi } from '../../api/operador/incidenceApi.jsx';
 import TableForm from '../../components/TableForm.jsx';
 import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation.jsx';
+import UpdateFormIncidence from '../../components/Supervisors/UpdateFormIncidence.jsx';
+import CreateFormIncidence from '../../components/Supervisors/CreateFormIncidence.jsx';
 
 const Incidence = () => {
     const [incidents, setIncidents] = useState([]);
@@ -101,13 +100,30 @@ const Incidence = () => {
                                 { label: 'Cod.', key: 'code' },
                                 { label: 'Nombre', key: 'name' },
                                 { label: 'Descripción', key: 'description' },
-                                { label: 'Fecha incidente', key: 'date' },
-                                { label: 'Estado', key: 'status' },
+                                { label: 'Fecha incidente', key: 'date', render: (value) =>{return new Date(value.date).toISOString().split('T')[0] }},
+                                { label: 'Hora incidente', key: 'date', 
+                                      render: (value) => {
+                                        const date = new Date(value.date);
+                                        const hours = date.getHours();
+                                        const minutes = date.getMinutes().toString().padStart(2, '0');
+                                        const ampm = hours >= 12 ? 'PM' : 'AM';
+                                        const hour12 = hours % 12 || 12;
+                                        return `${hour12}:${minutes} ${ampm}`;
+                                    }  
+                                },
+                                { label: 'Estado', key: 'status', render: (value) =>{
+                                    switch(value.status){
+                                        case "process": return 'En Proceso';
+                                        case "completed": return 'Completado';
+                                        case "finished": return 'Finalizado';
+                                        default: return value.status;
+                                    }
+                                }},
                                 { label: 'Observación', key: 'observation' },
-                                { label: 'Creado por', key: 'userId' },
-                                { label: 'creado en ', key: 'updatedAt' },
-                                { label: 'Actualizado por', key: 'userIdWhoUpdated' },
-                                { label: 'Actualizado en', key: 'updatedAt' },
+                                { label: 'Creado por', key: 'user', render: (value) => {return value.user.username} },
+                                { label: 'creado en ', key: 'createdAt', render: (value) => { return new Date(value.createdAt).toISOString().split('T')[0] }},
+                                { label: 'Actualizado por', key: 'userIdWhoUpdated', render: (value) => value.userWhoUpdated?.username ?? '—'},
+                                { label: 'Actualizado en', key: 'updatedAt', render: (value) => { return new Date(value.updatedAt).toISOString().split('T')[0]} },
                             ]}
                         />
                     ) : (
@@ -120,7 +136,7 @@ const Incidence = () => {
                 }
             </div>
 
-            <UpdateForm
+            <UpdateFormIncidence
                 isOpen={showUpdate}
                 onClose={() => setShowUpdate(false)}
                 data={dataEdit}
@@ -131,7 +147,7 @@ const Incidence = () => {
                 }}
             />
 
-            <CreateForm
+            <CreateFormIncidence
                 isOpen={showCreate}
                 onClose={() => setShowCreate(false)}
                 onSubmit={handleCreate}

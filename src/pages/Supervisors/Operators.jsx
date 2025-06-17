@@ -3,24 +3,33 @@ import {toast} from 'sonner';
 import Icon from '@mdi/react';
 import { icons } from '../../plugins/IconLibrary.js';
 import { addOperatorApi, deleteOperatorApi, getAllOperatorApi, updateOperatorApi } from '../../api/supervisor/OperatorService.jsx';
-import UpdateForm from '../../components/Supervisors/UpdateForm.jsx';
-import CreateForm from '../../components/Supervisors/CreateForm.jsx';
 import Loading from '../../components/Loading.jsx';
 import CreateFirstEntity from '../../components/CreateFirstEntity.jsx';
 import TableForm from '../../components/TableForm.jsx';
+import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation.jsx';
+import UpdateFormOperator from '../../components/Supervisors/UpdateFormOperator.jsx';
+import CreateFormOperator from '../../components/Supervisors/CreateFormOperator.jsx';
+import NewPwdForm from '../../components/NewPwdForm.jsx';
 
 const OperatorsAdmin = () => {
     const [operators, setOperators] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
     const fetched = useRef(false);
     const [dataEdit, setDataEdit] = useState(null);
+    const [dataEditPwd, setDataEditPwd] = useState(null);
 
     const [showUpdate, setShowUpdate] = useState(false);
+    const [showUpdatePwd, setShowUpdatePwd] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     const openModalEdit = (payload) => {
         setDataEdit(payload);
         setShowUpdate(true);
+    };
+
+    const openModalEditPwd = (payload) => {
+        setDataEditPwd(payload);
+        setShowUpdatePwd(true);
     };
 
     const fetchOperators = async () => {
@@ -35,48 +44,11 @@ const OperatorsAdmin = () => {
         }
     };
 
-    const deleteOperator = async (payload) => {
-        toast(
-            () => (
-                <div className="flex flex-col space-y-2">
-                    <p>¿Estás seguro de eliminar a <strong>{payload.name} {payload.lastname}</strong>?</p>
-                    <div className="flex justify-center gap-2">
-                        <button
-                            onClick={() => {
-                                toast.dismiss(); // cerrar manualmente
-                            }}
-                            className="px-3 py-1 text-sm border rounded hover:bg-gray-100"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            onClick={async () => {
-                                toast.dismiss();
-                                try {
-                                    await deleteOperatorApi(payload.id);
-                                    await fetchOperators();
-                                    toast.success(" Operador eliminado exitosamente!", {
-                                        position: 'top-right',
-                                    });
-                                } catch (err) {
-                                    toast.error(`Error al eliminar operador: ${err.message}`);
-                                }
-                            }}
-                            className="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700"
-                        >
-                            Eliminar
-                        </button>
-                    </div>
-                </div>
-            ),
-            {
-                position: "top-center",
-                duration: 999999,
-                className: "flex justify-center"
-            }
-        );
-
-    };
+    const confirmDelete = useDeleteConfirmation({
+        fetchData: fetchOperators,
+        deleteApiFn: deleteOperatorApi,
+        entityName: 'operator',
+    });
 
     const updateOperator = async (payload) => {
         try {
@@ -130,8 +102,9 @@ const OperatorsAdmin = () => {
                     operators.length > 0 ?(
                         <TableForm
                             data={operators}
+                            onEditPwd={openModalEditPwd}
                             onEdit={openModalEdit}
-                            onDelete={deleteOperator}
+                            onDelete={(op) => confirmDelete(op, (p) => `${p.name} ${p.lastname}`)}
                             columns={[
                                 { label: 'Nombre', key: 'name' },
                                 { label: 'Apellido', key: 'lastname' },
@@ -151,8 +124,19 @@ const OperatorsAdmin = () => {
                     )
                 }
             </div>
+                
+            <NewPwdForm
+                isOpen={showUpdatePwd}
+                onClose={() => setShowUpdatePwd(false)}
+                data={dataEditPwd}
+                onSubmit={async (updatedOperator) => {
+                    await updateOperator(updatedOperator);
+                    await fetchOperators();
+                    setShowUpdatePwd(false);
+                }}
+            />
 
-            <UpdateForm
+            <UpdateFormOperator
                 isOpen={showUpdate}
                 onClose={() => setShowUpdate(false)}
                 data={dataEdit}
@@ -163,7 +147,7 @@ const OperatorsAdmin = () => {
                 }}
             />
 
-            <CreateForm
+            <CreateFormOperator
                 isOpen={showCreate}
                 onClose={() => setShowCreate(false)}
                 onSubmit={handleCreate}

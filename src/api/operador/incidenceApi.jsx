@@ -1,4 +1,4 @@
-import { mainApi, incidenceApi } from "../config";
+import config, { mainApi, incidenceApi } from "../config";
 
 // Función para buscar incidencias por código (usa el endpoint especifico)
 export const searchIncidencesByCode = async (searchTerm) => {
@@ -26,7 +26,6 @@ export const createIncidenceApi = async (incidenceData) => {
 export const getAllIncidencesApi = async () => {
   try {
     const response = await mainApi.get('/incidence/all');
-    console.log("Estoy aqui denuevo");
     return response.data;
   } catch (error) {
     console.log("Error fetching incidences:", error);
@@ -47,7 +46,7 @@ export const getIncidenceByIdApi = async(id) => {
 
 export const updateIncidenceApi = async (payload,  id) => {
   try {
-    const response = await config.patch(`/incidence/update/${id}` , payload);
+    const response = await config.patch(`/incidence/${id}` , payload);
     return response.data;
   } catch (error) {
     console.log("Error fetching incidence:", error);

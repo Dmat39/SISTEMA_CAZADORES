@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { FaEye, FaEyeSlash, FaRegUser } from "react-icons/fa";
 
-const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
-    const [showPassword, setShowPassword] = useState(false);
+const UpdateFormOperator = ({ isOpen, onClose, data, onSubmit }) => {
     
     const [form, setForm] = useState({
         username: '',
-        password: '',
         name: '',
         lastname: '',
         phone: '',
@@ -19,7 +17,6 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
         if (data) {
             setForm({
                 username: data.user?.username || '',
-                password: data.user?.password || '',
                 name: data.name || '',
                 lastname: data.lastname || '',
                 phone: data.phone || '',
@@ -38,10 +35,6 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit?.(form);
-    };
-    
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
     };
 
     return (
@@ -116,32 +109,7 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
                                 </div>
                             </div>
                         </div>
-
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium">Contraseña</label>
-                            <div className='relative mt-1'>
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    name="password"
-                                    value={form.password}
-                                    onChange={handleChange}
-                                    className="w-full border px-3 py-2 rounded"
-                                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
-                                    title="La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo."
-                                />
-                                <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-                                    <button type="button" onClick={togglePasswordVisibility} className="focus:outline-none cursor-pointer">
-                                        {showPassword ? (
-                                            <FaEyeSlash className="w-5 h-5 text-gray-400" />
-                                        ) : (
-                                            <FaEye className="w-5 h-5 text-gray-400" />
-                                        )
-                                        }
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
+                        
                         <div className="flex justify-end">
                             <button
                                 type="button"
@@ -164,4 +132,4 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
     );
 };
 
-export default UpdateForm;
+export default UpdateFormOperator;

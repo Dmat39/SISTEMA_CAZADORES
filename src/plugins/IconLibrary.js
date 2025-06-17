@@ -4,10 +4,12 @@ import {
     mdiPlus,
     mdiEye,
     mdiAccount,
-    mdiPlusCircleOutline
+    mdiPlusCircleOutline,
+    mdiLockReset
 } from "@mdi/js";
 
 export const icons = {
+    lockReset: mdiLockReset,
     edit: mdiPencil,
     delete: mdiTrashCan,
     add: mdiPlus,

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { FaEye, FaEyeSlash, FaRegUser } from 'react-icons/fa';
 
-const CreateForm = ({ isOpen, onClose, onSubmit }) => {
+const CreateFormIncidence = ({ isOpen, onClose, onSubmit }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const [form, setForm] = useState({
@@ -165,4 +165,4 @@ const CreateForm = ({ isOpen, onClose, onSubmit }) => {
     );
 };
 
-export default CreateForm;
+export default CreateFormIncidence;
