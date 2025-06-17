@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
-import CreateFormIncidence from "../../components/Operador/CreateFormIncidence";
-import CardFormIncidence from "../../components/Operador/CardFormIncidence";
-import { useNavigate } from "react-router-dom"; // importar esto arriba
+import CreateFormIncidence from "../../components/Supervisors/CreateFormIncidence";
+import CardFormIncidence from "../../components/Supervisors/CardFormIncidence";
+import { useNavigate } from "react-router-dom"; 
 
 import { getAllIncidencesApi, createIncidenceApi } from "../../api/operador/incidenceApi";
 
@@ -30,9 +30,8 @@ const handleCreateIncidencia = async (payload) => {
     
     if (newId) {
       localStorage.setItem("last_created_incidence_id", newId);
-      navigate("/dashboard/operador/incidencia/detalle");
+      navigate("/dashboard/supervisors/incidencia/detalle");
     }
-
     await fetchIncidencias(); 
     setShowForm(false);
   } catch (err) {
