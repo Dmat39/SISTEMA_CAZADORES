@@ -4,7 +4,12 @@ import {
     mdiPlus,
     mdiEye,
     mdiAccount,
-    mdiPlusCircleOutline
+    mdiPlusCircleOutline,
+    mdiArrowLeft,
+    mdiCalendarRange,
+    mdiClockOutline,
+    mdiInformationOutline,
+    mdiCameraOutline
 } from "@mdi/js";
 
 export const icons = {
@@ -13,5 +18,10 @@ export const icons = {
     add: mdiPlus,
     view: mdiEye,
     user: mdiAccount,
-    plus: mdiPlusCircleOutline
+    plus: mdiPlusCircleOutline,
+    arrowLeft: mdiArrowLeft,
+    calendar: mdiCalendarRange,
+    clock: mdiClockOutline,
+    information: mdiInformationOutline,
+    camera: mdiCameraOutline
 };

@@ -50,7 +50,7 @@ export default function Router() {
         <Route element={<DashboardLayoutOperador />}>
           <Route path="/dashboard/operador" element={<PrivateRoute requiredRole="operator"><DashboardOperador /></PrivateRoute>} />
           <Route path="/dashboard/operador/incidencia" element={<PrivateRoute requiredRole="operator"><IncidenciaOperador /></PrivateRoute>} />
-          <Route path="/dashboard/operador/detalle/incidencia" element={<PrivateRoute requiredRole="operator"><IncidenciaDetalle /></PrivateRoute>} />
+          <Route path="/dashboard/operador/incidencia/detalle" element={<PrivateRoute requiredRole="operator"><IncidenciaDetalle /></PrivateRoute>} />
         </Route>
 
         {/* Página 404 personalizada */}

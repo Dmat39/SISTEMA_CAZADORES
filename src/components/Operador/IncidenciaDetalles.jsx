@@ -24,9 +24,9 @@ const RegistrosList = ({ records = [] }) => {
               key={rec.id}
               className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm"
             >
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2 text-sm text-gray-800 font-medium">
-                  <span className="bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-semibold">
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-2 text-base text-gray-800 font-medium">
+                  <span className="bg-gray-50 border-1 leading-tight border-gray-300 text-gray-700 rounded-lg px-2 py-0.5 text-xs font-semibold">
                     #{idx + 1}
                   </span>
                   {rec.cameraId ? "Entrada Principal" : "Sin cámara asociada"}
@@ -45,7 +45,7 @@ const RegistrosList = ({ records = [] }) => {
                 </div>
               </div>
 
-              <p className="text-sm text-gray-700 leading-relaxed mb-3">
+              <p className="text-base text-gray-700 leading-relaxed mb-3">
                 {rec.description || "Sin descripción del registro."}
               </p>
 

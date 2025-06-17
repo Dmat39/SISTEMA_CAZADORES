@@ -136,7 +136,7 @@ const CustomTable = ({
                             {sortedData.map((row) => (
 
                                 <TableRow
-                                    onClick={(e) => typeof rowOnClick === 'function' && rowOnClick(e, row)}
+                                     onClick={(e) => typeof rowOnClick === 'function' && rowOnClick(e, row)}
                                     className={⁠ ${typeof rowOnClick === 'function' ? 'cursor-pointer hover:bg-gray-100' : ''} ⁠}
                                     key={row.id || row.dni || row.codigo}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -214,7 +214,6 @@ const CustomTable = ({
                 </span>
             }
         </div>
-
     )
 }
 

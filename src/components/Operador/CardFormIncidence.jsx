@@ -16,7 +16,7 @@ const CardForm = ({ incidencias = [] }) => {
 
   const handleCardClick = (id) => {
     localStorage.setItem("last_created_incidence_id", id);
-    navigate("/dashboard/operador/detalle/incidencia");
+    navigate("/dashboard/operador/incidencia/detalle");
   };
 
   return (
