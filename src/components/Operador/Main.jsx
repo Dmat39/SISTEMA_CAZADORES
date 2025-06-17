@@ -381,6 +381,19 @@ const Main = () => {
                         onChange={handleDateChange}
                         format="DD/MM/YYYY"
                         class="focus:ring-gray-600 focus:border-gray-600 w-full readOnly"
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                              '&.Mui-focused': {
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                  borderColor: 'black !important',
+                                  outlineColor: 'black !important',
+                                },
+                              },
+                              '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: 'black !important',
+                              },
+                            },
+                          }}
                       />
                     </div>
                     <div className="col-span-2 sm:col-span-1">
@@ -391,6 +404,19 @@ const Main = () => {
                         value={formData.time}
                         onChange={handleTimeChange}
                         class="rounded-lg bg-gray-50 border border-gray-300 text-sm w-full readOnly"
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                              '&.Mui-focused': {
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                  borderColor: 'black !important',
+                                  outlineColor: 'black !important',
+                                },
+                              },
+                              '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: 'black !important',
+                              },
+                            },
+                          }}
                       />
                     </div>
                     <div className="col-span-2">

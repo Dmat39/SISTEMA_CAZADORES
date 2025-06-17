@@ -23,10 +23,14 @@ import { getIncidenceCodesApi } from "../../api/operador/incidenceApi";
 const IncidenciaDetalles = () => {
   const navigate = useNavigate();
   const { code } = useParams();
-  const [incidence, setIncidence] = useState(null);
-  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const { state } = location;
+  
+  const [incidence, setIncidence] = useState(null);
+  const [loading, setLoading] = useState(true);
+   const [error, setError] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
 
   useEffect(() => {
     const fetchIncidenceData = async () => {
@@ -64,18 +68,16 @@ const IncidenciaDetalles = () => {
   }
 
   // Valores de respaldo si el estado no está disponible
-  const incidenceStateDefault= state || {
-    name: "Sin título",
-    date: "2025-06-10T00:00:00Z",
-    description: "Sin descripción",
-    createdAt: "2025-06-10T00:00:00Z",
-  };
+  // const incidenceStateDefault= state || {
+  //   name: "Sin título",
+  //   date: "2025-06-10T00:00:00Z",
+  //   description: "Sin descripción",
+  //   createdAt: "2025-06-10T00:00:00Z",
+  // };
 
-  // Analizar la fecha y la hora de la cadena ISO 8601 combinada
+  
   const incidentDate = dayjs(incidence.date);
   const createdAtDate = dayjs(incidence.createdAt);
-
-  const [openModal, setOpenModal] = useState(false); // Estado para controlar el modal
 
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
