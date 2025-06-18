@@ -105,7 +105,7 @@ const OperatorsAdmin = () => {
                         <TableForm
                             data={operators}
                             columns={[
-                                { label: 'Nombre', key: 'name' },
+                                { label: 'Nombre', key: 'name'},
                                 { label: 'Apellido', key: 'lastname' },
                                 { label: 'Teléfono', key: 'phone' },
                                 { label: 'DNI', key: 'dni' },

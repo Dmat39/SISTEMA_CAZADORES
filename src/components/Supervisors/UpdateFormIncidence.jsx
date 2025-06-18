@@ -106,15 +106,15 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit }) => {
                             name="status"
                             value={form.status}
                             onChange={handleChange}
-                            className={`w-full border px-3 py-2 rounded mt-1 border-gray-300 text-gray-900 text-sm focus:ring-block w-full p-2.5
-                                ${form.status === "process" ? "bg-yellow-200 focus:ring-yellow-500 focus:border-yellow-500" : ""}
-                                ${form.status === "finished" ? "bg-green-200 focus:ring-green-500 focus:border-green-500" : ""}
-                                ${form.status === "completed" ? "bg-gray-200 focus:ring-gray-500 focus:border-gray-500" : ""}
+                            className={`w-full border px-3 py-2 rounded mt-1 text-sm focus:ring-block w-full p-2.5
+                                ${form.status === "process" ? "bg-blue-200 focus:ring-blue-500 focus:border-blue-500 border-blue-300 text-blue-900" : ""}
+                                ${form.status === "finished" ? "bg-red-200 focus:ring-red-500 focus:border-red-500 border-red-300 text-red-900" : ""}
+                                ${form.status === "completed" ? "bg-green-200 focus:ring-green-500 focus:border-green-500 border-green-300 text-green-900" : ""}
                             `}
                             >
-                                <option className='bg-white' value="process">En Proceso</option>
-                                <option className='bg-white' value="completed">Completado</option>
-                                <option className='bg-white' value="finished">Finalizado</option>
+                                <option className='bg-white text-black' value="process">En Proceso</option>
+                                <option className='bg-white text-black' value="completed">Completado</option>
+                                <option className='bg-white text-black' value="finished">Finalizado</option>
                             </select>
                         </div>
 

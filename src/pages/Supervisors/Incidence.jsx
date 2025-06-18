@@ -9,18 +9,19 @@ import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation
 import UpdateFormIncidence from '../../components/Supervisors/UpdateFormIncidence.jsx';
 import OperatorAssignmentForm from '../../components/Supervisors/OperatorAssignmentForm.jsx';
 import { getAllOperatorApi } from '../../api/supervisor/OperatorService.jsx';
-import { assignOperatorApi } from '../../api/supervisor/SupervidorService.jsx';
+import AssignedOperators from '../../components/Supervisors/AssignedOperators.jsx';
 
 const Incidence = () => {
     const [incidents, setIncidents] = useState([]);
     const [operators, setOperators] = useState([]);
     const [selectedIncidenceId, setSelectedIncidenceId] = useState(null);
+    const [selectedIncidenceName, setSelectedIncidenceName] = useState("");
 
     const fetched = useRef(false);
     const [dataEdit, setDataEdit] = useState(null);
     
     const [showUpdate, setShowUpdate] = useState(false);
-    const [showAssignOperator, setShowAssignOperator] = useState(false);
+    const [showAssignedOperators, setShowAssignedOperators] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     const openModalEdit = (payload) => {
@@ -73,11 +74,11 @@ const Incidence = () => {
         }
     }
     
-    const handleAssignOperator = async (newAssign) => {
+    const handleAssignedOperators = async (newAssign) => {
         try {
-            await assignOperatorApi(newAssign);
+            // await assignedOperatorsApi(newAssign);
             await fetchIncidents();
-            setShowAssignOperator(false);
+            setShowAssignedOperators(false);
             toast.success('Incidencia assignada a un nuevo operador exitosamente!');
         } catch (error) {
             toast.error(` Error al asignar la incidencia: ${error.message}`);
@@ -101,7 +102,7 @@ const Incidence = () => {
                         <TableForm
                             data={incidents}
                             columns={[
-                                { label: 'Cod.', key: 'code' },
+                                { label: 'Cod.', key: 'code'},
                                 { label: 'Nombre', key: 'name' },
                                 { label: 'Descripción', key: 'description' },
                                 { label: 'Fecha incidente', key: 'date', render: (value) =>{return new Date(value.date).toISOString().split('T')[0] }},
@@ -131,12 +132,13 @@ const Incidence = () => {
                             ]}
                             actions={[
                                 {
-                                    title: 'Asignar a un nuevo operador',
+                                    title: 'Operadores asignados',
                                     onClick: (incidence) => {
                                         setSelectedIncidenceId(incidence.id);
-                                        setShowAssignOperator(true);
+                                        setSelectedIncidenceName(incidence.name);
+                                        setShowAssignedOperators(true);
                                     },
-                                    icon: icons.mdiAccountMultiplePlus,
+                                    icon: icons.mdiAccountGroup,
                                     className: 'text-black-600 hover:text-black-800',
                                 },
                                 {
@@ -178,13 +180,21 @@ const Incidence = () => {
                 onSubmit={handleUpdateIncidence}
             />
 
-            <OperatorAssignmentForm
-                isOpen={showAssignOperator}
-                onClose={() => setShowAssignOperator(false)}
-                onSubmit={handleAssignOperator}
+            <AssignedOperators
+                isOpen={showAssignedOperators}
+                onClose={() => setShowAssignedOperators(false)}
+                onSubmit={handleAssignedOperators}
                 operators={operators}
                 incidenceId={selectedIncidenceId}
+                incidenceName={selectedIncidenceName}
             />
+            {/* <OperatorAssignmentForm
+                isOpen={showAssignedOperators}
+                onClose={() => setShowAssignedOperators(false)}
+                onSubmit={handleAssignedOperators}
+                operators={operators}
+                incidenceId={selectedIncidenceId}
+            /> */}
         </div>
     );
 };

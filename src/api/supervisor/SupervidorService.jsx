@@ -53,3 +53,13 @@ export const assignOperatorApi = async (payload) => {
     throw error.response ? error.response.data : new Error('Failed to assignment operators');
   }
 }
+
+export const getAllAssignedOperatorsApi = async (incidenceId) => {
+  try {
+    const response = await config.get(`/incidence/${incidenceId}/assign/all`);
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching assignments:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch assignments');
+  }
+}

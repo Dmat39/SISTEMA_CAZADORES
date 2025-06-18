@@ -1,5 +1,4 @@
 import Icon from '@mdi/react';
-import { icons } from '../plugins/IconLibrary.js';
 
 const TableForm = ({
   data = [],
@@ -21,7 +20,7 @@ const TableForm = ({
                 </th>
               ))}
               {actions.length > 0 && (
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Acciones</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" style={{ textAlign: 'center' }}>Acciones</th>
               )}
             </tr>
           </thead>
@@ -38,7 +37,7 @@ const TableForm = ({
 
                 {actions.length > 0 && (
                   <td className="px-6 py-4 text-sm text-gray-800 space-x-2">
-                    <div className='flex'>
+                    <div className='flex justify-center'>
                       {actions.map((action, actIdx) => (
                         <button
                           key={actIdx}
