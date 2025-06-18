@@ -3,20 +3,24 @@ import {toast} from 'sonner';
 import Icon from '@mdi/react';
 import { icons } from '../../plugins/IconLibrary.js';
 import Loading from '../../components/Loading.jsx';
-import CreateFirstEntity from '../../components/CreateFirstEntity.jsx';
-import { createIncidenceApi, deleteIncidenceApi, getAllIncidencesApi, updateIncidenceApi } from '../../api/operador/incidenceApi.jsx';
+import { deleteIncidenceApi, getAllIncidencesApi, updateIncidenceApi } from '../../api/operador/incidenceApi.jsx';
 import TableForm from '../../components/TableForm.jsx';
 import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation.jsx';
 import UpdateFormIncidence from '../../components/Supervisors/UpdateFormIncidence.jsx';
-import CreateFormIncidence from '../../components/Supervisors/CreateFormIncidence.jsx';
+import OperatorAssignmentForm from '../../components/Supervisors/OperatorAssignmentForm.jsx';
+import { getAllOperatorApi } from '../../api/supervisor/OperatorService.jsx';
+import { assignOperatorApi } from '../../api/supervisor/SupervidorService.jsx';
 
 const Incidence = () => {
     const [incidents, setIncidents] = useState([]);
-    const [showCreate, setShowCreate] = useState(false);
+    const [operators, setOperators] = useState([]);
+    const [selectedIncidenceId, setSelectedIncidenceId] = useState(null);
+
     const fetched = useRef(false);
     const [dataEdit, setDataEdit] = useState(null);
-
+    
     const [showUpdate, setShowUpdate] = useState(false);
+    const [showAssignOperator, setShowAssignOperator] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     const openModalEdit = (payload) => {
@@ -36,35 +40,47 @@ const Incidence = () => {
         }
     };
 
+    const fetchOperators = async () => {
+        try {
+            const data = await getAllOperatorApi();
+            setOperators(data.data);
+        } catch (error) {
+            toast.error(`Error al obtener operadores: ${error.message}`);
+        }
+    };
+
     const confirmDelete = useDeleteConfirmation({
         fetchData: fetchIncidents,
         deleteApiFn: deleteIncidenceApi,
         entityName: 'incidence',
     });
-
-    const updateIncidence = async (payload) => {
+    
+    useEffect(() => {
+        if (fetched.current) return;
+        fetched.current = true;
+        fetchIncidents();
+        fetchOperators();
+    }, []);
+        
+    const handleUpdateIncidence = async (payload) => {
         try {
             await updateIncidenceApi(payload, payload.id);
+            await fetchOperators();
+            setShowUpdate(false);
             toast.success('Incidencia actualizada exitosamente!');
         } catch (error) {
             toast.error(` Error al actualizar la incidencia: ${error.message}`);
         }
     }
-
-    useEffect(() => {
-        if (fetched.current) return;
-        fetched.current = true;
-        fetchIncidents();
-    }, []);
-
-    const handleCreate = async (newIncidence) => {
+    
+    const handleAssignOperator = async (newAssign) => {
         try {
-            await createIncidenceApi(newIncidence);
+            await assignOperatorApi(newAssign);
             await fetchIncidents();
-            setShowCreate(false);
-            toast.success('Incidencia creada exitosamente!');
+            setShowAssignOperator(false);
+            toast.success('Incidencia assignada a un nuevo operador exitosamente!');
         } catch (error) {
-            toast.error(` Error al crear al incidencia: ${error.message}`);
+            toast.error(` Error al asignar la incidencia: ${error.message}`);
         }
     };
 
@@ -76,16 +92,6 @@ const Incidence = () => {
                         <h2 className="text-2xl font-bold">Incidencias</h2>
                         <p className="text-gray-600">Gestiona y organiza todas tus incidencias</p>
                     </div>
-                    {incidents.length > 0 ?(
-                        <button
-                            onClick={() => setShowCreate(true)}
-                            className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
-                            type="button"
-                        >
-                            <Icon path={icons.add} size={1} />
-                            Agregar Incidencia
-                        </button>                        
-                    ) : null}
                 </div>
                 <hr className='border-gray-200' />
                 {isLoading ? (
@@ -94,8 +100,6 @@ const Incidence = () => {
                     incidents.length > 0 ?(
                         <TableForm
                             data={incidents}
-                            onEdit={openModalEdit}
-                            onDelete={(op) => confirmDelete(op, (p) => `${p.name} ${p.lastname}`)}
                             columns={[
                                 { label: 'Cod.', key: 'code' },
                                 { label: 'Nombre', key: 'name' },
@@ -125,13 +129,44 @@ const Incidence = () => {
                                 { label: 'Actualizado por', key: 'userIdWhoUpdated', render: (value) => value.userWhoUpdated?.username ?? '—'},
                                 { label: 'Actualizado en', key: 'updatedAt', render: (value) => { return new Date(value.updatedAt).toISOString().split('T')[0]} },
                             ]}
+                            actions={[
+                                {
+                                    title: 'Asignar a un nuevo operador',
+                                    onClick: (incidence) => {
+                                        setSelectedIncidenceId(incidence.id);
+                                        setShowAssignOperator(true);
+                                    },
+                                    icon: icons.mdiAccountMultiplePlus,
+                                    className: 'text-black-600 hover:text-black-800',
+                                },
+                                {
+                                    title: 'Editar',
+                                    onClick: openModalEdit,
+                                    icon: icons.edit,
+                                    className: 'text-blue-600 hover:text-blue-800',
+                                },
+                                {
+                                    title: 'Eliminar',
+                                    onClick: (op) => confirmDelete(op, (p) => `${p.code}: ${p.name}`),
+                                    icon: icons.delete,
+                                    className: 'text-red-600 hover:text-red-800',
+                                },
+                            ]}
                         />
                     ) : (
-                        <CreateFirstEntity 
-                            title="No hay incidencias" 
-                            body="Comienza creando tu primer incidencia para organizar tus registros" 
-                            button="Crear primer incidencia" onCreate={() => setShowCreate(true)}
-                        />
+                        <div>
+                            <div className="flex flex-col items-center justify-center max-w-4xl mx-auto h-150">
+                                <div className="flex flex-col items-center justify-center">
+                                    <Icon path={icons.mdiNoteAlertOutline} size={2} />
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                        No hay incidencias registradas
+                                    </h3>
+                                    <p className="text-gray-500 mb-6">
+                                        Aún no se han reportado incidencias por parte de los operadores
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     )
                 }
             </div>
@@ -140,17 +175,15 @@ const Incidence = () => {
                 isOpen={showUpdate}
                 onClose={() => setShowUpdate(false)}
                 data={dataEdit}
-                onSubmit={async (updatedOperator) => {
-                    await updateIncidence(updatedOperator);
-                    await fetchIncidents();
-                    setShowUpdate(false);
-                }}
+                onSubmit={handleUpdateIncidence}
             />
 
-            <CreateFormIncidence
-                isOpen={showCreate}
-                onClose={() => setShowCreate(false)}
-                onSubmit={handleCreate}
+            <OperatorAssignmentForm
+                isOpen={showAssignOperator}
+                onClose={() => setShowAssignOperator(false)}
+                onSubmit={handleAssignOperator}
+                operators={operators}
+                incidenceId={selectedIncidenceId}
             />
         </div>
     );

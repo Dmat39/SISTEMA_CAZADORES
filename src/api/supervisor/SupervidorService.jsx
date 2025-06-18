@@ -43,3 +43,13 @@ export const updateSupervisorApi = async (payload,  id) => {
     throw error.response ? error.response.data : new Error('Failed to fetch supervisors');
   }
 }
+
+export const assignOperatorApi = async (payload) => {
+  try {
+    const response = await config.patch(`/incidence/assign-operator` , payload);
+    return response.data;
+  } catch (error) {
+    console.log("Error assigning operators: ", error);
+    throw error.response ? error.response.data : new Error('Failed to assignment operators');
+  }
+}

@@ -11,8 +11,8 @@ import { toast } from 'sonner';
  * @returns {Function} confirmDelete(payload, getEntityLabel)
  */
 export const useDeleteConfirmation = ({ fetchData, deleteApiFn, entityName }) => {
-  const confirmDelete = (payload) => {
-    const label = payload.name ? payload.name : '';
+  const confirmDelete = (payload, getEntityLabel) => {
+    const label = typeof getEntityLabel === 'function' ? getEntityLabel(payload) : '';
     toast(
       () => (
         <div className="flex flex-col space-y-2">

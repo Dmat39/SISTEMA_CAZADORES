@@ -50,22 +50,13 @@ const OperatorsAdmin = () => {
         entityName: 'operator',
     });
 
-    const updateOperator = async (payload) => {
-        try {
-            await updateOperatorApi(payload, payload.id);
-            toast.success('Operador actualizado exitosamente!');
-        } catch (error) {
-            toast.error(` Error al actualizar el operador: ${error.message}`);
-        }
-    }
-
     useEffect(() => {
         if (fetched.current) return;
         fetched.current = true;
         fetchOperators();
     }, []);
 
-    const handleCreate = async (newOperator) => {
+    const handleCreateOperator = async (newOperator) => {
         try {
             await addOperatorApi(newOperator);
             await fetchOperators();
@@ -73,6 +64,17 @@ const OperatorsAdmin = () => {
             toast.success('Operador creado exitosamente!');
         } catch (error) {
             toast.error(` Error al crear al operador: ${error.message}`);
+        }
+    };
+
+    const handleUpdateOperator = async (payload) => {
+        try {
+            await updateOperatorApi(payload, payload.id);
+            await fetchOperators();
+            setShowUpdate(false);
+            toast.success('Operador actualizado exitosamente!');
+        } catch (error) {
+            toast.error(` Error al actualizar al operador: ${error.message}`);
         }
     };
 
@@ -102,9 +104,6 @@ const OperatorsAdmin = () => {
                     operators.length > 0 ?(
                         <TableForm
                             data={operators}
-                            onEditPwd={openModalEditPwd}
-                            onEdit={openModalEdit}
-                            onDelete={(op) => confirmDelete(op, (p) => `${p.name} ${p.lastname}`)}
                             columns={[
                                 { label: 'Nombre', key: 'name' },
                                 { label: 'Apellido', key: 'lastname' },
@@ -112,6 +111,26 @@ const OperatorsAdmin = () => {
                                 { label: 'DNI', key: 'dni' },
                                 { label: 'Usuario', key: 'user.username' },
                                 { label: 'Rol', key: 'user.role' },
+                            ]}
+                            actions={[
+                                {
+                                    title: 'Nueva contraseña',
+                                    onClick: openModalEditPwd,
+                                    icon: icons.mdiAccountKey,
+                                    className: 'text-black-600 hover:text-black-800',
+                                },
+                                {
+                                    title: 'Editar',
+                                    onClick: openModalEdit,
+                                    icon: icons.edit,
+                                    className: 'text-blue-600 hover:text-blue-800',
+                                },
+                                {
+                                    title: 'Eliminar',
+                                    onClick: (op) => confirmDelete(op, (p) => `${p.name} ${p.lastname}`),
+                                    icon: icons.delete,
+                                    className: 'text-red-600 hover:text-red-800',
+                                },
                             ]}
                         />
 
@@ -129,28 +148,20 @@ const OperatorsAdmin = () => {
                 isOpen={showUpdatePwd}
                 onClose={() => setShowUpdatePwd(false)}
                 data={dataEditPwd}
-                onSubmit={async (updatedOperator) => {
-                    await updateOperator(updatedOperator);
-                    await fetchOperators();
-                    setShowUpdatePwd(false);
-                }}
+                onSubmit={handleUpdateOperator}
             />
 
             <UpdateFormOperator
                 isOpen={showUpdate}
                 onClose={() => setShowUpdate(false)}
                 data={dataEdit}
-                onSubmit={async (updatedOperator) => {
-                    await updateOperator(updatedOperator);
-                    await fetchOperators();
-                    setShowUpdate(false);
-                }}
+                onSubmit={handleUpdateOperator}
             />
 
             <CreateFormOperator
                 isOpen={showCreate}
                 onClose={() => setShowCreate(false)}
-                onSubmit={handleCreate}
+                onSubmit={handleCreateOperator}
             />
         </div>
     );
