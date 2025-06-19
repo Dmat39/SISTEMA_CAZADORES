@@ -13,6 +13,7 @@ body {
   margin: 0;
   padding: 0;
   background: #E8E8E8;
+  overflow: hidden;
 }
 
 .custom-placeholder .css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
