@@ -188,13 +188,6 @@ const Incidence = () => {
                 incidenceId={selectedIncidenceId}
                 incidenceName={selectedIncidenceName}
             />
-            {/* <OperatorAssignmentForm
-                isOpen={showAssignedOperators}
-                onClose={() => setShowAssignedOperators(false)}
-                onSubmit={handleAssignedOperators}
-                operators={operators}
-                incidenceId={selectedIncidenceId}
-            /> */}
         </div>
     );
 };

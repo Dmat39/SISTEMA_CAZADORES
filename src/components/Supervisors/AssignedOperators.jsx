@@ -3,10 +3,11 @@ import { Dialog } from '@headlessui/react';
 import { toast } from 'sonner';
 import TableForm from '../TableForm';
 import Loading from '../Loading';
-import { getAllAssignedOperatorsApi } from '../../api/supervisor/SupervidorService';
+import { assignOperatorApi, deleteAssignApi, getAllAssignedOperatorsApi } from '../../api/supervisor/SupervidorService';
 import { icons } from '../../plugins/IconLibrary';
 import Icon from '@mdi/react';
 import OperatorAssignmentForm from './OperatorAssignmentForm';
+import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation';
 
 const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, incidenceName }) => {
     const [assingments, setAssingments] = useState([]);
@@ -30,19 +31,25 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
         fetchAssingments();
     }, [isOpen, incidenceId]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!form.userId || !incidenceId) {
-            toast.error('Debes seleccionar un operador');
-            return;
+    const confirmDelete = useDeleteConfirmation({
+        fetchData: fetchAssingments,
+        deleteApiFn: deleteAssignApi,
+        entityName: 'La Asignación',
+    });
+
+    const handleAssignOperator = async (payload) => {
+        try {
+            await assignOperatorApi(payload);
+            toast.success('Operador asignado exitosamente!');
+            await fetchAssingments();
+            setShowOperatorAssignForm(false);
+        } catch (error) {
+            toast.error(`Error al asignar operador: ${error.message}`);
         }
-        onSubmit?.({ userId: form.userId, incidenceId });
-        setForm({ userId: '' });
-        onClose();
     };
 
     return (
-        <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+        <Dialog open={isOpen} onClose={onClose} className="relative z-50" >
             <div className="fixed inset-0 bg-black/60" aria-hidden="true"></div>
 
             <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -71,52 +78,18 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
                                 actions={[
                                     {
                                         title: 'Eliminar',
-                                        onClick: (op) => confirmDelete(op, (p) => `${p.code}: ${p.name}`),
+                                        onClick: (op) => confirmDelete(op, (p) => `${p.operator.name}: ${p.operator.lastname}`),
                                         icon: icons.delete,
                                         className: 'text-red-600 hover:text-red-800',
                                     },
                                 ]}
                             />
                             {showOperatorAssignForm ? (
-                                // <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-                                //     <h3 className="text-md font-semibold mb-4">Asignar nuevo operador</h3>
-                                //     <form onSubmit={handleSubmit}>
-                                //         <div className="mb-4">
-                                //             <label className="block text-sm font-medium mb-2">Operador</label>
-                                //             <select
-                                //                 name="userId"
-                                //                 value={form.userId}
-                                //                 onChange={handleChange}
-                                //                 className="w-full border px-3 py-2 rounded border-gray-300 text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                //             >
-                                //                 <option value="" disabled hidden>Selecciona un operador</option>
-                                //                 {operators.map((op) => (
-                                //                     <option key={op.id} value={op.id}>
-                                //                         {op.name} {op.lastname}
-                                //                     </option>
-                                //                 ))}
-                                //             </select>
-                                //         </div>
-                                        
-                                //         <div className="flex justify-end gap-2">
-                                //             <button
-                                //                 type="button"
-                                //                 onClick={handleCancel}
-                                //                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors"
-                                //             >
-                                //                 Cancelar
-                                //             </button>
-                                //             <button
-                                //                 type="submit"
-                                //                 className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-[#32A3B5] cursor-pointer transition-colors"
-                                //             >
-                                //                 Asignar
-                                //             </button>
-                                //         </div>
-                                //     </form>
-                                // </div>
                                 <OperatorAssignmentForm
-                                    
+                                    operators={operators}
+                                    incidenceId={incidenceId}
+                                    onClose={() => setShowOperatorAssignForm(false)}
+                                    onSubmit={handleAssignOperator}
                                 />
                             ):(
                                 <div className='justify-self-end mt-4'>

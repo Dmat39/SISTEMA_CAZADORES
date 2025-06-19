@@ -46,7 +46,7 @@ export const updateSupervisorApi = async (payload,  id) => {
 
 export const assignOperatorApi = async (payload) => {
   try {
-    const response = await config.patch(`/incidence/assign-operator` , payload);
+    const response = await config.post(`/incidence/assign-operator` , payload);
     return response.data;
   } catch (error) {
     console.log("Error assigning operators: ", error);
@@ -61,5 +61,15 @@ export const getAllAssignedOperatorsApi = async (incidenceId) => {
   } catch (error) {
     console.log("Error fetching assignments:", error);
     throw error.response ? error.response.data : new Error('Failed to fetch assignments');
+  }
+}
+
+export const deleteAssignApi = async ( id) => {
+  try {
+    const response = await config.delete(`/supervisor/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching supervisors:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch supervisors');
   }
 }
