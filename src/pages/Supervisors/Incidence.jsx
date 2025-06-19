@@ -114,7 +114,7 @@ const Incidence = () => {
                 </div>
                 <hr className='border-gray-200' />
                 {isLoading ? (
-                    <Loading message= "Cargando Operadores"/>
+                    <Loading message= "Cargando Incidencias"/>
                 ) : 
                     incidents?.length > 0 ?(
                         <TableForm
