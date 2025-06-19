@@ -189,7 +189,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
             </label>
             <TextareaAutosize
               minRows={4}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              className="w-full p-2 border border-gray-300 rounded-md text-md hover:border-gray-800"
               placeholder="Describe los detalles del incidente, lo que observaste, acciones tomadas..."
               value={form.description}
               onChange={(e) =>
