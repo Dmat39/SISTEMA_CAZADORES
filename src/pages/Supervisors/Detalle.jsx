@@ -146,7 +146,7 @@ const IncidenciaDetalles = () => {
                     value={incidencia.status || 'process'}
                     onChange={(e) => handleStatusChange(e.target.value)}
                     disabled={updatingStatus}
-                    className={`${getStatusColor(incidencia.status)} text-sm px-3 py-1 rounded-full font-medium border-0 cursor-pointer appearance-none pr-8 ${updatingStatus ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80'}`}
+                    className={`${getStatusColor(incidencia.status)} text-sm py-1.5 rounded-full font-medium border-0 cursor-pointer appearance-none pr-6 ${updatingStatus ? 'opacity-50  cursor-not-allowed' : 'hover:bg-blue-600 transition-all duration-200 ease-in-out'}`}
                   >
                     {statusOptions.map(option => (
                       <option key={option.value} value={option.value}>

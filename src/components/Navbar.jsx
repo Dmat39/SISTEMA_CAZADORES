@@ -1,10 +1,22 @@
-import React from 'react';
+import { useState } from 'react';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice'; 
 
 const Navbar = () => {
-  const dispatch = useDispatch();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const dispatch = useDispatch();
 
   const { username, role } = useSelector((state) => state.auth || {});
 
@@ -17,7 +29,7 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200">
       <div className="px-3 py-3 lg:px-5 lg:pl-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-row items-center justify-between">
           <div className="flex items-center justify-start rtl:justify-end">
             <button
               data-drawer-target="logo-sidebar"
@@ -29,7 +41,7 @@ const Navbar = () => {
               <span className="sr-only">Open sidebar</span>
               <svg
                 className="w-6 h-6"
-                aria-hidden="true"
+                aria-hidden="true"  
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -49,48 +61,41 @@ const Navbar = () => {
               />
             </a>
           </div>
-          <div className="flex items-center">
-            <div className="flex items-center ms-3">
-              <div>
+          <div className="flex flex-row items-center justify-center mr-3">
+              <div className='flex flex-row items-center'>
+                <div className='flex flex-col me-3 items-center'>
+                  <span className='text-[18px] text-gray-900 font-medium'>{username || "Usuario"}</span>
+                  <span className='text-[13px] text-gray-500 font-medium'>{role || "Desconocido"}</span>
+                </div>
                 <button
-                  type="button"
-                  className="flex text-sm bg-gray-800 rounded-full focus:ring-4 cursor-pointer focus:ring-gray-300"
-                  aria-expanded="false"
-                  data-dropdown-toggle="dropdown-user"
+                  type='button'
+                  id="basic-button"
+                  aria-controls={open ? 'basic-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}
+                  onClick={handleClick}
+                  className='cursor-pointer'
                 >
-                  <span className="sr-only">Open user menu</span>
                   <img
-                    className="w-8 h-8 rounded-full"
-                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                    className="w-10 h-10 rounded-full"
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
                     alt="user photo"
                   />
                 </button>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  slotProps={{
+                    list: {
+                      'aria-labelledby': 'basic-button',
+                    },
+                  }}
+                >
+                  <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
+                </Menu>
               </div>
-              <div
-                className="z-50 hidden my-4 mt-44 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm"
-                id="dropdown-user"
-              >
-                <div className="px-4 py-3" role="none">
-                  <p className="text-sm text-gray-900" role="none">
-                    {username || 'Usuario'}
-                  </p>
-                  <p className="text-sm font-medium text-gray-900 truncate" role="none">
-                     {role || 'Desconocido'}
-                  </p>
-                </div>
-                <ul className="py-1" role="none">
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      role="menuitem"
-                    >
-                      Cerrar sesión
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
           </div>
         </div>
       </div>

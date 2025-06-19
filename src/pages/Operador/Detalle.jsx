@@ -16,6 +16,15 @@ const IncidenciaDetalles = () => {
   const [showRegistroForm, setShowRegistroForm] = useState(false);
   const navigate = useNavigate();
 
+  const formatStatus = (status) => {
+    const map = {
+      process: { text: "En Proceso", color: "bg-blue-100 text-blue-900" },
+      completed: { text: "Completado", color: "bg-green-100 text-green-900" },
+      cancelled: { text: "Rechazado", color: "bg-red-100 text-red-900" },
+    };
+    return map[status] || { text: status, color: "bg-gray-100 text-gray-900" };
+  };
+
   const fetchIncidencia = async () => {
     const id = localStorage.getItem("last_created_incidence_id");
     if (!id) return;
@@ -27,6 +36,7 @@ const IncidenciaDetalles = () => {
     }
   };
 
+
   useEffect(() => {
     fetchIncidencia();
   }, []);
@@ -35,6 +45,7 @@ const IncidenciaDetalles = () => {
     return <p className="p-4 text-gray-500">Cargando detalle de incidencia...</p>;
   }
 
+  const status = formatStatus(incidencia.status);
   const formattedDate = dayjs(incidencia.date).format("YYYY-MM-DD");
   const formattedTime = dayjs(incidencia.date).format("HH:mm");
   const createdAt = dayjs(incidencia.createdAt).format("D [de] MMMM [de] YYYY");
@@ -84,11 +95,20 @@ const IncidenciaDetalles = () => {
             <div className="flex flex-col">
               <h1 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
                 {incidencia.name}
-                <span className="ml-4 bg-blue-100 text-blue-900 text-sm px-3 py-1 rounded-full font-medium self-center">
-                  En Proceso
+                <span className={`ml-4 text-sm px-3 py-1 rounded-full font-medium self-center ${status.color}`}>
+                  {status.text}
+                </span>
+                <span className={`ml-4 text-sm px-4 py-1 rounded-full bg-gray-100 text-gray-900 font-medium self-center`}>
+                  {incidencia.code}
                 </span>
               </h1>
               <div className="flex items-center text-gray-600 gap-6 text-sm">
+                <span className="flex items-center gap-1">
+                  <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
+                </span>
                 <span className="flex items-center gap-1">
                   <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
                 </span>

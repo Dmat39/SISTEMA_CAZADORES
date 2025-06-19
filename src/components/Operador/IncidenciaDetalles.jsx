@@ -1,11 +1,14 @@
 import dayjs from "dayjs";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
+import ImageViewer from "./ImageViewer";
 
 const RegistrosList = ({ records = [] }) => {
+
   if (!records.length) {
     return <p className="text-gray-500 text-sm">No hay registros aún.</p>;
   }
+
 
   return (
     <div className="mt-8">
@@ -39,6 +42,7 @@ const RegistrosList = ({ records = [] }) => {
                   <span className="flex items-center gap-1">
                     <Icon path={icons.clock} size={0.7} /> {recordDate.format("HH:mm")} {isPM ? "p.m." : "a.m."}
                   </span>
+                  
                   <span className="flex items-center gap-1">
                     <Icon path={icons.camera} size={0.7} /> {imagesCount} imagen{imagesCount === 1 ? "" : "es"}
                   </span>
@@ -56,12 +60,13 @@ const RegistrosList = ({ records = [] }) => {
                     {rec.images.map((img) => (
                       <div
                         key={img.id}
-                        className="bg-gray-100 border border-gray-300 rounded-md p-2 flex flex-col items-center w-40"
+                        className="bg-gray-100 border border-gray-300 rounded-md p-2 flex flex-col items-center justify-center w-35 h-25 relative"
                       >
-                        <Icon path={icons.camera} size={1.2} className="text-gray-500 mb-1" />
+                        <Icon path={icons.camera} size={1.5} className="text-gray-500" />
                         <span className="text-xs text-gray-700 text-center truncate">
                           {img.originalName}
                         </span>
+                         <ImageViewer Path={img.imagePath} originalName={img.originalName} />
                       </div>
                     ))}
                   </div>

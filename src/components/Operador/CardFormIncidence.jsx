@@ -1,4 +1,6 @@
-import { CalendarDaysIcon, ClockIcon, DocumentTextIcon, CameraIcon } from "@heroicons/react/24/outline";
+import { CalendarDaysIcon, ClockIcon, DocumentTextIcon, CameraIcon, MapIcon } from "@heroicons/react/24/outline";
+import Icon from '@mdi/react';
+import { icons } from '../../plugins/IconLibrary'; 
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
@@ -8,11 +10,22 @@ const CardForm = ({ incidencias = [] }) => {
   const formatStatus = (status) => {
     const map = {
       process: { text: "En Proceso", color: "bg-blue-100 text-blue-900" },
-      resolved: { text: "Completado", color: "bg-green-100 text-green-900" },
-      cancelled: { text: "Rechazado", color: "bg-red-100 text-red-900" },
+      completed: { text: "Completado", color: "bg-green-100 text-green-900" },
+      finished: { text: "Finalizado", color: "bg-red-100 text-red-900" },
     };
     return map[status] || { text: status, color: "bg-gray-100 text-gray-900" };
   };
+
+  //  const formatMedios = (status) => {
+  //   const map = {
+  //     panic: { text: "En Proceso",  },
+  //     camera: { text: "Completado",  },
+  //     call: { text: "Finalizado",  },
+  //     radio: { text: "Finalizado", },
+  //     wsp: { text: "Finalizado", color: "bg-red-100 text-red-900" },
+  //   };
+  //   return map[status] || { text: status, color: "bg-gray-100 text-gray-900" };
+  // };
 
   const handleCardClick = (id) => {
     localStorage.setItem("last_created_incidence_id", id);
@@ -45,16 +58,30 @@ const CardForm = ({ incidencias = [] }) => {
               {inc.description || "Sin descripción"}
             </p>
 
-            <div className="flex flex-row items-center gap-4 border-b border-gray-200 pb-3">
-              <div className="flex items-center space-x-1">
-                <CalendarDaysIcon className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">{date.format("DD/MM/YYYY")}</span>
+            <div className="flex flex-row justify-between items-center gap-4 border-b border-gray-200 pb-3">
+              <div className="flex flex-row items-center space-x-2">
+                <div className="flex items-center space-x-1">
+                  <Icon path={icons.wsp} className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">WhatsApp</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <MapIcon className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">
+                    Zona Alta
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center space-x-1">
-                <ClockIcon className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">
-                  {date.format("hh:mm")} {isPM ? "p.m." : "a.m."}
-                </span>
+              <div className="flex flex-row items-center space-x-2">
+                <div className="flex items-center space-x-1">
+                  <CalendarDaysIcon className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">{date.format("DD/MM/YYYY")}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <ClockIcon className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">
+                    {date.format("hh:mm")} {isPM ? "p.m." : "a.m."}
+                  </span>
+                </div>
               </div>
             </div>
 

@@ -8,8 +8,8 @@ const CardForm = ({ incidencias = [] }) => {
   const formatStatus = (status) => {
     const map = {
       process: { text: "En Proceso", color: "bg-blue-100 text-blue-900" },
-      resolved: { text: "Completado", color: "bg-green-100 text-green-900" },
-      cancelled: { text: "Rechazado", color: "bg-red-100 text-red-900" },
+      completed: { text: "Completado", color: "bg-green-100 text-green-900" },
+      finished: { text: "Rechazado", color: "bg-red-100 text-red-900" },
     };
     return map[status] || { text: status, color: "bg-gray-100 text-gray-900" };
   };

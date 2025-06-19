@@ -1,7 +1,6 @@
 import { mainApi, incidenceApi } from "../config";
 
 // Función para buscar incidencias por código
-// Función para buscar incidencias por código
 export const getIncidenceCodesApi = async () => {
   try {
     const response = await incidenceApi.get('/buscar_incidencias');
@@ -34,7 +33,7 @@ export const getAllIncidencesApi = async () => {
   }
 }
 
-
+// Función para obtener una incidencia por ID
 export const getIncidenceByIdApi = async(id) => {
   try {
     const response = await mainApi.get(`/incidence/${id}`);
@@ -44,3 +43,27 @@ export const getIncidenceByIdApi = async(id) => {
     throw error.response ? error.response.data : new Error('Failed to fetch incidence');
   }
 }
+
+// Funcion para crear los zona de una incidencia
+export const getAllIncidenceZonesApi = async () => {
+  try {
+    const response = await mainApi.get('/zones/all');
+    return response.data;
+  } catch (error) {
+    console.error("Error creating incidence media:", error);
+    throw error.response ? error.response.data : new Error('Failed to create incidence media');
+  }
+}
+
+// Función para crear las zonas de una incidencia
+export const getAllIncidenceComunicationApi = async () => {
+  try {
+    const response = await mainApi.get('/comunication/all');
+    return response.data;
+  } catch (error) {
+    console.error("Error creating incidence zones:", error);
+    throw error.response ? error.response.data : new Error('Failed to create incidence zones');
+  }
+}
+
+

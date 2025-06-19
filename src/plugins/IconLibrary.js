@@ -9,7 +9,16 @@ import {
     mdiCalendarRange,
     mdiClockOutline,
     mdiInformationOutline,
-    mdiCameraOutline
+    mdiCameraOutline,
+    mdiCctv,
+    mdiWhatsapp,
+    mdiRadioHandheld,
+    mdiGestureTap,
+    mdiPhoneInTalkOutline,
+    mdiMapMarkerRadiusOutline,
+    mdiEyeOutline,
+    mdiEyeOffOutline,
+    mdiCloseCircleOutline
 } from "@mdi/js";
 
 export const icons = {
@@ -23,5 +32,14 @@ export const icons = {
     calendar: mdiCalendarRange,
     clock: mdiClockOutline,
     information: mdiInformationOutline,
-    camera: mdiCameraOutline
+    camera: mdiCameraOutline,
+    cameraCctv: mdiCctv,
+    wsp: mdiWhatsapp,
+    radio: mdiRadioHandheld,
+    btnPanic: mdiGestureTap,
+    callPhone: mdiPhoneInTalkOutline,
+    map: mdiMapMarkerRadiusOutline,
+    eye: mdiEyeOutline,
+    eyeOff: mdiEyeOffOutline,
+    close: mdiCloseCircleOutline
 };
