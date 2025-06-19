@@ -61,7 +61,7 @@ const CardForm = ({ incidencias = [] }) => {
             <div className="flex flex-row justify-between items-center gap-4 border-b border-gray-200 pb-3">
               <div className="flex flex-row items-center space-x-2">
                 <div className="flex items-center space-x-1">
-                  <Icon path={icons.wsp} className="h-4 w-4 text-gray-500" />
+                  <Icon path={icons.attach} className="h-4 w-4 text-gray-500" />
                   <span className="text-sm text-gray-600">{inc.comunication?.name}</span>
                 </div>
                 <div className="flex items-center space-x-1">

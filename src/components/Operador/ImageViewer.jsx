@@ -48,20 +48,24 @@ const ImageViewer = ({ Path, originalName }) => {
       {error && <p className="text-sm text-red-500">{error}</p>}
       
       {isVisible && imageUrl && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[9999]">
-          <div className="relative bg-white p-8 rounded-lg max-w-4xl max-h-[90vh] overflow-auto">
-            <div>
-              <img
-                src={imageUrl}
-                alt={originalName}
-                className="max-w-full max-h-full object-contain"
-              />
-              <button
-                onClick={toggleVisibility}
-                className="absolute top-2 right-2 text-red-500 hover:text-red-700 cursor-pointer"
-              >
-                <Icon path={icons.close} size={1.5} />
-              </button>
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999]">
+          <div className="relative">
+            <div className="bg-white opacity-100 px-6 py-8 rounded-lg max-w-4xl max-h-[90vh] overflow-auto">   
+                  <div className="absolute bg-white w-10 h-10 -top-4 -right-4 rounded-full flex items-center justify-center shadow-lg">
+                    <button
+                      onClick={toggleVisibility}
+                      className="absolute top-0.5 right-0.5 text-red-500 hover:text-red-700 cursor-pointer"
+                    >
+                      <Icon path={icons.close} size={1.4} />
+                    </button>
+                  </div>
+              <div>
+                <img
+                  src={imageUrl}
+                  alt={originalName}
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
             </div>
           </div>
         </div>

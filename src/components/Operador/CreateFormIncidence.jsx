@@ -151,7 +151,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
     const { code, name, date, time, description, communicationId, zoneId, latitud, longitud } = formData;
     
-    if (!code || !name || !date || !time || !communicationId || !zoneId) {
+    if (!name || !date || !time || !communicationId || !zoneId) {
       setError("Por favor, completa todos los campos obligatorios (*)");
       setLoading(false);
       return;
@@ -163,7 +163,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
       .format("YYYY-MM-DDTHH:mm:ss[Z]");
 
     const payload = {
-      code,
+      code: code && code.trim() !== "" ? code : null,
       name,
       description,
       communicationId,
@@ -223,7 +223,6 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   open={openAutocomplete}
                   onOpen={() => {
                     setOpenAutocomplete(true);
-                    setInputValue("");
                   }}
                   onClose={() => setOpenAutocomplete(false)}
                   options={options}
@@ -253,7 +252,6 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      required
                       placeholder="Buscar o ingresar código"
                       variant="outlined"
                       InputProps={{
@@ -286,7 +284,6 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
                   placeholder="Ingresa el título de la incidencia"
-                  required
                 />
               </div>
 

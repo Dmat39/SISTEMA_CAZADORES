@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Modal,
   Box,
-  Button,
   TextField,
   TextareaAutosize,
   Autocomplete,
@@ -112,12 +111,12 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               Agrega un nuevo registro a esta incidencia
             </span>
           </div>
-          <Button
+          <button
             onClick={handleCloseModal}
             className="text-white bg-gray-500 flex flex-row items-center justify-center hover:bg-gray-700 rounded-lg w-8 h-8 cursor-pointer"
           >
             ✕
-          </Button>
+          </button>
         </div>
 
         <form className="p-4 space-y-5">
@@ -126,6 +125,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               Seleccionar Cámara *
             </label>
             <Autocomplete
+              id="codigoCamara"
               options={cameras}
               getOptionLabel={(option) => option.name || ""}
               value={cameras.find((camera) => camera.id === form.cameraId) || null}
@@ -234,20 +234,20 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
           </div>
 
           <div className="flex justify-end gap-3 mt-6">
-            <Button
+            <button
               onClick={handleCloseModal}
               className="text-gray-900 cursor-pointer border border-gray-800 hover:bg-gray-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             >
               Cancelar
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={handleEmit}
               variant="contained"
               disabled={!form.cameraId || !form.date || !form.time}
               className="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             >
               Crear Registro
-            </Button>
+            </button>
           </div>
         </form>
       </Box>

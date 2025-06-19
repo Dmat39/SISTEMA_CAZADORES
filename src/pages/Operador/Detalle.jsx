@@ -114,13 +114,25 @@ const IncidenciaDetalles = () => {
                 <span className={`ml-4 text-sm px-3 py-1 rounded-full font-medium self-center ${status.color}`}>
                   {status.text}
                 </span>
-                <span className={`ml-4 text-sm px-4 py-1 rounded-full bg-gray-100 text-gray-900 font-medium self-center`}>
-                  {incidencia.code}
+                <span className={`ml-3 text-sm px-4 py-1 rounded-full bg-gray-100 text-gray-900 font-medium self-center`}>
+                  {incidencia.code || "Sin Código"}
                 </span>
+                {incidencia.code && (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-pointer"
+                  href={`http://192.168.13.80:81/incidencias/codigo-incidencia/${incidencia.code}`}
+                >
+                  <span className="ml-3 text-sm px-4 py-1 rounded-full bg-emerald-50 text-emerald-800 font-medium self-center">
+                    Ver Detalle
+                  </span>
+                </a>
+              )}
               </h1>
               <div className="flex items-center text-gray-600 gap-6 text-sm">
                 <span className="flex items-center gap-1">
-                  <Icon path={icons.wsp} size={0.75} /> Medio: {incidencia.comunication?.name}
+                  <Icon path={icons.attach} size={0.75} /> Medio: {incidencia.comunication?.name}
                 </span>
                 <span className="flex items-center gap-1">
                   <Icon path={icons.map} size={0.75} /> Zona: {incidencia.zone?.name}
