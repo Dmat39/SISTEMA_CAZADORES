@@ -43,3 +43,24 @@ export const getIncidenceByIdApi = async(id) => {
     throw error.response ? error.response.data : new Error('Failed to fetch incidence');
   }
 }
+
+export const getAllIncidenceComunicationApi = async () => {
+  try {
+    const response = await mainApi.get('/comunication/all');
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching incidences:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch incidences');
+  }
+}
+
+export const getAllIncidenceZonesApi = async () => {
+  try {
+    const response = await mainApi.get('/zones/all');
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching incidences:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch incidences');
+  }
+}
+

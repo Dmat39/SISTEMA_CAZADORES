@@ -10,7 +10,6 @@ import {
     mdiClockOutline,
     mdiInformationOutline,
     mdiCameraOutline,
-<<<<<<< HEAD
     mdiCctv,
     mdiWhatsapp,
     mdiRadioHandheld,
@@ -19,13 +18,11 @@ import {
     mdiMapMarkerRadiusOutline,
     mdiEyeOutline,
     mdiEyeOffOutline,
-    mdiCloseCircleOutline
-=======
+    mdiCloseCircleOutline,
     mdiLockReset,
     mdiAccountKey,
     mdiAccountGroup,
     mdiNoteAlertOutline
->>>>>>> 2606ed529b4e20592f042966474c0c1bda755320
 } from "@mdi/js";
 
 export const icons = {
@@ -43,7 +40,6 @@ export const icons = {
     clock: mdiClockOutline,
     information: mdiInformationOutline,
     camera: mdiCameraOutline,
-<<<<<<< HEAD
     cameraCctv: mdiCctv,
     wsp: mdiWhatsapp,
     radio: mdiRadioHandheld,
@@ -52,8 +48,6 @@ export const icons = {
     map: mdiMapMarkerRadiusOutline,
     eye: mdiEyeOutline,
     eyeOff: mdiEyeOffOutline,
-    close: mdiCloseCircleOutline
-=======
+    close: mdiCloseCircleOutline,
     mdiNoteAlertOutline:mdiNoteAlertOutline
->>>>>>> 2606ed529b4e20592f042966474c0c1bda755320
 };
