@@ -3,11 +3,17 @@ import { Dialog } from '@headlessui/react';
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
+import { Autocomplete, CircularProgress, TextField } from '@mui/material';
+import { getIncidenceCodesApi } from '../../api/operador/incidenceApi';
 
 const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) => {
     const { zones = [], communications = [] } = dataSelect || {};
     const [date, setDate] = useState(null);
     const [time, setTime] = useState(null);
+    const [openCodeAutocomplete, setOpenCodeAutocomplete] = useState(false);
+    const [inputValueCode, setInputValueCode] = useState('');
+    const [optionsCode, setOptionsCode] = useState([]);
+    const [loadingOptionsCode, setLoadingOptionsCode] = useState(false);
 
     const [form, setForm] = useState({
         code:'',
@@ -17,7 +23,9 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
         comunication:'',
         date: '',
         status:'',
-        observation:''
+        observation:'',
+        latitud: '',
+        longitud: '',
     });    
     
     // Precargar datos cuando se abra el modal
@@ -26,6 +34,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
             const dateTime = dayjs(data.date);
             setDate(dateTime.startOf('day'));
             setTime(dateTime);
+            setInputValueCode(data.code || '');
 
             setForm({
                 code: data.code || '',
@@ -35,16 +44,73 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                 comunication: data.comunication || '',
                 status: data.status || '',
                 observation: data.observation,
+                latitud: data.latitud || '',
+                longitud: data.longitud || '',
                 id: data.id,
             });
         }
     }, [data]);
+
+    useEffect(() => {
+        if (!openCodeAutocomplete) return;
+        setLoadingOptionsCode(true);
+
+        const fetchOptions = async () => {
+            try {
+            const response = await getIncidenceCodesApi(inputValueCode);
+            if (response.success && Array.isArray(response.data)) {
+                setOptionsCode(response.data);
+            } else {
+                setOptionsCode([]);
+            }
+            } catch (err) {
+                setOptionsCode([]);
+                console.error('Error al cargar códigos:', err);
+            } finally {
+                setLoadingOptionsCode(false);
+            }
+        };
+
+        const timeout = setTimeout(fetchOptions, 300);
+        return () => clearTimeout(timeout);
+    }, [inputValueCode, openCodeAutocomplete]);
+    
     
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
     };
     
+    const handleCodeSelection = (event, selectedOption) => {
+        if (selectedOption) {
+            if (typeof selectedOption === 'object') {
+                setForm((prev) => ({
+                    ...prev,
+                    code: selectedOption.codigo_incidencia,
+                    latitud: selectedOption.latitud,
+                    longitud: selectedOption.longitud,
+                }));
+                setInputValueCode(selectedOption.codigo_incidencia);
+            } else {
+                setForm((prev) => ({
+                    ...prev,
+                    code: selectedOption,
+                    latitud: '',
+                    longitud: '',
+                }));
+                setInputValueCode(selectedOption);
+            }
+        } else {
+            setForm((prev) => ({
+            ...prev,
+            code: '',
+            latitud: '',
+            longitud: '',
+            }));
+            setInputValueCode('');
+        }
+    };
+
     const handleSubmit = (e) => {
          e.preventDefault();
 
@@ -79,15 +145,63 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                         </div>
                         <hr className='border-gray-200 mb-4'/>
                         <form onSubmit={handleSubmit} className='max-h-[80vh] overflow-y-auto pb-4'>
+
                             <div className="mb-4">
-                                <label className="block text-sm font-medium">Codigo</label>
-                                <input
-                                    type="text"
-                                    name="code"
+                                <label className="block mb-2 text-sm font-medium text-gray-900">Código *</label>
+                                <Autocomplete
+                                    freeSolo
+                                    id="code-autocomplete"
+                                    open={openCodeAutocomplete}
+                                    onOpen={() => {
+                                        setOpenCodeAutocomplete(true);
+                                        setInputValueCode(form.code || '');
+                                    }}
+                                    onClose={() => setOpenCodeAutocomplete(false)}
+                                    options={optionsCode}
+                                    loading={loadingOptionsCode}
                                     value={form.code}
-                                    onChange={handleChange}
-                                    className="w-full border px-3 py-2 rounded mt-1"
+                                    onChange={handleCodeSelection}
+                                    inputValue={inputValueCode}
+                                    onInputChange={(e, newInputValue) => setInputValueCode(newInputValue)}
+                                    getOptionLabel={(option) => {
+                                        if (typeof option === 'object' && option.codigo_incidencia) {
+                                            return option.codigo_incidencia;
+                                        }
+                                        return option;
+                                    }}
+                                    renderOption={(props, option) => (
+                                        <li {...props}>
+                                            <div>
+                                            <div className="font-medium">{option.codigo_incidencia}</div>
+                                            <div className="text-sm text-gray-500">
+                                                Lat: {option.latitud}, Lng: {option.longitud}
+                                            </div>
+                                            </div>
+                                        </li>
+                                    )}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            required
+                                            placeholder="Buscar o ingresar código"
+                                            variant="outlined"
+                                            InputProps={{
+                                            ...params.InputProps,
+                                            endAdornment: (
+                                                <>
+                                                {loadingOptionsCode && <CircularProgress color="inherit" size={20} />}
+                                                {params.InputProps.endAdornment}
+                                                </>
+                                            ),
+                                            }}
+                                        />
+                                    )}
                                 />
+                                {form.latitud && form.longitud && (
+                                    <div className="mt-2 text-sm text-gray-600">
+                                        📍 Coordenadas: {form.latitud}, {form.longitud}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="mb-4">
