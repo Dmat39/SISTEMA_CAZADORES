@@ -78,7 +78,6 @@ const SupervisorsAdmin = () => {
     };
 
     const updateSupervisor = async (payload) => {
-        console.log(payload, " aqui edito");
         const id = payload.id;
         try {
             await updateSupervisorApi(payload, id);
@@ -96,7 +95,6 @@ const SupervisorsAdmin = () => {
     }, []);
 
     const handleCreate = async (newSupervisor) => {
-        console.log(newSupervisor);
         try {
             await addsupervidorServiceApi(newSupervisor);
             await fetchSupervisors();
