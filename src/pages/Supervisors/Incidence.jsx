@@ -116,7 +116,7 @@ const Incidence = () => {
                 {isLoading ? (
                     <Loading message= "Cargando Operadores"/>
                 ) : 
-                    incidents.length > 0 ?(
+                    incidents?.length > 0 ?(
                         <TableForm
                             data={{ data: incidents, pagination }}
                             columns={[
