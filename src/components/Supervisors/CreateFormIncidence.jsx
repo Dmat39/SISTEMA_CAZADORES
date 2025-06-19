@@ -1,4 +1,5 @@
-import { useState, useEffect} from "react";
+
+import { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -12,10 +13,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 
-import { getIncidenceCodesApi, getAllIncidenceComunicationApi, getAllIncidenceZonesApi } from "../../api/operador/incidenceApi";
+import { getIncidenceCodesApi } from "../../api/operador/incidenceApi";
 
 // Extiende dayjs
 dayjs.extend(utc);
@@ -24,77 +23,26 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     code: "",
     name: "",
-    communicationId: "",
-    zoneId: "",
+    description: "",
     date: null,
     time: null,
-    description: "",
-    latitud: "", // Nuevo campo
-    longitud: "", // Nuevo campo
   });
 
   const [inputValue, setInputValue] = useState("");
-  const [options, setOptions] = useState([]); // Ahora guardará objetos completos
+  const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingOptions, setLoadingOptions] = useState(false);
   const [openAutocomplete, setOpenAutocomplete] = useState(false);
   const [error, setError] = useState(null);
-  const [zonaOptions, setZonaOptions] = useState([]);
-  const [medioOptions, setMedioOptions] = useState([]);
-  const [loadingZonas, setLoadingZonas] = useState(false); 
-  const [loadingMedios, setLoadingMedios] = useState(false);
-
-   // Cargar Zonas
-  useEffect(() => {
-    if (!open) return;
-
-    const fetchZonas = async () => {
-      setLoadingZonas(true);
-      try {
-        const zonasResponse = await getAllIncidenceZonesApi();
-        console.log("Zonas API response:", zonasResponse);
-        setZonaOptions(zonasResponse.data || []);
-      } catch (error) {
-        console.error("Error fetching zonas:", error);
-      } finally {
-        setLoadingZonas(false);
-      }
-    };
-
-    fetchZonas();
-  }, [open]);
-
-   // Cargar Medios
-  useEffect(() => {
-    if (!open) return;
-
-    const fetchMedios = async () => {
-      setLoadingMedios(true);
-      try {
-        const mediosResponse = await getAllIncidenceComunicationApi();
-        console.log("Medios API response:", mediosResponse);
-        setMedioOptions(mediosResponse.data || []);
-      } catch (error) {
-        console.error("Error fetching medios:", error);
-      } finally {
-        setLoadingMedios(false);
-      }
-    };
-
-    fetchMedios();
-  }, [open]);
 
   useEffect(() => {
     if (!openAutocomplete) return;
     setLoadingOptions(true);
-
-    // Cargar codigos de incidencia con coordenadas
     const fetchOptions = async () => {
       try {
         const response = await getIncidenceCodesApi(inputValue);
         if (response.success && Array.isArray(response.data)) {
-          // Guardamos los objetos completos para acceder a latitud y longitud
-          setOptions(response.data);
+          setOptions(response.data.map((i) => i.codigo_incidencia));
         } else {
           setOptions([]);
         }
@@ -113,45 +61,13 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Función para manejar la selección del autocomplete
-  const handleCodeSelection = (event, selectedOption) => {
-    if (selectedOption) {
-      // Si es un objeto (seleccionado de la lista)
-      if (typeof selectedOption === 'object') {
-        setFormData((prev) => ({
-          ...prev,
-          code: selectedOption.codigo_incidencia,
-          latitude: selectedOption.latitud,
-          longitude: selectedOption.longitud,
-        }));
-      } else {
-        // Si es texto libre
-        setFormData((prev) => ({
-          ...prev,
-          code: selectedOption,
-          latitud: "",
-          longitud: "",
-        }));
-      }
-    } else {
-      // Si se limpia la selección
-      setFormData((prev) => ({
-        ...prev,
-        code: "",
-        latitud: "",
-        longitud: "",
-      }));
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    const { code, name, date, time, description, communicationId, zoneId, latitud, longitud } = formData;
-    
-    if (!code || !name || !date || !time || !communicationId || !zoneId) {
+    const { code, name, date, time, description } = formData;
+    if (!code || !name || !date || !time) {
       setError("Por favor, completa todos los campos obligatorios (*)");
       setLoading(false);
       return;
@@ -166,27 +82,11 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
       code,
       name,
       description,
-      communicationId,
-      zoneId,
       date: combinedDateTime,
-      latitud, // Incluir coordenadas en el payload
-      longitud,
     };
 
-    console.log("Payload con coordenadas:", payload); // Para debug
-
     onSubmit(payload);
-    setFormData({ 
-      code: "", 
-      name: "", 
-      communicationId: "", 
-      zoneId: "", 
-      date: null, 
-      time: null, 
-      description: "",
-      latitud: "",
-      longitud: "",
-    });
+    setFormData({ code: "", name: "", description: "", date: null, time: null });
     onClose();
     setLoading(false);
   };
@@ -206,16 +106,16 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
             overflowY: "auto",
           }}
         >
-          <div className="flex items-center justify-between py-5 border-b rounded-t border-gray-300">
+          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-300">
             <h3 className="text-2xl font-semibold text-gray-900">Nueva Incidencia</h3>
             <Button onClick={onClose} class="text-white bg-gray-500 flex flex-row items-center justify-center hover:bg-gray-700 rounded-md w-8 h-8 cursor-pointer">
               <span className="sr-only">Cerrar</span>X
             </Button>
           </div>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="p-4 md:p-5">
             <div className="grid gap-4 mb-4 grid-cols-2">
               {/* Código */}
-              <div className="col-span-2 mt-5">
+              <div className="col-span-2">
                 <label className="block mb-2 text-sm font-medium text-gray-900">Código *</label>
                 <Autocomplete
                   freeSolo
@@ -229,27 +129,9 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   options={options}
                   loading={loadingOptions}
                   value={formData.code}
-                  onChange={handleCodeSelection}
+                  onChange={(e, newValue) => setFormData((prev) => ({ ...prev, code: newValue || "" }))}
                   inputValue={inputValue}
                   onInputChange={(e, newInputValue) => setInputValue(newInputValue)}
-                  getOptionLabel={(option) => {
-                    // Si es un objeto, mostrar el código
-                    if (typeof option === 'object' && option.codigo_incidencia) {
-                      return option.codigo_incidencia;
-                    }
-                    // Si es string, mostrarlo tal como está
-                    return option;
-                  }}
-                  renderOption={(props, option) => (
-                    <li {...props}>
-                      <div>
-                        <div className="font-medium">{option.codigo_incidencia}</div>
-                        <div className="text-sm text-gray-500">
-                          Lat: {option.latitud}, Lng: {option.longitud}
-                        </div>
-                      </div>
-                    </li>
-                  )}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -268,12 +150,6 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                     />
                   )}
                 />
-                {/* Mostrar coordenadas si están disponibles */}
-                {formData.latitud && formData.longitud && (
-                  <div className="mt-2 text-sm text-gray-600">
-                    📍 Coordenadas: {formData.latitud}, {formData.longitud}
-                  </div>
-                )}
               </div>
 
               {/* Título */}
@@ -288,52 +164,6 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   placeholder="Ingresa el título de la incidencia"
                   required
                 />
-              </div>
-
-               {/* Medio */}
-              <div className="col-span-2 sm:col-span-1">
-                <label className="block mb-2 text-sm font-medium text-gray-900">Medio *</label>
-                <Select
-                  labelId="demo-simple-medio"
-                  id="demo-simple-medio"
-                  value={formData.communicationId}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, communicationId: e.target.value }))}
-                  className="w-full custom-placeholder"
-                  disabled={loadingMedios}
-                  displayEmpty
-                >
-                 <MenuItem value="" disabled>
-                  {loadingMedios ? "Cargando..." : "Selecciona un medio"}
-                </MenuItem>
-                {medioOptions.map((communicationId) => (
-                  <MenuItem key={communicationId.id} value={communicationId.id}>
-                    {communicationId.name}
-                  </MenuItem>
-                ))}
-                </Select>
-              </div>
-
-               {/* Zona */}
-              <div className="col-span-2 sm:col-span-1">
-                <label className="block mb-2 text-sm font-medium text-gray-900">Zona *</label>
-                <Select
-                  labelId="demo-simple-zona"
-                  id="demo-simple-zona"
-                  value={formData.zoneId}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, zoneId: e.target.value }))}
-                  className="w-full custom-placeholder"
-                  disabled={loadingZonas}
-                  displayEmpty
-                >
-                 <MenuItem value="" disabled>
-                  {loadingZonas ? "Cargando..." : "Selecciona una zona"}
-                </MenuItem>
-                {zonaOptions.map((zoneId) => (
-                  <MenuItem key={zoneId.id} value={zoneId.id}>
-                    {zoneId.name}
-                  </MenuItem>
-                ))}
-                </Select>
               </div>
 
               {/* Fecha */}

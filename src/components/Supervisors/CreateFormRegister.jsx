@@ -212,7 +212,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               </div>
               <div className="text-center">
                 <p className="text-sm font-medium">
-                  Haz clic para subir 2 imágenes
+                  Haz clic para subir imágenes
                 </p>
                 <span className="text-xs text-gray-500">
                   PNG, JPG, JPEG hasta 10MB cada una

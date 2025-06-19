@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getIncidenceByIdApi } from "../../api/operador/incidenceApi";
+import { updateIncidenceApi } from "../../api/supervisor/IncidenceApi"; // Asegúrate de importar esta función
 import { createSubRegistroIncidenceApi } from "../../api/operador/registroIncidenceApi";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
 import dayjs from "dayjs";
-import RegistrosList from "../../components/Operador/IncidenciaDetalles";
-import CreateFormRegister from "../../components/Operador/CreateFormRegister";
+import RegistrosList from "../../components/Supervisors/IncidenciaDetalles";
+import CreateFormRegister from "../../components/Supervisors/CreateFormRegister";
+import { toast } from 'sonner';
 
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -14,28 +16,70 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 const IncidenciaDetalles = () => {
   const [incidencia, setIncidencia] = useState(null);
   const [showRegistroForm, setShowRegistroForm] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
   const navigate = useNavigate();
 
-  const formatStatus = (status) => {
-    const map = {
-      process: { text: "En Proceso", color: "bg-blue-100 text-blue-900" },
-      completed: { text: "Completado", color: "bg-green-100 text-green-900" },
-      cancelled: { text: "Rechazado", color: "bg-red-100 text-red-900" },
-    };
-    return map[status] || { text: status, color: "bg-gray-100 text-gray-900" };
+ 
+  const statusOptions = [
+    { value: 'process', label: 'En Proceso', color: 'bg-blue-100 text-blue-900' },
+    { value: 'completed', label: 'Completado', color: 'bg-green-100 text-green-900' },
+    { value: 'finished', label: 'Finalizado', color: 'bg-red-100 text-red-900' }
+  ];
+
+
+  const getStatusColor = (status) => {
+    const statusOption = statusOptions.find(option => option.value === status);
+    return statusOption ? statusOption.color : 'bg-gray-100 text-gray-900';
+  };
+
+  // Función para obtener el label en español según el estado
+  const getStatusLabel = (status) => {
+    const statusOption = statusOptions.find(option => option.value === status);
+    return statusOption ? statusOption.label : status;
   };
 
   const fetchIncidencia = async () => {
     const id = localStorage.getItem("last_created_incidence_id");
-    if (!id) return;
+    if (!id) {
+      toast.error("No se encontró el ID de la incidencia");
+      return;
+    }
     try {
       const response = await getIncidenceByIdApi(id);
       setIncidencia(response.data);
     } catch (error) {
       console.error("Error al obtener detalle de incidencia:", error);
+      toast.error("Error al cargar los detalles de la incidencia");
     }
   };
 
+  // Función para actualizar el estado de la incidencia
+  const handleStatusChange = async (newStatus) => {
+    if (!incidencia?.id || updatingStatus) return;
+    
+    setUpdatingStatus(true);
+    try {
+      const payload = { status: newStatus };
+      await updateIncidenceApi(incidencia.id, payload);
+      
+      // Actualizar el estado local
+      setIncidencia(prev => ({ ...prev, status: newStatus }));
+      
+      const statusLabel = getStatusLabel(newStatus);
+      toast.success(`Estado actualizado a "${statusLabel}" exitosamente`, {
+        position: 'top-right',
+      });
+      
+      console.log("Estado actualizado exitosamente a:", newStatus);
+    } catch (error) {
+      console.error("Error al actualizar el estado:", error);
+      toast.error("Error al actualizar el estado de la incidencia", {
+        position: 'top-right',
+      });
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
 
   useEffect(() => {
     fetchIncidencia();
@@ -45,36 +89,36 @@ const IncidenciaDetalles = () => {
     return <p className="p-4 text-gray-500">Cargando detalle de incidencia...</p>;
   }
 
-  const status = formatStatus(incidencia.status);
   const formattedDate = dayjs(incidencia.date).format("YYYY-MM-DD");
   const formattedTime = dayjs(incidencia.date).format("HH:mm");
   const createdAt = dayjs(incidencia.createdAt).format("D [de] MMMM [de] YYYY");
 
-  // Emisión desde el modal -> consumir API
   const handleRegistroSubmit = async (formData) => {
     try {
-      console.log("FormData recibido del hijo:");
-      
-      // Verificar que es FormData
       if (!(formData instanceof FormData)) {
         console.error("Error: Se esperaba FormData pero se recibió:", typeof formData);
+        toast.error("Error en el formato de los datos del registro");
         return;
       }
 
-      // Debug: Mostrar contenido del FormData
       for (let [key, value] of formData.entries()) {
         console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value);
       }
 
-      // Enviar directamente el FormData al API
       const response = await createSubRegistroIncidenceApi(formData);
       console.log("Registro creado exitosamente:", response);
       
+      toast.success("Registro agregado exitosamente", {
+        position: 'top-right',
+      });
+      
       setShowRegistroForm(false);
-      await fetchIncidencia(); // recargar para ver nuevo registro
+      await fetchIncidencia(); 
     } catch (err) {
       console.error("Error al guardar el registro:", err);
-      // Opcional: mostrar notificación de error al usuario
+      toast.error("Error al guardar el registro", {
+        position: 'top-right',
+      });
     }
   };
 
@@ -85,7 +129,7 @@ const IncidenciaDetalles = () => {
             <div className="mt-2 mb-3">
               {/* Volver */}
               <button
-                onClick={() => navigate("/dashboard/operador/incidencia")}
+                onClick={() => navigate("/dashboard/supervisors/incidencia")}
                 className="flex items-center text-sm text-gray-600 cursor-pointer">
                 <Icon className="text-gray-800" path={icons.arrowLeft} size={0.8} />
                 <span className="ml-1 text-black font-medium">Volver</span>
@@ -93,22 +137,35 @@ const IncidenciaDetalles = () => {
             </div>
           <div className="flex flex-row items-start justify-between gap-8">
             <div className="flex flex-col">
-              <h1 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
+              <h1 className="text-2xl font-bold text-gray-900 leading-tight mb-4 flex items-center">
                 {incidencia.name}
-                <span className={`ml-4 text-sm px-3 py-1 rounded-full font-medium self-center ${status.color}`}>
-                  {status.text}
-                </span>
-                <span className={`ml-4 text-sm px-4 py-1 rounded-full bg-gray-100 text-gray-900 font-medium self-center`}>
-                  {incidencia.code}
-                </span>
+                
+                {/* Selector de estado */}
+                <div className="ml-4 relative">
+                  <select
+                    value={incidencia.status || 'process'}
+                    onChange={(e) => handleStatusChange(e.target.value)}
+                    disabled={updatingStatus}
+                    className={`${getStatusColor(incidencia.status)} text-sm py-1.5 rounded-full font-medium border-0 cursor-pointer appearance-none pr-6 ${updatingStatus ? 'opacity-50  cursor-not-allowed' : 'hover:bg-blue-600 transition-all duration-200 ease-in-out'}`}
+                  >
+                    {statusOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  {/* Icono de dropdown personalizado */}
+                  <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                    <Icon 
+                      path={updatingStatus ? icons.loading : icons.chevronDown} 
+                      size={0.6}
+                      className={updatingStatus ? 'animate-spin' : ''}
+                    />
+                  </div>
+                </div>
               </h1>
               <div className="flex items-center text-gray-600 gap-6 text-sm">
-                <span className="flex items-center gap-1">
-                  <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
-                </span>
                 <span className="flex items-center gap-1">
                   <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
                 </span>
@@ -133,7 +190,6 @@ const IncidenciaDetalles = () => {
           </div>
         </div>
 
-        {/* Descripción */}
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6 h-36">
           <h3 className="text-base font-normal text-gray-900 mb-2">Descripción</h3>
           <p className="text-sm text-gray-700 leading-relaxed">

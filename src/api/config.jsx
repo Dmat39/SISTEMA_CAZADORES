@@ -1,17 +1,15 @@
 import axios from 'axios';
-
 // Variable global para almacenar el token
 let globalToken = null;
 
 // Función para actualizar el token globalmente
-export const setToken = (token) => {
+export const setToken = (token,) => {
   globalToken = token;
 }
 
 // Configuración base para la API principal
 const config = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
- 
 });
 
 // Configuración especifica para el endpoint de codigo incidencias
@@ -20,7 +18,7 @@ const incidenceConfig = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 5000, 
+  timeout: 3000, 
 });
 
 
@@ -32,8 +30,9 @@ const addAuthToken = (config) => {
 };
 
 // Aplicar interceptors a ambas configuraciones
-config.interceptors.request.use(addAuthToken, error => Promise.reject(error));
-incidenceConfig.interceptors.request.use(config => config, error => Promise.reject(error));
+config.interceptors.request.use(addAuthToken, (error) => Promise.reject(error));
+incidenceConfig.interceptors.request.use((config) => config, error => Promise.reject(error));
+
 
 // Exportar ambas configuraciones
 export const mainApi = config;

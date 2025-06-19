@@ -15,3 +15,7 @@ body {
   background: #E8E8E8;
   overflow: hidden;
 }
+
+.custom-placeholder .css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  color: #202020 !important; /* Gris personalizado */
+}
