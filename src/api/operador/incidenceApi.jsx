@@ -1,4 +1,4 @@
-import { mainApi, incidenceApi } from "../config";
+import config, { mainApi, incidenceApi } from "../config";
 
 // Función para buscar incidencias por código
 // Función para buscar incidencias por código
@@ -41,6 +41,26 @@ export const getIncidenceByIdApi = async(id) => {
     return response.data;
   } catch (error) {
      console.error("Error fetching incidence:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch incidence');
+  }
+}
+
+export const updateIncidenceApi = async (payload,  id) => {
+  try {
+    const response = await config.patch(`/incidence/${id}` , payload);
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching incidence:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch incidence');
+  }
+}
+
+export const deleteIncidenceApi = async ( id) => {
+  try {
+    const response = await config.delete(`/incidence/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching incidence:", error);
     throw error.response ? error.response.data : new Error('Failed to fetch incidence');
   }
 }

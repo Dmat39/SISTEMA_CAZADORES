@@ -9,10 +9,17 @@ import {
     mdiCalendarRange,
     mdiClockOutline,
     mdiInformationOutline,
-    mdiCameraOutline
+    mdiCameraOutline,
+    mdiLockReset,
+    mdiAccountKey,
+    mdiAccountGroup,
+    mdiNoteAlertOutline
 } from "@mdi/js";
 
 export const icons = {
+    mdiAccountGroup:mdiAccountGroup,
+    mdiAccountKey:mdiAccountKey,
+    lockReset: mdiLockReset,
     edit: mdiPencil,
     delete: mdiTrashCan,
     add: mdiPlus,
@@ -23,5 +30,6 @@ export const icons = {
     calendar: mdiCalendarRange,
     clock: mdiClockOutline,
     information: mdiInformationOutline,
-    camera: mdiCameraOutline
+    camera: mdiCameraOutline,
+    mdiNoteAlertOutline:mdiNoteAlertOutline
 };
