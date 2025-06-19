@@ -62,12 +62,12 @@ const CardForm = ({ incidencias = [] }) => {
               <div className="flex flex-row items-center space-x-2">
                 <div className="flex items-center space-x-1">
                   <Icon path={icons.wsp} className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">WhatsApp</span>
+                  <span className="text-sm text-gray-600">{inc.comunication?.name}</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <MapIcon className="h-4 w-4 text-gray-500" />
+                  <Icon path={icons.map} className="h-4 w-4 text-gray-500" />
                   <span className="text-sm text-gray-600">
-                    Zona Alta
+                    {inc.zone?.name}
                   </span>
                 </div>
               </div>

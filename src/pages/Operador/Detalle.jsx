@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getIncidenceByIdApi } from "../../api/operador/incidenceApi";
+import { getIncidenceByIdApi} from "../../api/operador/incidenceApi";
 import { createSubRegistroIncidenceApi } from "../../api/operador/registroIncidenceApi";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
 import dayjs from "dayjs";
 import RegistrosList from "../../components/Operador/IncidenciaDetalles";
 import CreateFormRegister from "../../components/Operador/CreateFormRegister";
-
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
@@ -24,6 +23,19 @@ const IncidenciaDetalles = () => {
     };
     return map[status] || { text: status, color: "bg-gray-100 text-gray-900" };
   };
+  
+  // Función para medios
+  // const formatCommunication = (communication) => {
+  //   const map = {
+  //     "Botón de pánico": { text: "En Proceso", icono: icons.btnPanic },
+  //     "Cámara": { text: "Completado", icono: icons.cameraCctv },
+  //     "Llamada": { text: "Rechazado",  icono: icons.callPhone },
+  //     "Radio": { text: "Rechazado", icono: icons.radio },
+  //     "Whatsapp": { text: "Rechazado", icono: icons.wsp },
+  //   };
+  //   return map[communication.name] || { text: communication.name || "No especificado", icono: icons.information };
+  // };
+  
 
   const fetchIncidencia = async () => {
     const id = localStorage.getItem("last_created_incidence_id");
@@ -36,6 +48,8 @@ const IncidenciaDetalles = () => {
     }
   };
 
+    
+
 
   useEffect(() => {
     fetchIncidencia();
@@ -45,6 +59,8 @@ const IncidenciaDetalles = () => {
     return <p className="p-4 text-gray-500">Cargando detalle de incidencia...</p>;
   }
 
+  // Formatear datos
+  // const communication = formatCommunication(incidencia.communicationId);
   const status = formatStatus(incidencia.status);
   const formattedDate = dayjs(incidencia.date).format("YYYY-MM-DD");
   const formattedTime = dayjs(incidencia.date).format("HH:mm");
@@ -104,10 +120,10 @@ const IncidenciaDetalles = () => {
               </h1>
               <div className="flex items-center text-gray-600 gap-6 text-sm">
                 <span className="flex items-center gap-1">
-                  <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
+                  <Icon path={icons.wsp} size={0.75} /> Medio: {incidencia.comunication?.name}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
+                  <Icon path={icons.map} size={0.75} /> Zona: {incidencia.zone?.name}
                 </span>
                 <span className="flex items-center gap-1">
                   <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
