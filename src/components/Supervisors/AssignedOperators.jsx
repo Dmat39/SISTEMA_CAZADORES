@@ -17,10 +17,11 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
     const fetchAssingments = async () => {
         try {
             setIsLoading(true);
+            setAssingments([]);
             const data = await getAllAssignedOperatorsApi(incidenceId);
             setAssingments(data.data);
         } catch (error) {
-            toast.error(` Error al obtener las asignaciones: ${error.message}`);
+            toast.error(`${error.message}`);
         } finally {
             setIsLoading(false);
         }
@@ -49,7 +50,7 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
     };
 
     return (
-        <Dialog open={isOpen} onClose={onClose} className="relative z-50" >
+        <Dialog open={isOpen} onClose={(onClose)} className="relative z-50">
             <div className="fixed inset-0 bg-black/60" aria-hidden="true"></div>
 
             <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -78,7 +79,14 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
                                 actions={[
                                     {
                                         title: 'Eliminar',
-                                        onClick: (op) => confirmDelete(op, (p) => `${p.operator.name}: ${p.operator.lastname}`),
+                                        onClick: (assignment) =>
+                                        confirmDelete(assignment, (as) => {
+                                            const name = as.operator?.name ?? '';
+                                            const lastname = as.operator?.lastname ?? '';
+                                            const fullName = `${name} ${lastname}`.trim();
+
+                                            return fullName !== '' ? fullName : 'Operador no existente';
+                                        }),
                                         icon: icons.delete,
                                         className: 'text-red-600 hover:text-red-800',
                                     },

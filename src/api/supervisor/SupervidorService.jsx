@@ -66,7 +66,7 @@ export const getAllAssignedOperatorsApi = async (incidenceId) => {
 
 export const deleteAssignApi = async ( id) => {
   try {
-    const response = await config.delete(`/supervisor/delete/${id}`);
+    const response = await config.delete(`/incidence/assign/delete/${id}`);
     return response.data;
   } catch (error) {
     console.log("Error fetching supervisors:", error);

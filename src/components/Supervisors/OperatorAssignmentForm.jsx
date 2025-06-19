@@ -27,13 +27,13 @@ const OperatorAssignmentForm = ({ onClose, onSubmit, operators, incidenceId }) =
   return (
     <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
       <h3 className="text-md font-semibold mb-4">Asignar nuevo operador</h3>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
+      <form onSubmit={handleSubmit} >
+        <div className="mb-4 justify-items-center">
           <select
             name="userId"
             value={form.userId}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded mt-1 border-gray-300 text-gray-900 text-sm focus:ring-block p-2.5"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           >
             <option value="" disabled hidden>Selecciona un operador</option>
             {operators.map((op) => (

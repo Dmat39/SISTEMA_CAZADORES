@@ -3,17 +3,18 @@ import {toast} from 'sonner';
 import Icon from '@mdi/react';
 import { icons } from '../../plugins/IconLibrary.js';
 import Loading from '../../components/Loading.jsx';
-import { deleteIncidenceApi, getAllIncidencesApi, updateIncidenceApi } from '../../api/operador/incidenceApi.jsx';
+import { deleteIncidenceApi, getAllIncidenceComunicationApi, getAllIncidencesApi, getAllIncidenceZonesApi, updateIncidenceApi } from '../../api/operador/incidenceApi.jsx';
 import TableForm from '../../components/TableForm.jsx';
 import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation.jsx';
 import UpdateFormIncidence from '../../components/Supervisors/UpdateFormIncidence.jsx';
-import OperatorAssignmentForm from '../../components/Supervisors/OperatorAssignmentForm.jsx';
 import { getAllOperatorApi } from '../../api/supervisor/OperatorService.jsx';
 import AssignedOperators from '../../components/Supervisors/AssignedOperators.jsx';
 
 const Incidence = () => {
     const [incidents, setIncidents] = useState([]);
     const [operators, setOperators] = useState([]);
+    const [zones, setZones] = useState([]);
+    const [communications, setCommunications] = useState([]);
     const [selectedIncidenceId, setSelectedIncidenceId] = useState(null);
     const [selectedIncidenceName, setSelectedIncidenceName] = useState("");
 
@@ -27,6 +28,24 @@ const Incidence = () => {
     const openModalEdit = (payload) => {
         setDataEdit(payload);
         setShowUpdate(true);
+    };
+    
+    const fetchZones = async () => {
+        try {
+            const data = await getAllIncidenceZonesApi();
+            setZones(data.data);
+        } catch (error) {
+            toast.error(` Error al obtener las zonas: ${error.message}`);
+        }
+    };
+
+    const fetchCommunications = async () => {
+        try {
+            const data = await getAllIncidenceComunicationApi();
+            setCommunications(data.data);
+        } catch (error) {
+            toast.error(` Error al obtener las zonas: ${error.message}`);
+        }
     };
 
     const fetchIncidents = async () => {
@@ -61,29 +80,20 @@ const Incidence = () => {
         fetched.current = true;
         fetchIncidents();
         fetchOperators();
+        fetchZones();
+        fetchCommunications();
     }, []);
         
     const handleUpdateIncidence = async (payload) => {
         try {
             await updateIncidenceApi(payload, payload.id);
-            await fetchOperators();
+            await fetchIncidents();
             setShowUpdate(false);
             toast.success('Incidencia actualizada exitosamente!');
         } catch (error) {
             toast.error(` Error al actualizar la incidencia: ${error.message}`);
         }
     }
-    
-    const handleAssignedOperators = async (newAssign) => {
-        try {
-            // await assignedOperatorsApi(newAssign);
-            await fetchIncidents();
-            setShowAssignedOperators(false);
-            toast.success('Incidencia assignada a un nuevo operador exitosamente!');
-        } catch (error) {
-            toast.error(` Error al asignar la incidencia: ${error.message}`);
-        }
-    };
 
     return (
         <div className="m-4">
@@ -105,6 +115,8 @@ const Incidence = () => {
                                 { label: 'Cod.', key: 'code'},
                                 { label: 'Nombre', key: 'name' },
                                 { label: 'Descripción', key: 'description' },
+                                { label: 'Zona', key: 'zone', render: (value) => value.zone?.name ?? '—'},
+                                { label: 'Medio', key: 'comunication', render: (value) => value.comunication?.name ?? '—'},
                                 { label: 'Fecha incidente', key: 'date', render: (value) =>{return new Date(value.date).toISOString().split('T')[0] }},
                                 { label: 'Hora incidente', key: 'date', 
                                       render: (value) => {
@@ -116,14 +128,42 @@ const Incidence = () => {
                                         return `${hour12}:${minutes} ${ampm}`;
                                     }  
                                 },
-                                { label: 'Estado', key: 'status', render: (value) =>{
-                                    switch(value.status){
-                                        case "process": return 'En Proceso';
-                                        case "completed": return 'Completado';
-                                        case "finished": return 'Finalizado';
-                                        default: return value.status;
+                                {
+                                    label: 'Estado',
+                                    key: 'status',
+                                    render: (value) => {
+                                        let text = '';
+                                        let colorClass = '';
+
+                                        switch (value.status) {
+                                            case 'process':
+                                                text = 'En Proceso';
+                                                colorClass = 'bg-blue-100 text-blue-800';
+                                                break;
+                                            case 'completed':
+                                                text = 'Completado';
+                                                colorClass = 'bg-green-100 text-green-800';
+                                                break;
+                                            case 'finished':
+                                                text = 'Finalizado';
+                                                colorClass = 'bg-red-100 text-red-800';
+                                                break;
+                                            default:
+                                                text = value.status;
+                                                colorClass = 'bg-gray-100 text-gray-800';
+                                                break;
+                                        }
+
+                                        return (
+                                            <span
+                                                className={`px-3 py-1 rounded-full text-xs font-semibold ${colorClass} whitespace-nowrap`}
+                                            >
+                                                {text}
+                                            </span>
+                                        );
                                     }
-                                }},
+                                },
+
                                 { label: 'Observación', key: 'observation' },
                                 { label: 'Creado por', key: 'user', render: (value) => {return value.user.username} },
                                 { label: 'creado en ', key: 'createdAt', render: (value) => { return new Date(value.createdAt).toISOString().split('T')[0] }},
@@ -177,13 +217,13 @@ const Incidence = () => {
                 isOpen={showUpdate}
                 onClose={() => setShowUpdate(false)}
                 data={dataEdit}
+                dataSelect={{ zones, communications }}
                 onSubmit={handleUpdateIncidence}
             />
 
             <AssignedOperators
                 isOpen={showAssignedOperators}
                 onClose={() => setShowAssignedOperators(false)}
-                onSubmit={handleAssignedOperators}
                 operators={operators}
                 incidenceId={selectedIncidenceId}
                 incidenceName={selectedIncidenceName}
