@@ -17,6 +17,8 @@ const Incidence = () => {
     const [communications, setCommunications] = useState([]);
     const [selectedIncidenceId, setSelectedIncidenceId] = useState(null);
     const [selectedIncidenceName, setSelectedIncidenceName] = useState("");
+    const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState(null);
 
     const fetched = useRef(false);
     const [dataEdit, setDataEdit] = useState(null);
@@ -48,11 +50,12 @@ const Incidence = () => {
         }
     };
 
-    const fetchIncidents = async () => {
+    const fetchIncidents = async (pageToFetch = page) => {
         try {
             setIsLoading(true);
-            const data = await getAllIncidencesApi();
-            setIncidents(data.data);
+            const response = await getAllIncidencesApi(pageToFetch);
+            setIncidents(response.data.data);
+            setPagination(response.data.pagination);
         } catch (error) {
             toast.error(` Error al obtener las incidencias: ${error.message}`);
         } finally {
@@ -94,6 +97,11 @@ const Incidence = () => {
             toast.error(` Error al actualizar la incidencia: ${error.message}`);
         }
     }
+    
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        fetchIncidents(newPage);
+    };
 
     return (
         <div className="m-4">
@@ -110,7 +118,7 @@ const Incidence = () => {
                 ) : 
                     incidents.length > 0 ?(
                         <TableForm
-                            data={incidents}
+                            data={{ data: incidents, pagination }}
                             columns={[
                                 { label: 'Cod.', key: 'code'},
                                 { label: 'Nombre', key: 'name' },
@@ -194,6 +202,7 @@ const Incidence = () => {
                                     className: 'text-red-600 hover:text-red-800',
                                 },
                             ]}
+                            onPageChange={handlePageChange}
                         />
                     ) : (
                         <div>

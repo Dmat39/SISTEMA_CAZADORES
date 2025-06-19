@@ -23,9 +23,11 @@ export const createIncidenceApi = async (incidenceData) => {
 }
 
 // Función para obtener todas las incidencias
-export const getAllIncidencesApi = async () => {
+export const getAllIncidencesApi = async (page = 1, limit = 10) => {
   try {
-    const response = await mainApi.get('/incidence/all');
+    const response = await mainApi.get('/incidence/all', {
+      params: { page, limit }
+    });
     return response.data;
   } catch (error) {
     console.log("Error fetching incidences:", error);
