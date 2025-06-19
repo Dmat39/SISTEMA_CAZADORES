@@ -54,7 +54,7 @@ const ImageViewer = ({ Path, originalName }) => {
                   <div className="absolute bg-white w-10 h-10 -top-4 -right-4 rounded-full flex items-center justify-center shadow-lg">
                     <button
                       onClick={toggleVisibility}
-                      className="absolute top-0.5 right-0.5 text-red-500 hover:text-red-700 cursor-pointer"
+                      className="absolute top-0.5 right-0.5 text-gray-500 hover:text-gray-700 cursor-pointer"
                     >
                       <Icon path={icons.close} size={1.4} />
                     </button>
