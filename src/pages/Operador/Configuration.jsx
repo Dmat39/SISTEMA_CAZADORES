@@ -20,13 +20,11 @@ const ConfigurationProfile = () => {
 
     try {
       setIsLoading(true);
-      console.log("Operador ID:", operatorId);
       const response = await getOperatorProfileApi(operatorId);
       
       // Acceder correctamente a los datos según tu estructura de respuesta
       if (response.status && response.data) {
         setOperatorData(response.data);
-        console.log("Datos del operador cargados:", response.data);
       } else {
         toast.error('No se pudieron cargar los datos del operador');
       }

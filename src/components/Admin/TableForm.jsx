@@ -8,7 +8,7 @@ const TableForm = ({ data = [], onEdit, onDelete }) => {
 
     return (
         <div className="pt-6">
-            <div className="overflow-x-auto shadow rounded-lg">
+            <div className="overflow-x-auto shadow rounded-lg max-h-[60vh] h-full">
                 <table className="min-w-full divide-y divide-gray-200 bg-white">
                     <thead className="bg-gray-100">
                     <tr>

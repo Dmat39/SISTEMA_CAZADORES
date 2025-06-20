@@ -15,7 +15,6 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
 
     useEffect(() => {
         if (operatorData) {
-            console.log('Datos recibidos en FormProfile:', operatorData);
             setForm({
                 username: operatorData.user?.username || '',
                 password: '', // No mostrar la contraseña real

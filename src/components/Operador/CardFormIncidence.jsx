@@ -33,7 +33,7 @@ const CardForm = ({ incidencias = [] }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 h-[65vh] overflow-y-auto">
       {incidencias.map((inc) => {
         const status = formatStatus(inc.status);
         const date = dayjs(inc.date);

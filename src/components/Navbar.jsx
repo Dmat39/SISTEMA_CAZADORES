@@ -99,7 +99,9 @@ const Navbar = () => {
                     },
                   }}
                 >
-                  <MenuItem onClick={handleConfiguration}>Configuración</MenuItem>
+                  {role === 'operator' && (
+                    <MenuItem onClick={handleConfiguration}>Configuración</MenuItem>
+                  )}
                   <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
                 </Menu>
               </div>
