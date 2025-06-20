@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 
 const CreateForm = ({ isOpen, onClose, onSubmit }) => {
@@ -18,6 +18,14 @@ const CreateForm = ({ isOpen, onClose, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit?.(form);
+        // Resetear el formulario después de enviar
+        setForm({
+            username: '',
+            password: '',
+            name: '',
+            lastname: '',
+            phone: '',
+        });
         onClose();
     };
 
@@ -94,13 +102,13 @@ const CreateForm = ({ isOpen, onClose, onSubmit }) => {
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="mr-2 px-4 py-2 border rounded"
+                                className="mr-2 px-4 py-2 border rounded cursor-pointer"
                             >
                                 Cancelar
                             </button>
                             <button
                                 type="submit"
-                                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+                                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 cursor-pointer"
                             >
                                 Guardar
                             </button>
