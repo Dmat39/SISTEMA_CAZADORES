@@ -19,14 +19,17 @@ const useLogin = () => {
       const { token, user } = data; // ← ✅ CAMBIO AQUÍ
 
       if (token && user) {
-        const {username, role} = user;
+        const {id, username, role } = user;
         dispatch(
           setAuth({
             token,
+            id,
             username,
             role: role.toLowerCase(),
+            
           })
         );
+   
         setToken(token);
         return {success: true, role: user.role.toLowerCase()};
       } else {

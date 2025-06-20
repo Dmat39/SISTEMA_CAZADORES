@@ -42,6 +42,7 @@ const persistedReducer = persistReducer(
         in: (inboundState) => ({
           token: inboundState.token,
           username: inboundState.username,
+          id : inboundState.id,
           role: inboundState.role,
           authorized: inboundState.authorized,
         }),
