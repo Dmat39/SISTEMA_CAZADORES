@@ -45,17 +45,17 @@ export default function Router() {
 
         {/* Rutas Protegidas - Supervisor */}
         <Route element={<DashboardLayoutSupervisor />}>
-          <Route path="/dashboard/supervisors" element={<PrivateRoute requiredRole="supervisor"><DashboardSupervisor /></PrivateRoute>} />
+          {/* <Route path="/dashboard/supervisors" element={<PrivateRoute requiredRole="supervisor"><DashboardSupervisor /></PrivateRoute>} /> */}
           <Route path="/dashboard/supervisors/operadores" element={<PrivateRoute requiredRole="supervisor"><OperatorsAdmin /></PrivateRoute>} />
           <Route path="/dashboard/supervisors/incidencia" element={<PrivateRoute requiredRole="supervisor"> <Incidence /></PrivateRoute>} />
-          <Route path="/dashboard/supervisors/reportes" element={<PrivateRoute requiredRole="supervisor"> <ReportesSupervisor /></PrivateRoute>} />
+          {/* <Route path="/dashboard/supervisors/reportes" element={<PrivateRoute requiredRole="supervisor"> <ReportesSupervisor /></PrivateRoute>} /> */}
           <Route path="/dashboard/supervisors/incidencia" element={<PrivateRoute requiredRole="supervisor"><IncidenciaSupervisor /></PrivateRoute>} />
           <Route path="/dashboard/supervisors/incidencia/detalle" element={<PrivateRoute requiredRole="supervisor"><IncidenciaDetalleSupervisor /></PrivateRoute>} />
         </Route>
 
         {/* Rutas Protegidas - Operador */}
         <Route element={<DashboardLayoutOperador />}>
-          <Route path="/dashboard/operador" element={<PrivateRoute requiredRole="operator"><DashboardOperador /></PrivateRoute>} />
+          {/* <Route path="/dashboard/operador" element={<PrivateRoute requiredRole="operator"><DashboardOperador /></PrivateRoute>} /> */}
           <Route path="/dashboard/operador/incidencia" element={<PrivateRoute requiredRole="operator"><IncidenciaOperador /></PrivateRoute>} />
           <Route path="/dashboard/operador/incidencia/detalle" element={<PrivateRoute requiredRole="operator"><IncidenciaDetalle /></PrivateRoute>} />
         </Route>

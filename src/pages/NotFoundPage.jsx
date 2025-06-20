@@ -12,9 +12,11 @@ const NotFoundPage = () => {
       case 'admin':
         return '/dashboard/admin';
       case 'supervisor':
-        return '/dashboard/supervisors';
+        // return '/dashboard/supervisors';
+        return '/dashboard/supervisors/operadores';
       case 'operator':
-        return '/dashboard/operador';
+        // return '/dashboard/operador';
+        return '/dashboard/operador/incidencia';
       default:
         return '/'; // fallback para no logueados o sin rol
     }

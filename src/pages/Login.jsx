@@ -17,8 +17,10 @@ const LoginPage = () => {
         result.role === "admin"
         ? "/dashboard/admin" 
         : result.role === "supervisor"
-        ? "/dashboard/supervisors"
-        : "/dashboard/operador";
+        // ? "/dashboard/supervisors"
+        ? "/dashboard/supervisors/operadores"
+        // : "/dashboard/operador";
+        : "/dashboard/operador/incidencia";
         navigate(redirectPath);
         console.log('Redirigiendo a:', redirectPath); // Depuración
     } else {
