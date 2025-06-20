@@ -63,7 +63,7 @@ const RegistrosList = ({ records = [] }) => {
                         className="bg-gray-100 border border-gray-300 rounded-md p-2 flex flex-col items-center justify-center w-35 h-25 relative"
                       >
                         <Icon path={icons.camera} size={1.5} className="text-gray-500" />
-                        <span className="text-xs text-gray-700 text-center truncate">
+                        <span className="text-xs text-gray-700 text-center line-clamp-1 w-full">
                           {img.originalName}
                         </span>
                          <ImageViewer Path={img.imagePath} originalName={img.originalName} />
