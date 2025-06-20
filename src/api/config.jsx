@@ -3,7 +3,7 @@ import axios from 'axios';
 let globalToken = null;
 
 // Función para actualizar el token globalmente
-export const setToken = (token,) => {
+export const setToken = (token) => {
   globalToken = token;
 }
 

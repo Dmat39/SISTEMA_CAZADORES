@@ -3,10 +3,12 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice'; 
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
   
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -25,6 +27,10 @@ const Navbar = () => {
     localStorage.clear(); 
     window.location.reload();
   };
+
+  const handleConfiguration = () => {
+    navigate("/dashboard/operador/incidencia/configuracion")
+  }
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200">
@@ -93,6 +99,7 @@ const Navbar = () => {
                     },
                   }}
                 >
+                  <MenuItem onClick={handleConfiguration}>Configuración</MenuItem>
                   <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
                 </Menu>
               </div>
