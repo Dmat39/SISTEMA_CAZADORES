@@ -147,7 +147,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                         <form onSubmit={handleSubmit} className='max-h-[80vh] overflow-y-auto pb-4'>
 
                             <div className="mb-4">
-                                <label className="block mb-2 text-sm font-medium text-gray-900">Código *</label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">Código</label>
                                 <Autocomplete
                                     freeSolo
                                     id="code-autocomplete"
@@ -227,7 +227,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                 />
                             </div>
 
-                            <div className='flex'>
+                            <div className='flex flex-col md:flex-row'>
                                 <div className="mb-4 w-full mr-4">
                                     <label className="block text-sm font-medium">Zona</label>
                                     <select
@@ -267,7 +267,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                 </div>
                             </div>
 
-                            <div className='flex'>
+                            <div className='flex flex-col md:flex-row'>
                                 <div className="mb-4 w-full mr-4">
                                     <label className="block text-sm font-medium mb-1">Fecha</label>
                                     <DatePicker

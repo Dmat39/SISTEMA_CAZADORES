@@ -81,7 +81,7 @@ const OperatorsAdmin = () => {
     return (
         <div className="m-4">
             <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col md:flex-row items-center justify-between mb-6">
                     <div className="block">
                         <h2 className="text-2xl font-bold">Mantenimiento de Operadores</h2>
                         <p className="text-gray-600">Gestiona y organiza todos tus operadores</p>
