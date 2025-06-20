@@ -13,7 +13,7 @@ const ImageViewer = ({ Path, originalName }) => {
     const fetchImage = async () => {
       setLoading(true);
       try {
-          const imagePath = Path.replace("192.168.13.46:3000/api/v1/files/records/", "");
+          const imagePath = Path.replace(`${import.meta.env.VITE_IMG_PATH}`, "");
            const blob = await getSubRegistroIncidenceImageApi(imagePath);
           const url = URL.createObjectURL(blob);
           console.log("Image URL:", Path);
