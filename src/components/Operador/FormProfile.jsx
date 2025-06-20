@@ -97,20 +97,6 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
         }
     };
 
-    const handleReset = () => {
-        if (operatorData) {
-            setForm({
-                username: operatorData.user?.username || '',
-                password: '',
-                name: operatorData.name || '',
-                lastname: operatorData.lastname || '',
-                phone: operatorData.phone || '',
-                dni: operatorData.dni || ''
-            });
-            toast.info('Formulario restablecido');
-        }
-    };
-
     return (
         <div className="p-4">
             <div className="bg-white rounded-xl shadow-md p-6">
@@ -239,15 +225,6 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                             } text-white`}
                         >
                             {isSubmitting ? 'Actualizando...' : 'Actualizar Perfil'}
-                        </button>
-                        
-                        <button
-                            type="button"
-                            onClick={handleReset}
-                            disabled={isSubmitting}
-                            className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Cancelar
                         </button>
                     </div>
                 </form>
