@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { getAllIncidencesApi, createIncidenceApi } from "../../api/operador/incidenceApi";
 import CreateFirstEntity from "../../components/CreateFirstEntity";
 import Loading from "../../components/Loading";
+import { toast } from "sonner";
 
 const IncidenciaOperador = () => {
   const [showForm, setShowForm] = useState(false);
@@ -40,6 +41,7 @@ const IncidenciaOperador = () => {
       await fetchIncidencias(); 
       setShowForm(false);
     } catch (err) {
+      toast.error("Error al crear incidencia: " + err.message);
       console.error("Error al crear incidencia:", err);
     }
   };

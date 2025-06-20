@@ -16,7 +16,7 @@ const RegistrosList = ({ records = [] }) => {
         Registros ({records.length})
       </h3>
 
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-y-auto h-[25vh]">
         {records.map((rec, idx) => {
           const recordDate = dayjs(rec.date);
           const isPM = recordDate.hour() >= 12;
