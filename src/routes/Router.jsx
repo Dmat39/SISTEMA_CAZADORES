@@ -33,6 +33,7 @@ export default function Router() {
     <BrowserRouter>
       <Routes>
         {/* Rutas Publicas */}
+        <Route path="/" element={<LoginPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
