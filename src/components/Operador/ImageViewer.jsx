@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { getSubRegistroIncidenceImageApi } from "../../api/operador/registroIncidenceApi";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
 
@@ -13,11 +12,13 @@ const ImageViewer = ({ Path, originalName }) => {
     const fetchImage = async () => {
       setLoading(true);
       try {
-          const imagePath = Path.replace(`${import.meta.env.VITE_IMG_PATH}`, "");
-           const blob = await getSubRegistroIncidenceImageApi(imagePath);
-          const url = URL.createObjectURL(blob);
-          console.log("Image URL:", Path);
-          setImageUrl(url);
+        const fullImageUrl = `${import.meta.env.VITE_API_BASE_URL}/files/${Path}`;
+        const response = await fetch(fullImageUrl);
+        if (!response.ok) throw new Error("No se pudo obtener la imagen");
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setImageUrl(url);
       } catch (err) {
         console.error("Error fetching image:", err);
         setError("Error al cargar la imagen");
@@ -26,10 +27,9 @@ const ImageViewer = ({ Path, originalName }) => {
       }
     };
 
-    if (Path) {
-      fetchImage();
-    }
+    if (Path) fetchImage();
   }, [Path]);
+
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
