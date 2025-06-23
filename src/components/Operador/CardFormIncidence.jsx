@@ -24,7 +24,7 @@ const CardForm = ({ incidencias = [] }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 h-[65vh] overflow-y-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 overflow-y-auto max-h-[70vh] pr-2">
       {incidencias.map((inc) => {
         const {
           id,
