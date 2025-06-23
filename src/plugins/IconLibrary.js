@@ -23,7 +23,8 @@ import {
     mdiAccountKey,
     mdiAccountGroup,
     mdiNoteAlertOutline,
-    mdiPaperclip
+    mdiPaperclip,
+    mdiHandcuffs
 } from "@mdi/js";
 
 export const icons = {
@@ -51,5 +52,6 @@ export const icons = {
     eyeOff: mdiEyeOffOutline,
     close: mdiCloseCircleOutline,
     mdiNoteAlertOutline:mdiNoteAlertOutline,
-    attach: mdiPaperclip
+    attach: mdiPaperclip,
+    mdiHandcuffs:mdiHandcuffs
 };

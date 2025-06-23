@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { getIncidenceByIdApi} from "../../api/operador/incidenceApi";
+import { getIncidenceByIdApi, updateIncidenceApi } from "../../api/operador/incidenceApi";
 import { createSubRegistroIncidenceApi } from "../../api/operador/registroIncidenceApi";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
@@ -9,131 +9,132 @@ import RegistrosList from "../../components/Operador/IncidenciaDetalles";
 import CreateFormRegister from "../../components/Operador/CreateFormRegister";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import UpdateCodeModal from "../../components/Operador/UpdateCodeModal";
 
 const IncidenciaDetalles = () => {
   const [incidencia, setIncidencia] = useState(null);
   const [showRegistroForm, setShowRegistroForm] = useState(false);
+  const [showCodeModal, setShowCodeModal] = useState(false);
   const navigate = useNavigate();
 
+  // Mapeo de estado a estilos y texto
   const formatStatus = (status) => {
-    const map = {
+    const statusMap = {
       process: { text: "En Proceso", color: "bg-blue-100 text-blue-900" },
       completed: { text: "Completado", color: "bg-green-100 text-green-900" },
       cancelled: { text: "Rechazado", color: "bg-red-100 text-red-900" },
     };
-    return map[status] || { text: status, color: "bg-gray-100 text-gray-900" };
+    return statusMap[status] || { text: status, color: "bg-gray-100 text-gray-900" };
   };
-  
-  // Función para medios
-  // const formatCommunication = (communication) => {
-  //   const map = {
-  //     "Botón de pánico": { text: "En Proceso", icono: icons.btnPanic },
-  //     "Cámara": { text: "Completado", icono: icons.cameraCctv },
-  //     "Llamada": { text: "Rechazado",  icono: icons.callPhone },
-  //     "Radio": { text: "Rechazado", icono: icons.radio },
-  //     "Whatsapp": { text: "Rechazado", icono: icons.wsp },
-  //   };
-  //   return map[communication.name] || { text: communication.name || "No especificado", icono: icons.information };
-  // };
-  
 
-  const fetchIncidencia = async () => {
+  // Obtener incidencia desde API
+  const fetchIncidencia = useCallback(async () => {
     const id = localStorage.getItem("last_created_incidence_id");
     if (!id) return;
+
     try {
       const response = await getIncidenceByIdApi(id);
       setIncidencia(response.data);
     } catch (error) {
       console.error("Error al obtener detalle de incidencia:", error);
     }
-  };
-
-    
-  useEffect(() => {
-    fetchIncidencia();
   }, []);
 
-  if (!incidencia) {
-    return <p className="p-4 text-gray-500">Cargando detalle de incidencia...</p>;
-  }
+  useEffect(() => {
+    fetchIncidencia();
+  }, [fetchIncidencia]);
 
-  // Formatear datos
-  // const communication = formatCommunication(incidencia.communicationId);
-  const status = formatStatus(incidencia.status);
-  const formattedDate = dayjs(incidencia.date).format("YYYY-MM-DD");
-  const formattedTime = dayjs(incidencia.date).format("HH:mm");
-  const createdAt = dayjs(incidencia.createdAt).format("D [de] MMMM [de] YYYY");
-
-  // Emisión desde el modal -> consumir API
+  // Crear registro desde formulario
   const handleRegistroSubmit = async (formData) => {
     try {
-      console.log("FormData recibido del hijo:");
-      
-      // Verificar que es FormData
       if (!(formData instanceof FormData)) {
         console.error("Error: Se esperaba FormData pero se recibió:", typeof formData);
         return;
       }
 
-      // Debug: Mostrar contenido del FormData
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value);
-      }
-
-      // Enviar directamente el FormData al API
       const response = await createSubRegistroIncidenceApi(formData);
       console.log("Registro creado exitosamente:", response);
-      
+
       setShowRegistroForm(false);
-      await fetchIncidencia(); // recargar para ver nuevo registro
+      await fetchIncidencia();
     } catch (err) {
       console.error("Error al guardar el registro:", err);
-      // Opcional: mostrar notificación de error al usuario
     }
   };
+
+  if (!incidencia) {
+    return <p className="p-4 text-gray-500">Cargando detalle de incidencia...</p>;
+  }
+
+  // Formateo de datos de la incidencia
+  const {
+    id,
+    name,
+    status,
+    code,
+    comunication,
+    zone,
+    crime,
+    description,
+    date: dateString,
+    createdAt: createdAtString,
+    records = [],
+  } = incidencia;
+
+  const statusInfo = formatStatus(status);
+  const formattedDate = dayjs(dateString).format("YYYY-MM-DD");
+  const formattedTime = dayjs(dateString).format("HH:mm");
+  const createdDate = dayjs(createdAtString).format("D [de] MMMM [de] YYYY");
 
   return (
     <div className="px-4 py-6">
       <div className="bg-white rounded-xl shadow-md p-6">
+        {/* Header */}
         <div className="flex flex-col border-b border-gray-200 pb-4 mb-6">
-            <div className="mt-2 mb-3">
-              {/* Volver */}
-              <button
-                onClick={() => navigate("/dashboard/operador/incidencia")}
-                className="flex items-center text-sm text-gray-600 cursor-pointer">
-                <Icon className="text-gray-800" path={icons.arrowLeft} size={0.8} />
-                <span className="ml-1 text-black font-medium">Volver</span>
-              </button>
-            </div>
+          <div className="mt-2 mb-3">
+            <button
+              onClick={() => navigate("/dashboard/operador/incidencia")}
+              className="flex items-center text-sm text-gray-600 cursor-pointer"
+            >
+              <Icon className="text-gray-800" path={icons.arrowLeft} size={0.8} />
+              <span className="ml-1 text-black font-medium">Volver</span>
+            </button>
+          </div>
+
           <div className="flex flex-row items-start justify-between gap-8">
             <div className="flex flex-col">
               <h1 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
-                {incidencia.name}
-                <span className={`ml-4 text-sm px-3 py-1 rounded-full font-medium self-center ${status.color}`}>
-                  {status.text}
+                {name}
+                <span className={`ml-4 text-sm px-3 py-1 rounded-full font-medium whitespace-nowrap ${statusInfo.color}`}>
+                  {statusInfo.text}
                 </span>
-                <span className={`ml-3 text-sm px-4 py-1 rounded-full bg-gray-100 text-gray-900 font-medium self-center`}>
-                  {incidencia.code || "Sin Código"}
-                </span>
-                {incidencia.code && (
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cursor-pointer"
-                  href={`http://192.168.13.80:81/incidencias/codigo-incidencia/${incidencia.code}`}
+                <span 
+                  onClick={() => setShowCodeModal(true)}
+                  className="ml-3 text-sm px-4 py-1 rounded-full bg-gray-100 text-gray-900 font-medium cursor-pointer whitespace-nowrap"
                 >
-                  <span className="ml-3 text-sm px-4 py-1 rounded-full bg-emerald-50 text-emerald-800 font-medium self-center">
+                  {code || "Sin Código"}
+                </span>
+                {code && (
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={`http://192.168.13.80:81/incidencias/codigo-incidencia/${code}`}
+                    className="ml-3 text-sm px-4 py-1 rounded-full bg-emerald-50 text-emerald-800 font-medium whitespace-nowrap"
+                  >
                     Ver Detalle
-                  </span>
-                </a>
-              )}
+                  </a>
+                )}
               </h1>
-              <div className="flex items-center text-gray-600 gap-6 text-sm">
+
+              <div className="flex flex-wrap items-center text-gray-600 gap-6 text-sm">
                 <span className="flex items-center gap-1">
-                  <Icon path={icons.attach} size={0.75} /> Medio: {incidencia.comunication?.name}
+                  <Icon path={icons.attach} size={0.75} /> Medio: {comunication?.name || "Sin medio"}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Icon path={icons.map} size={0.75} /> Zona: {incidencia.zone?.name}
+                  <Icon path={icons.map} size={0.75} /> Zona: {zone?.name || "Sin zona"}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Icon path={icons.mdiHandcuffs} size={0.75} /> Crimen: {crime?.name || "Sin crimen"}
                 </span>
                 <span className="flex items-center gap-1">
                   <Icon path={icons.calendar} size={0.75} /> Fecha: {formattedDate}
@@ -142,12 +143,15 @@ const IncidenciaDetalles = () => {
                   <Icon path={icons.clock} size={0.75} /> Hora: {formattedTime}
                 </span>
               </div>
-              <div className="flex items-center text-gray-600 gap-6 text-sm mt-3">
+
+
+              <div className="flex flex-wrap items-center text-gray-600 gap-6 text-sm mt-3">
                 <span className="flex items-center gap-1">
-                  <Icon path={icons.information} size={0.75} /> Creado el {createdAt}
+                  <Icon path={icons.information} size={0.75} /> Creado el {createdDate}
                 </span>
               </div>
             </div>
+
             <div className="flex gap-3 mt- md:mt-0">
               <button
                 className="flex items-center gap-2 text-white bg-gray-900 hover:bg-[#32A3B5] transition px-4.5 py-2.5 rounded-lg text-sm cursor-pointer"
@@ -155,7 +159,7 @@ const IncidenciaDetalles = () => {
               >
                 <Icon path={icons.plus} size={0.8} /> Agregar Registro
               </button>
-          </div>
+            </div>
           </div>
         </div>
 
@@ -163,24 +167,38 @@ const IncidenciaDetalles = () => {
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6 h-36">
           <h3 className="text-base font-normal text-gray-900 mb-2">Descripción</h3>
           <p className="text-sm text-gray-700 leading-relaxed">
-            {incidencia.description || "Sin descripción disponible."}
+            {description || "Sin descripción disponible."}
           </p>
         </div>
 
-        {/* Registros */}
-        <RegistrosList records={incidencia.records || []} />
+        {/* Listado de Registros */}
+        <RegistrosList records={records} />
       </div>
 
-      {/* Formulario de Registro */}
+      {/* Modal de Formulario */}
       {showRegistroForm && (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <CreateFormRegister
-            incidenceId={incidencia.id}
+            incidenceId={id}
             onClose={() => setShowRegistroForm(false)}
             onSubmit={handleRegistroSubmit}
           />
         </LocalizationProvider>
       )}
+
+      <UpdateCodeModal
+        isOpen={showCodeModal}
+        onClose={() => setShowCodeModal(false)}
+        data={incidencia}
+        onSubmit={async (payload) => {
+          try {
+            await updateIncidenceApi(payload, payload.id);
+            fetchIncidencia();
+          } catch (err) {
+            console.error("Error actualizando código:", err);
+          }
+        }}
+      />
     </div>
   );
 };
