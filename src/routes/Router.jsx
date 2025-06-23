@@ -49,6 +49,11 @@ export default function Router() {
           {/* <Route path="/dashboard/supervisors" element={<PrivateRoute requiredRole="supervisor"><DashboardSupervisor /></PrivateRoute>} /> */}
           <Route path="/dashboard/supervisors/operadores" element={<PrivateRoute requiredRole="supervisor"><OperatorsAdmin /></PrivateRoute>} />
           <Route path="/dashboard/supervisors/incidencia" element={<PrivateRoute requiredRole="supervisor"> <Incidence /></PrivateRoute>} />
+          <Route path="/dashboard/supervisors/incidencia/detalle" element={
+            <PrivateRoute requiredRole="supervisor">
+              <IncidenciaDetalle />
+            </PrivateRoute>
+          } />
           {/* <Route path="/dashboard/supervisors/reportes" element={<PrivateRoute requiredRole="supervisor"> <ReportesSupervisor /></PrivateRoute>} /> */}
           <Route path="/dashboard/supervisors/incidencia" element={<PrivateRoute requiredRole="supervisor"><IncidenciaSupervisor /></PrivateRoute>} />
           <Route path="/dashboard/supervisors/incidencia/detalle" element={<PrivateRoute requiredRole="supervisor"><IncidenciaDetalleSupervisor /></PrivateRoute>} />

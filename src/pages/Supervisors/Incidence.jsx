@@ -3,12 +3,15 @@ import {toast} from 'sonner';
 import Icon from '@mdi/react';
 import { icons } from '../../plugins/IconLibrary.js';
 import Loading from '../../components/Loading.jsx';
-import { deleteIncidenceApi, getAllIncidenceComunicationApi, getAllIncidencesApi, getAllIncidenceZonesApi, updateIncidenceApi } from '../../api/operador/incidenceApi.jsx';
+import { createIncidenceApi, deleteIncidenceApi, getAllIncidenceComunicationApi, getAllIncidencesApi, getAllIncidenceZonesApi, updateIncidenceApi } from '../../api/operador/incidenceApi.jsx';
 import TableForm from '../../components/TableForm.jsx';
 import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation.jsx';
 import UpdateFormIncidence from '../../components/Supervisors/UpdateFormIncidence.jsx';
 import { getAllOperatorApi } from '../../api/supervisor/OperatorService.jsx';
 import AssignedOperators from '../../components/Supervisors/AssignedOperators.jsx';
+import { useNavigate } from 'react-router-dom';
+import { Autocomplete, TextField } from '@mui/material';
+import CreateFormIncidence from "../../components/Operador/CreateFormIncidence";
 
 const Incidence = () => {
     const [incidents, setIncidents] = useState([]);
@@ -19,6 +22,12 @@ const Incidence = () => {
     const [selectedIncidenceName, setSelectedIncidenceName] = useState("");
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState(null);
+    const [inputValue, setInputValue] = useState("");
+    const [showForm, setShowForm] = useState(false);
+    const [selectedIncidence, setSelectedIncidence] = useState(null);
+    const [localPage, setLocalPage] = useState(1);
+    const navigate = useNavigate();
+    const rowsPerPage = 10;
 
     const fetched = useRef(false);
     const [dataEdit, setDataEdit] = useState(null);
@@ -26,14 +35,34 @@ const Incidence = () => {
     const [showUpdate, setShowUpdate] = useState(false);
     const [showAssignedOperators, setShowAssignedOperators] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const isFiltering = selectedIncidence || inputValue.trim();
 
     const openModalEdit = (payload) => {
         setDataEdit(payload);
         setShowUpdate(true);
     };
-    
+
+    const filteredIncidents = selectedIncidence
+        ? [selectedIncidence]
+        : inputValue.trim()
+        ? incidents.filter((inc) =>
+            inc.name?.toLowerCase().includes(inputValue.toLowerCase()) ||
+                inc.code?.toLowerCase().includes(inputValue.toLowerCase())
+            )
+            : incidents;
+    const paginatedFilteredIncidents = isFiltering
+        ? filteredIncidents.slice((localPage - 1) * rowsPerPage, localPage * rowsPerPage)
+        : filteredIncidents;
+
+    const localPagination = {
+        total: filteredIncidents.length,
+        perPage: rowsPerPage,
+        page: localPage,
+        totalPages: Math.ceil(filteredIncidents.length / rowsPerPage) || 1,
+    };
+
     const fetchZones = async () => {
-        try {
+    try {
             const data = await getAllIncidenceZonesApi();
             setZones(data.data);
         } catch (error) {
@@ -86,7 +115,29 @@ const Incidence = () => {
         fetchZones();
         fetchCommunications();
     }, []);
-        
+
+    useEffect(() => {
+        setLocalPage(1);
+    }, [inputValue, selectedIncidence]);
+    
+    const handleCreateIncidencia = async (payload) => {
+        try {
+            const response = await createIncidenceApi(payload);
+            const newId = response?.data?.id;
+            
+            if (newId) {
+                localStorage.setItem("last_created_incidence_id", newId);
+                navigate("/dashboard/supervisors/incidencia/detalle");
+            }
+
+            await fetchIncidents(); 
+            setShowForm(false);
+        } catch (err) {
+            toast.error("Error al crear incidencia: " + err.message);
+            console.error("Error al crear incidencia:", err);
+        }
+    };
+
     const handleUpdateIncidence = async (payload) => {
         try {
             await updateIncidenceApi(payload, payload.id);
@@ -106,10 +157,56 @@ const Incidence = () => {
     return (
         <div className="m-4">
             <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col md:flex-row items-center justify-between mb-6">
                     <div className="block">
                         <h2 className="text-2xl font-bold">Incidencias</h2>
                         <p className="text-gray-600">Gestiona y organiza todas tus incidencias</p>
+                    </div>
+                    <div className='flex flex-col md:flex-row items-center'>
+                        <div className="w-full md:w-auto">
+                            <Autocomplete
+                                freeSolo
+                                options={incidents}
+                                value={null}
+                                inputValue={inputValue}
+                                onInputChange={(event, newInputValue) => {
+                                    setInputValue(newInputValue);
+                                    if (newInputValue === '') {
+                                    setSelectedIncidence(null);
+                                    }
+                                }}
+                                onChange={(event, newValue) => {
+                                    if (typeof newValue === 'string') {
+                                    setInputValue(newValue);
+                                    setSelectedIncidence(null);
+                                    } else if (newValue) {
+                                    const label = newValue.code ? `${newValue.code} - ${newValue.name}` : newValue.name;
+                                    setInputValue(label);
+                                    setSelectedIncidence(newValue);
+                                    } else {
+                                    setInputValue('');
+                                    setSelectedIncidence(null);
+                                    }
+                                }}
+                                getOptionLabel={(option) =>
+                                    option?.code ? `${option.code} - ${option.name}` : option?.name || ""
+                                }
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                sx={{ minWidth: 300 }}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Buscar incidencia" size="small" />
+                                )}
+                                />
+
+                        </div>
+                        <button
+                        onClick={() => setShowForm(true)}
+                        className="md:mt-2 ml-2 cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                        type="button"
+                        >
+                        <Icon path={icons.add} size={1} />
+                        Agregar Incidencias
+                        </button>
                     </div>
                 </div>
                 <hr className='border-gray-200' />
@@ -118,7 +215,7 @@ const Incidence = () => {
                 ) : 
                     incidents?.length > 0 ?(
                         <TableForm
-                            data={{ data: incidents, pagination }}
+                            data={{ data: filteredIncidents, pagination: isFiltering ? localPagination : pagination }}
                             columns={[
                                 { label: 'Cod.', key: 'code'},
                                 { label: 'Nombre', key: 'name' },
@@ -131,9 +228,7 @@ const Incidence = () => {
                                         const date = new Date(value.date);
                                         const hours = date.getHours();
                                         const minutes = date.getMinutes().toString().padStart(2, '0');
-                                        const ampm = hours >= 12 ? 'PM' : 'AM';
-                                        const hour12 = hours % 12 || 12;
-                                        return `${hour12}:${minutes} ${ampm}`;
+                                        return `${hours}:${minutes}`;
                                     }  
                                 },
                                 {
@@ -202,7 +297,18 @@ const Incidence = () => {
                                     className: 'text-red-600 hover:text-red-800',
                                 },
                             ]}
-                            onPageChange={handlePageChange}
+                            onPageChange={(newPage) => {
+                                if (isFiltering) {
+                                setLocalPage(newPage);
+                                } else {
+                                handlePageChange(newPage);
+                                }
+                            }}
+                            onRowClick={(item) => {
+                                localStorage.setItem("last_created_incidence_id", item.id);
+                                navigate("/dashboard/supervisors/incidencia/detalle");
+                            }}
+
                         />
                     ) : (
                         <div>
@@ -221,6 +327,12 @@ const Incidence = () => {
                     )
                 }
             </div>
+
+            <CreateFormIncidence
+                open={showForm}
+                onClose={() => setShowForm(false)}
+                onSubmit={handleCreateIncidencia}
+            />
 
             <UpdateFormIncidence
                 isOpen={showUpdate}

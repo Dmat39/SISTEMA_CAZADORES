@@ -10,6 +10,7 @@ import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation
 import UpdateFormOperator from '../../components/Supervisors/UpdateFormOperator.jsx';
 import CreateFormOperator from '../../components/Supervisors/CreateFormOperator.jsx';
 import NewPwdForm from '../../components/NewPwdForm.jsx';
+import { Autocomplete, TextField } from '@mui/material';
 
 const OperatorsAdmin = () => {
     const [operators, setOperators] = useState([]);
@@ -21,6 +22,13 @@ const OperatorsAdmin = () => {
     const [showUpdate, setShowUpdate] = useState(false);
     const [showUpdatePwd, setShowUpdatePwd] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+
+    const [inputValue, setInputValue] = useState("");
+    const [filteredOperators, setFilteredOperators] = useState([]);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10; 
+
 
     const openModalEdit = (payload) => {
         setDataEdit(payload);
@@ -56,6 +64,33 @@ const OperatorsAdmin = () => {
         fetchOperators();
     }, []);
 
+    useEffect(() => {
+        const value = inputValue.trim().toLowerCase();
+
+        const filtered = operators.filter(op => {
+            const fullName = `${op.name} ${op.lastname}`.toLowerCase();
+            return fullName.includes(value);
+        });
+
+        setCurrentPage(1);
+
+        setFilteredOperators(filtered.length > 0 || value ? filtered : operators);
+    }, [inputValue, operators]);
+
+    const totalPages = Math.ceil(filteredOperators.length / pageSize);
+    const paginatedData = filteredOperators.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+    const paginationObject = {
+        page: currentPage,
+        totalPages,
+    };
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+        }
+    };
+
     const handleCreateOperator = async (newOperator) => {
         try {
             await addOperatorApi(newOperator);
@@ -86,16 +121,33 @@ const OperatorsAdmin = () => {
                         <h2 className="text-2xl font-bold">Mantenimiento de Operadores</h2>
                         <p className="text-gray-600">Gestiona y organiza todos tus operadores</p>
                     </div>
-                    {operators.length > 0 ?(
-                        <button
-                            onClick={() => setShowCreate(true)}
-                            className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
-                            type="button"
-                        >
-                            <Icon path={icons.add} size={1} />
-                            Agregar Operador
-                        </button>                        
-                    ) : null}
+                    <div className='flex items-center'>
+                        <Autocomplete
+                            freeSolo
+                            options={operators}
+                            getOptionLabel={(option) =>
+                                option ? `${option.name} ${option.lastname}` : ''
+                            }
+                            value={null}
+                            inputValue={inputValue}
+                            onInputChange={(event, newValue) => setInputValue(newValue)}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Buscar operador" size="small" sx={{  width: 300 }} />
+                            )}
+                            className='mr-2'
+                        />
+                        {operators.length > 0 ?(
+                            <button
+                                onClick={() => setShowCreate(true)}
+                                className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                                type="button"
+                            >
+                                <Icon path={icons.add} size={1} />
+                                Agregar Operador
+                            </button>                        
+                        ) : null}
+                    </div>
                 </div>
                 <hr className='border-gray-200' />
                 {isLoading ? (
@@ -103,7 +155,9 @@ const OperatorsAdmin = () => {
                 ) : 
                     operators.length > 0 ?(
                         <TableForm
-                            data={operators}
+                            data={paginatedData}
+                            pagination={paginationObject}
+                            onPageChange={handlePageChange}
                             columns={[
                                 { label: 'Nombre', key: 'name'},
                                 { label: 'Apellido', key: 'lastname' },

@@ -10,6 +10,7 @@ import CreateFormRegister from "../../components/Operador/CreateFormRegister";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import UpdateCodeModal from "../../components/Operador/UpdateCodeModal";
+import { toast } from "sonner";
 
 const IncidenciaDetalles = () => {
   const [incidencia, setIncidencia] = useState(null);
@@ -53,12 +54,12 @@ const IncidenciaDetalles = () => {
       }
 
       const response = await createSubRegistroIncidenceApi(formData);
-      console.log("Registro creado exitosamente:", response);
+      toast.success("Registro creado exitosamente:");
 
       setShowRegistroForm(false);
       await fetchIncidencia();
     } catch (err) {
-      console.error("Error al guardar el registro:", err);
+      toast.error("Error al guardar el registro:", err.message);
     }
   };
 
@@ -93,7 +94,7 @@ const IncidenciaDetalles = () => {
         <div className="flex flex-col border-b border-gray-200 pb-4 mb-6">
           <div className="mt-2 mb-3">
             <button
-              onClick={() => navigate("/dashboard/operador/incidencia")}
+              onClick={() => navigate(-1)}
               className="flex items-center text-sm text-gray-600 cursor-pointer"
             >
               <Icon className="text-gray-800" path={icons.arrowLeft} size={0.8} />
@@ -172,7 +173,7 @@ const IncidenciaDetalles = () => {
         </div>
 
         {/* Listado de Registros */}
-        <RegistrosList records={records} />
+        <RegistrosList records={records} fetchRecords={fetchIncidencia} />
       </div>
 
       {/* Modal de Formulario */}

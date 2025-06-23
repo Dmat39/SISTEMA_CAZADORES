@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Modal,
   Box,
@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import { allCameraApi } from "../../api/operador/CameraApi"; // Ajusta la ruta según tu estructura
 
 const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
+  const pasteZoneRef = useRef(null);
   const [openModal, setOpenModal] = useState(true);
   const [cameras, setCameras] = useState([]);
   const [form, setForm] = useState({
@@ -23,7 +24,6 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
     files: [],
   });
 
-  // Cargar cámaras al montar el componente
   useEffect(() => {
     const loadCameras = async () => {
       try {
@@ -35,6 +35,33 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
     };
     loadCameras();
   }, []);
+
+  useEffect(() => {
+    const handlePaste = (event) => {
+      const items = event.clipboardData?.items;
+      if (!items) return;
+
+      const imageItems = Array.from(items).filter(item =>
+        item.type.startsWith("image")
+      );
+
+      if (imageItems.length > 0) {
+        const pastedFiles = imageItems.map(item => item.getAsFile());
+        setForm((prevForm) => ({
+          ...prevForm,
+          files: [...prevForm.files, ...pastedFiles],
+        }));
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, []);
+
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -81,7 +108,6 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
   return (
     <Modal
       open={openModal}
-      onClose={handleCloseModal}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       sx={{
@@ -198,7 +224,11 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
             />
           </div>
 
-          <div className="border-2 border-dashed p-6 rounded-lg border-gray-400 hover:border-gray-800 relative">
+          <div
+            ref={pasteZoneRef}
+            tabIndex={0}
+            className="border-2 border-dashed p-6 rounded-lg border-gray-400 hover:border-gray-800 relative"
+          >
             <input
               type="file"
               multiple
@@ -212,7 +242,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               </div>
               <div className="text-center">
                 <p className="text-sm font-medium">
-                  Haz clic para subir 2 imágenes
+                  Haz clic para subir imágenes o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
                 </p>
                 <span className="text-xs text-gray-500">
                   PNG, JPG, JPEG hasta 10MB cada una

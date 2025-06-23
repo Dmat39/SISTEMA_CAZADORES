@@ -97,6 +97,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     const combinedDateTime = dayjs(date)
       .set("hour", time.hour())
       .set("minute", time.minute())
+      .utc()
       .format("YYYY-MM-DDTHH:mm:ss[Z]");
 
     const payload = {
@@ -185,7 +186,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
   }, [inputValue, openAutocomplete]);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Modal open={open} onClose={onClose} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Modal open={open}  sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
         <Box
           sx={{
             bgcolor: "background.paper",
@@ -363,6 +364,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
               <div className="col-span-2 sm:col-span-1">
                 <label className="block mb-2 text-sm font-medium text-gray-900">Hora del Incidente *</label>
                 <TimePicker
+                  ampm={false} 
                   value={formData.time}
                   onChange={(time) => setFormData((prev) => ({ ...prev, time }))}
                   className="w-full"

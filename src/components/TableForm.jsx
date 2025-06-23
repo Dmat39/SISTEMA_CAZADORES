@@ -5,11 +5,14 @@ const TableForm = ({
   columns = [],
   actions = [],
   pagination = null,
-  onPageChange = () => {} 
+  onPageChange = () => {} ,
+  onRowClick = null
 }) => {
   const actualData = Array.isArray(data?.data) ? data.data : data;
   const actualPagination = data?.pagination || pagination;
-  const totalPages= data?.pagination ? data?.pagination.totalPages : 1;
+  const totalPages = actualPagination?.totalPages || 1;
+  const currentPage = actualPagination?.page || 1;
+  const isRowClickable = typeof onRowClick === 'function';
   return (
     <div className="pt-6">
       <div className="overflow-x-auto shadow rounded-lg max-h-[60vh] h-full">
@@ -32,9 +35,16 @@ const TableForm = ({
           <tbody className="divide-y divide-gray-200">
             {actualData.length > 0 ? (
               actualData.map((item, idx) => (
-                <tr key={item.id || idx} className="hover:bg-gray-50">
+                <tr
+                  key={item.id || idx}
+                  className={`${isRowClickable ? 'hover:bg-gray-200 cursor-pointer' : ''}`}
+                  onClick={() => isRowClickable && onRowClick(item)}
+                >
                   {columns.map((col, colIdx) => (
-                    <td key={colIdx} className="px-6 py-4 text-sm text-gray-800">
+                    <td
+                      key={colIdx}
+                      className={`px-6 py-4 text-sm text-gray-800 ${isRowClickable ? 'cursor-pointer' : ''}`}
+                    >
                       {typeof col.render === 'function'
                         ? col.render(item)
                         : col.key.split('.').reduce((acc, key) => acc?.[key], item) || '—'}
@@ -46,7 +56,10 @@ const TableForm = ({
                         {actions.map((action, actIdx) => (
                           <button
                             key={actIdx}
-                            onClick={() => action.onClick(item)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              action.onClick(item);
+                            }}
                             title={action.title}
                             className="cursor-pointer p-1"
                           >
@@ -76,25 +89,26 @@ const TableForm = ({
         <div className="flex items-center justify-center gap-4 mt-4">
           <button
             className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-            onClick={() => onPageChange(actualPagination.page - 1)}
-            disabled={actualPagination.page <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
           >
             Anterior
           </button>
 
           <span className="text-sm">
-            Página {actualPagination.page} de {totalPages}
+            Página {currentPage} de {totalPages}
           </span>
 
           <button
             className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-            onClick={() => onPageChange(actualPagination.page + 1)}
-            disabled={actualPagination.page >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages}
           >
             Siguiente
           </button>
         </div>
       )}
+ 
     </div>
   );
 };
