@@ -14,7 +14,6 @@ const useLogin = () => {
     setError(null);
     try {
       const response = await login(credentials);
-      console.log('Respuesta de la API:', response);
       const { data } = response;
       const { token, user } = data; // ← ✅ CAMBIO AQUÍ
 

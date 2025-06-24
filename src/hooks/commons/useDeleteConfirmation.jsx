@@ -11,8 +11,9 @@ import { toast } from 'sonner';
  * @returns {Function} confirmDelete(payload, getEntityLabel)
  */
 export const useDeleteConfirmation = ({ fetchData, deleteApiFn, entityName }) => {
-  const confirmDelete = (payload, getEntityLabel) => {
+  const confirmDelete = (payload, getEntityLabel, onConfirmed) => {
     const label = typeof getEntityLabel === 'function' ? getEntityLabel(payload) : '';
+    
     toast(
       () => (
         <div className="flex flex-col space-y-2">
@@ -31,11 +32,15 @@ export const useDeleteConfirmation = ({ fetchData, deleteApiFn, entityName }) =>
               onClick={async () => {
                 toast.dismiss();
                 try {
-                  await deleteApiFn(payload.id);
-                  await fetchData();
-                  toast.success(`${entityName} eliminado exitosamente`, {
-                    position: 'top-right',
-                  });
+                  if (onConfirmed) {
+                    await onConfirmed();
+                  } else {
+                    await deleteApiFn(payload.id);
+                    await fetchData();
+                    toast.success(`${entityName} eliminado exitosamente`, {
+                      position: 'top-right',
+                    });
+                  }
                 } catch (err) {
                   toast.error(`Error al eliminar ${entityName}: ${err.message}`);
                 }
@@ -57,3 +62,4 @@ export const useDeleteConfirmation = ({ fetchData, deleteApiFn, entityName }) =>
 
   return confirmDelete;
 };
+

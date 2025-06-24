@@ -36,7 +36,7 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
       fetchRecords();
       handleCloseEditModal();
     } catch (error) {
-      toast.error("Error al actualizar el registro.");
+      toast.error("Error al actualizar el registro: "+error.message);
     }
   };
 
@@ -76,7 +76,6 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
                     <span className="bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-semibold">
                       #{idx + 1}
                     </span>
-                    {/* aca */}
                     {rec.camera?.name || "Sin cámara asociada"}
                   </div>
 
