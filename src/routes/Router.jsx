@@ -23,6 +23,7 @@ import DashboardOperador from "../pages/Operador/Dashboard";
 import IncidenciaOperador from "../pages/Operador/Incidencia";
 import IncidenciaDetalle from "../pages/Operador/Detalle";
 import ConfigurationProfile from "../pages/Operador/Configuration";
+import SupervisorProfile from "../pages/Supervisors/Configuration";
 import IncidenciaSupervisor from "../pages/Supervisors/Incidencia"
 import IncidenciaDetalleSupervisor from "../pages/Supervisors/Detalle"
 
@@ -57,6 +58,7 @@ export default function Router() {
           {/* <Route path="/dashboard/supervisors/reportes" element={<PrivateRoute requiredRole="supervisor"> <ReportesSupervisor /></PrivateRoute>} /> */}
           <Route path="/dashboard/supervisors/incidencia" element={<PrivateRoute requiredRole="supervisor"><IncidenciaSupervisor /></PrivateRoute>} />
           <Route path="/dashboard/supervisors/incidencia/detalle" element={<PrivateRoute requiredRole="supervisor"><IncidenciaDetalleSupervisor /></PrivateRoute>} />
+          <Route path="/dashboard/supervisors/incidencia/configuracion" element={<PrivateRoute requiredRole="supervisor"><SupervisorProfile /></PrivateRoute>} />
         </Route>
 
         {/* Rutas Protegidas - Operador */}
