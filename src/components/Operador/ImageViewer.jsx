@@ -49,7 +49,7 @@ const ImageViewer = ({ Path, originalName, onDelete }) => {
             type="button"
             onClick={onDelete}
             title="Eliminar imagen"
-            className="text-gray-500 hover:text-red-600 transition-all duration-200 ease-in cursor-pointer"
+            className="text-red-500 hover:text-red-600 transition-all duration-200 ease-in cursor-pointer"
           >
             <Icon path={icons.delete} size={0.9} />
           </button>

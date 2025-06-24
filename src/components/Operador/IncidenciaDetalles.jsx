@@ -55,11 +55,11 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
 
   return (
     <div className="mt-8">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <h3 className="text-lg font-semibold text-gray-900">
         Registros ({records.length})
       </h3>
 
-      <div className="space-y-4 overflow-y-auto h-[25vh]">
+      <div className="space-y-4 overflow-y-auto max-h-[40rem] my-4">
         {records.map((rec, idx) => {
           const recordDate = dayjs(rec.date);
           const isPM = recordDate.hour() >= 12;
@@ -70,8 +70,9 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
               key={rec.id}
               className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm"
             >
-              <div className="flex justify-between items-start mb-2">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 text-sm text-gray-800 font-medium">
                     <span className="bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-semibold">
                       #{idx + 1}
@@ -92,22 +93,22 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
                     </span>
                   </div>
                 </div>
-                  <div className="flex gap-3 items-center">
-                    <button
-                      onClick={() => handleEdit(rec)}
-                      className="text-blue-600 hover:text-blue-800 transition"
-                      title="Editar registro"
-                    >
-                      <Icon path={icons.edit} size={0.8} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(rec)}
-                      className="text-red-600 hover:text-red-800 transition"
-                      title="Eliminar registro"
-                    >
-                      <Icon path={icons.delete} size={0.8} />
-                    </button>
-                  </div>
+                <div className="flex gap-3 items-center shrink-0">
+                  <button
+                    onClick={() => handleEdit(rec)}
+                    className="cursor-pointer text-blue-600 hover:text-blue-800 transition"
+                    title="Editar registro"
+                  >
+                    <Icon path={icons.edit} size={0.8} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(rec)}
+                    className="cursor-pointer text-red-600 hover:text-red-800 transition"
+                    title="Eliminar registro"
+                  >
+                    <Icon path={icons.delete} size={0.8} />
+                  </button>
+                </div>
               </div>
 
               <p className="text-sm text-gray-700 leading-relaxed mb-3">

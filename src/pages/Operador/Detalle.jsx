@@ -102,31 +102,38 @@ const IncidenciaDetalles = () => {
             </button>
           </div>
 
-          <div className="flex flex-row items-start justify-between gap-8">
+          <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
             <div className="flex flex-col">
-              <h1 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
-                {name}
-                <span className={`ml-4 text-sm px-3 py-1 rounded-full font-medium whitespace-nowrap ${statusInfo.color}`}>
-                  {statusInfo.text}
-                </span>
-                <span 
-                  onClick={() => setShowCodeModal(true)}
-                  className="ml-3 text-sm px-4 py-1 rounded-full bg-gray-100 text-gray-900 font-medium cursor-pointer whitespace-nowrap"
-                >
-                  {code || "Sin Código"}
-                </span>
-                {code && (
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={`http://192.168.13.80:81/incidencias/codigo-incidencia/${code}`}
-                    className="ml-3 text-sm px-4 py-1 rounded-full bg-emerald-50 text-emerald-800 font-medium whitespace-nowrap"
-                  >
-                    Ver Detalle
-                  </a>
-                )}
-              </h1>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                <h1 className="text-2xl font-bold text-gray-900 leading-tight">
+                  {name}
+                </h1>
 
+                <div className="flex flex-wrap gap-2 sm:flex-row">
+                  <span className={`text-sm px-3 py-1 rounded-full font-medium whitespace-nowrap w-auto ${statusInfo.color}`}>
+                    {statusInfo.text}
+                  </span>
+                  <span 
+                    onClick={() => setShowCodeModal(true)}
+                    className="text-sm px-4 py-1 rounded-full bg-gray-100 text-gray-900 font-medium cursor-pointer whitespace-nowrap w-auto"
+                  >
+                    {code || "Sin Código"}
+                  </span>
+                  {code && (
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={`http://192.168.13.80:81/incidencias/codigo-incidencia/${code}`}
+                      className="text-sm px-4 py-1 rounded-full bg-emerald-50 text-emerald-800 font-medium whitespace-nowrap w-auto"
+                    >
+                      Ver Detalle
+                    </a>
+                  )}
+                </div>
+              </div>
+
+
+              
               <div className="flex flex-wrap items-center text-gray-600 gap-6 text-sm">
                 <span className="flex items-center gap-1">
                   <Icon path={icons.attach} size={0.75} /> Medio: {comunication?.name || "Sin medio"}
@@ -164,16 +171,20 @@ const IncidenciaDetalles = () => {
           </div>
         </div>
 
-        {/* Descripción */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6 h-36">
-          <h3 className="text-base font-normal text-gray-900 mb-2">Descripción</h3>
-          <p className="text-sm text-gray-700 leading-relaxed">
-            {description || "Sin descripción disponible."}
-          </p>
-        </div>
+        <div >
+          {/* Descripción */}
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
+            <h3 className="text-base font-normal text-gray-900 mb-2">Descripción</h3>
+            <div className="max-h-40 overflow-y-auto">
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {description || "Sin descripción disponible."}
+              </p>
+            </div>
+          </div>
 
-        {/* Listado de Registros */}
-        <RegistrosList records={records} fetchRecords={fetchIncidencia} />
+          {/* Listado de Registros */}
+          <RegistrosList records={records} fetchRecords={fetchIncidencia} />
+        </div>
       </div>
 
       {/* Modal de Formulario */}

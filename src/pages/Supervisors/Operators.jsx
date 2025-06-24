@@ -121,26 +121,29 @@ const OperatorsAdmin = () => {
                         <h2 className="text-2xl font-bold">Mantenimiento de Operadores</h2>
                         <p className="text-gray-600">Gestiona y organiza todos tus operadores</p>
                     </div>
-                    <div className='flex items-center'>
-                        <Autocomplete
-                            freeSolo
-                            options={operators}
-                            getOptionLabel={(option) =>
-                                option ? `${option.name} ${option.lastname}` : ''
-                            }
-                            value={null}
-                            inputValue={inputValue}
-                            onInputChange={(event, newValue) => setInputValue(newValue)}
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            renderInput={(params) => (
-                                <TextField {...params} label="Buscar operador" size="small" sx={{  width: 300 }} />
-                            )}
-                            className='mr-2'
-                        />
+                    <div className='flex flex-col md:flex-row items-center w-full max-w-[30rem]'>
+                        <div className="mt-2 md:mt-0 w-full">
+                            <Autocomplete
+                                freeSolo
+                                options={operators}
+                                getOptionLabel={(option) =>
+                                    option ? `${option.name} ${option.lastname}` : ''
+                                }
+                                value={null}
+                                inputValue={inputValue}
+                                onInputChange={(event, newValue) => setInputValue(newValue)}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                sx={{ width: '100%' }}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Buscar operador" size="small" />
+                                )}
+                                
+                            />
+                        </div>
                         {operators.length > 0 ?(
                             <button
                                 onClick={() => setShowCreate(true)}
-                                className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                                className="mt-2 md:mt-0 ml-0 md:ml-2 cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
                                 type="button"
                             >
                                 <Icon path={icons.add} size={1} />

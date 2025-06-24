@@ -73,12 +73,13 @@ const IncidenciaOperador = () => {
           <>
             {incidencias.length > 0 ? (
               <>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h2 className="text-2xl font-bold">Incidencias</h2>
                   <p className="text-gray-600">Gestiona y organiza todas tus incidencias</p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:max-w-[30rem]">
                   <Autocomplete
                     freeSolo
                     options={incidencias}
@@ -103,12 +104,11 @@ const IncidenciaOperador = () => {
                         setSelectedIncidencia(null);
                       }
                     }}
-
                     getOptionLabel={(option) =>
-                      option?.code ? `${option.code} - ${option.name}` : option?.name || ""
+                      option?.code ? `${option.code} - ${option.name}` : option?.name || ''
                     }
                     isOptionEqualToValue={(option, value) => option.id === value.id}
-                    sx={{ minWidth: 250 }}
+                    sx={{ width: '100%' }}
                     renderInput={(params) => (
                       <TextField {...params} label="Buscar incidencia" size="small" />
                     )}
@@ -116,7 +116,7 @@ const IncidenciaOperador = () => {
 
                   <button
                     onClick={() => setShowForm(true)}
-                    className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                    className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out mt-2 sm:mt-0 sm:ml-2"
                     type="button"
                   >
                     <Icon path={icons.add} size={1} />
@@ -124,6 +124,7 @@ const IncidenciaOperador = () => {
                   </button>
                 </div>
               </div>
+
 
               <CardFormIncidence incidencias={incidenciasFiltradas} />
               </>

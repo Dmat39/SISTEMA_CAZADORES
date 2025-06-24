@@ -45,9 +45,17 @@ const TableForm = ({
                       key={colIdx}
                       className={`px-6 py-4 text-sm text-gray-800 ${isRowClickable ? 'cursor-pointer' : ''}`}
                     >
-                      {typeof col.render === 'function'
-                        ? col.render(item)
-                        : col.key.split('.').reduce((acc, key) => acc?.[key], item) || '—'}
+                      {(() => {
+                        const value = typeof col.render === 'function'
+                          ? col.render(item)
+                          : col.key.split('.').reduce((acc, key) => acc?.[key], item) || '—';
+
+                        if (typeof value === 'string' && value.length > 50 && col.label.toLowerCase() !== 'acciones') {
+                          return value.slice(0, 50) + ' . . .';
+                        }
+
+                        return value;
+                      })()}
                     </td>
                   ))}
                   {actions.length > 0 && (

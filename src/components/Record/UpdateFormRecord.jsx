@@ -4,11 +4,12 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Autocomplete, TextField, TextareaAutosize } from '@mui/material';
 import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import dayjs from 'dayjs';
 import { allCameraApi } from '../../api/operador/CameraApi';
 import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation';
 import { deletePhotoApi } from '../../api/photo/photoApi';
+import { useConfirmDiscard } from '../../hooks/commons/useConfirmDiscard';
 import ImageViewer from '../Operador/ImageViewer';
 import { toast } from 'sonner';
 
@@ -27,6 +28,8 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
     files: [],
     imagesToDelete: []
   });
+
+  const originalData = useRef(null);
 
   const updateFormField = useCallback((field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -50,7 +53,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
   useEffect(() => {
     if (data) {
       const parsedDate = dayjs(data.date);
-      setForm({
+      const initialForm = {
         cameraId: data.camera?.id || '',
         cameraName: data.camera?.name || '',
         description: data.description || '',
@@ -58,8 +61,10 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
         time: parsedDate,
         files: [],
         imagesToDelete: []
-      });
+      };
+      setForm(initialForm);
       setImages(data.images || []);
+      originalData.current = initialForm;
     }
   }, [data]);
 
@@ -96,9 +101,34 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
       }
     };
 
-    if (isOpen) document.addEventListener('paste', handlePaste);
+  if (isOpen) document.addEventListener('paste', handlePaste);
     return () => document.removeEventListener('paste', handlePaste);
   }, [isOpen, images.length, form.files.length, form.imagesToDelete.length]);
+
+  const hasChanges = useMemo(() => {
+    if (!originalData.current) return false;
+    return (
+      form.cameraId !== originalData.current.cameraId ||
+      form.description !== originalData.current.description ||
+      !form.date?.isSame(originalData.current.date) ||
+      !form.time?.isSame(originalData.current.time) ||
+      form.files.length > 0 ||
+      form.imagesToDelete.length > 0
+    );
+  }, [form]);
+
+  const confirmDiscard = useConfirmDiscard({
+    onConfirm: onClose,
+    message: 'Tienes cambios sin guardar. ¿Estás seguro de que deseas descartarlos?'
+  });
+
+  const handleClose = () => {
+    if (hasChanges) {
+      confirmDiscard();
+    } else {
+      onClose();
+    }
+  };
 
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
@@ -155,7 +185,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
             <div className="mb-2 flex">
               <Dialog.Title className="text-lg font-bold">Editar Registro</Dialog.Title>
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="ml-auto text-gray-400 hover:text-gray-900 hover:bg-gray-200 rounded-lg p-1"
               >
                 <span className="sr-only">Cerrar modal</span>
@@ -260,7 +290,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                   </div>
                 </div>
                 <div className="flex justify-end gap-3 mt-6">
-                  <button type="button" onClick={onClose} className="border border-gray-800 text-sm px-5 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white">
+                  <button type="button" onClick={handleClose} className="border border-gray-800 text-sm px-5 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white">
                     Cancelar
                   </button>
                   <button

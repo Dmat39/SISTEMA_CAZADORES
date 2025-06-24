@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Modal,
   Box,
@@ -9,7 +9,10 @@ import {
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
 import dayjs from "dayjs";
-import { allCameraApi } from "../../api/operador/CameraApi"; // Ajusta la ruta según tu estructura
+import { allCameraApi } from "../../api/operador/CameraApi";
+import { toast } from "sonner";
+
+const MAX_IMAGES = 5;
 
 const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
   const pasteZoneRef = useRef(null);
@@ -23,6 +26,19 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
     time: dayjs(),
     files: [],
   });
+
+  const updateFormField = useCallback((field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const canAddImages = (newCount) => {
+    const currentTotal = form.files.length + newCount;
+    if (currentTotal > MAX_IMAGES) {
+      toast.error(`Máximo ${MAX_IMAGES} imágenes por registro.`);
+      return false;
+    }
+    return true;
+  };
 
   useEffect(() => {
     const loadCameras = async () => {
@@ -41,27 +57,20 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
       const items = event.clipboardData?.items;
       if (!items) return;
 
-      const imageItems = Array.from(items).filter(item =>
-        item.type.startsWith("image")
-      );
+      const imageItems = Array.from(items)
+        .filter((item) => item.type.startsWith("image"))
+        .map((item) => item.getAsFile())
+        .filter(Boolean);
 
-      if (imageItems.length > 0) {
-        const pastedFiles = imageItems.map(item => item.getAsFile());
-        setForm((prevForm) => ({
-          ...prevForm,
-          files: [...prevForm.files, ...pastedFiles],
-        }));
-        event.preventDefault();
-      }
+      if (!canAddImages(imageItems.length)) return;
+
+      updateFormField("files", [...form.files, ...imageItems]);
+      event.preventDefault();
     };
 
     window.addEventListener("paste", handlePaste);
-
-    return () => {
-      window.removeEventListener("paste", handlePaste);
-    };
-  }, []);
-
+    return () => window.removeEventListener("paste", handlePaste);
+  }, [form.files]);
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -69,19 +78,17 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
   };
 
   const handleFileChange = (e) => {
-    setForm({ ...form, files: Array.from(e.target.files) });
+    const selectedFiles = Array.from(e.target.files);
+    if (!canAddImages(selectedFiles.length)) return;
+    updateFormField("files", [...form.files, ...selectedFiles]);
   };
 
   const handleCameraChange = (event, newValue) => {
-    setForm({
-      ...form,
-      cameraId: newValue ? newValue.id : "",
-      cameraName: newValue ? newValue.name : "",
-    });
+    updateFormField("cameraId", newValue?.id || "");
+    updateFormField("cameraName", newValue?.name || "");
   };
 
   const handleEmit = () => {
-    // Combinar fecha y hora en formato ISO
     const combinedDateTime = form.date
       .hour(form.time.hour())
       .minute(form.time.minute())
@@ -89,17 +96,12 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
       .millisecond(0)
       .toISOString();
 
-    // Crear FormData para envío
     const formData = new FormData();
     formData.append("cameraId", form.cameraId);
     formData.append("description", form.description);
     formData.append("date", combinedDateTime);
     formData.append("incidenceId", incidenceId);
-
-    // Agregar archivos al FormData
-    form.files.forEach((file, index) => {
-      formData.append(`images`, file);
-    });
+    form.files.forEach((file) => formData.append("images", file));
 
     onSubmit?.(formData);
     handleCloseModal();
@@ -110,11 +112,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
       open={openModal}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
     >
       <Box
         sx={{
@@ -191,7 +189,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               </label>
               <DatePicker
                 value={form.date}
-                onChange={(value) => setForm({ ...form, date: value })}
+                onChange={(value) => updateFormField("date", value)}
                 format="DD/MM/YYYY"
                 slotProps={{ textField: { fullWidth: true } }}
               />
@@ -202,7 +200,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               </label>
               <TimePicker
                 value={form.time}
-                onChange={(value) => setForm({ ...form, time: value })}
+                onChange={(value) => updateFormField("time", value)}
                 format="HH:mm"
                 slotProps={{ textField: { fullWidth: true } }}
               />
@@ -218,9 +216,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               className="w-full p-2 border border-gray-300 rounded-md text-md hover:border-gray-800"
               placeholder="Describe los detalles del incidente, lo que observaste, acciones tomadas..."
               value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
+              onChange={(e) => updateFormField("description", e.target.value)}
             />
           </div>
 
@@ -272,7 +268,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
             </button>
             <button
               onClick={handleEmit}
-              variant="contained"
+              type="button"
               disabled={!form.cameraId || !form.date || !form.time}
               className="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             >
