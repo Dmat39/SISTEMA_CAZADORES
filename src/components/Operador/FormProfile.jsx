@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { updateOperatorProfileApi } from '../../api/operador/profileApi';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const FormProfile = ({ operatorData, onProfileUpdated }) => {
     const [form, setForm] = useState({
@@ -12,6 +13,7 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
         dni: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         if (operatorData) {
@@ -94,6 +96,10 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(prevState => !prevState);
     };
 
     return (
@@ -193,19 +199,30 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                             />
                         </div>
 
-                        <div className="space-y-1">
+                        <div className="space-y-1 relative">
                             <label className="block text-sm font-medium text-gray-700">
                                 Nueva Contraseña
                             </label>
-                            <input
-                                type="password"
-                                name="password"
-                                value={form.password}
-                                onChange={handleChange}
-                                minLength={8}
-                                className="w-full border border-gray-300 px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                placeholder="Dejar en blanco para no cambiar"
-                            />
+                            <div className="relative mt-2">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    name="password"
+                                    value={form.password}
+                                    onChange={handleChange}
+                                    minLength={8}
+                                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                    placeholder="Dejar en blanco para no cambiar"
+                                />
+                                <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
+                                    <button type="button" onClick={togglePasswordVisibility} className="focus:outline-none cursor-pointer">
+                                        {showPassword ? (
+                                            <FaEyeSlash className="w-5 h-5 text-gray-400" />
+                                        ) : (
+                                            <FaEye className="w-5 h-5 text-gray-400" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
                             <p className="text-xs text-gray-500 mt-1">
                                 Mínimo 8 caracteres (opcional)
                             </p>
