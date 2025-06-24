@@ -39,7 +39,7 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
         setIsSubmitting(true);
 
         try {
-            // Preparar datos para actualizar
+          
             const updateData = {
                 name: form.name.trim(),
                 lastname: form.lastname.trim(),
@@ -47,28 +47,23 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                 dni: form.dni.trim(),
             };
 
-            // Solo incluir username si ha cambiado
             if (form.username !== operatorData.user?.username) {
                 updateData.username = form.username.trim();
             }
 
-            // Solo incluir password si se proporcionó una nueva
             if (form.password && form.password.trim()) {
                 updateData.password = form.password;
             }
 
             console.log('Datos a actualizar:', updateData);
             
-            // Llamar a la API de actualización
             const response = await updateOperatorProfileApi(operatorData.id, updateData);
             
             if (response.status) {
                 toast.success('Perfil actualizado correctamente');
                 
-                // Limpiar el campo de contraseña después de actualizar
                 setForm(prev => ({ ...prev, password: '' }));
                 
-                // Notificar al componente padre para que recargue los datos
                 if (onProfileUpdated) {
                     onProfileUpdated();
                 }
@@ -78,8 +73,7 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
             
         } catch (error) {
             console.error('Error al actualizar perfil:', error);
-            
-            // Manejar diferentes tipos de errores
+
             let errorMessage = 'Error al actualizar perfil';
             
             if (error.message) {
