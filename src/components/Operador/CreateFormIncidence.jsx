@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 import {
   Modal,
   Box,
@@ -67,15 +68,15 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
       setFormData((prev) => ({
         ...prev,
         code: selectedOption.codigo_incidencia,
-        latitud: selectedOption.latitud,
-        longitud: selectedOption.longitud,
+        latitude: selectedOption.latitud,
+        longitude: selectedOption.longitud,
       }));
     } else {
       setFormData((prev) => ({
         ...prev,
         code: selectedOption || "",
-        latitud: "",
-        longitud: "",
+        latitude: "",
+        longitude: "",
       }));
     }
   };
@@ -86,7 +87,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     setError(null);
     setLoading(true);
 
-    const { code, name, date, time, description, communicationId, zoneId, latitud, longitud, crimeId } = formData;
+    const { code, name, date, time, description, communicationId, zoneId, latitude, longitude, crimeId } = formData;
 
     if (!name || !date || !time || !communicationId || !zoneId || !crimeId) {
       setError("Por favor, completa todos los campos obligatorios (*)");
@@ -107,12 +108,13 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
       communicationId,
       zoneId,
       date: combinedDateTime,
-      latitud,
-      longitud,
+      latitude,
+      longitude,
       crimeId,
     };
 
     onSubmit(payload);
+    toast.success("Incidencia creada exitosamente");
     resetForm();
   };
 
@@ -126,8 +128,8 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
       date: null,
       time: null,
       description: "",
-      latitud: "",
-      longitud: "",
+      latitude: "",
+      longitude: "",
       crimeId: "",
     });
     setLoading(false);
@@ -211,7 +213,6 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
               <div className="col-span-2 mt-5">
                 <label className="block mb-2 text-sm font-medium text-gray-900">Código *</label>
                 <Autocomplete
-                  freeSolo
                   id="code-autocomplete"
                   open={openAutocomplete}
                   onOpen={() => {
@@ -260,9 +261,9 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   )}
                 />
                 {/* Mostrar coordenadas si están disponibles */}
-                {formData.latitud && formData.longitud && (
+                {formData.latitude && formData.longitude && (
                   <div className="mt-2 text-sm text-gray-600">
-                    📍 Coordenadas: {formData.latitud}, {formData.longitud}
+                    📍 Coordenadas: {formData.latitude}, {formData.longitude}
                   </div>
                 )}
               </div>
@@ -277,6 +278,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 hover:border-gray-900"
                   placeholder="Ingresa el título de la incidencia"
+                  required
                 />
               </div>
 
@@ -291,6 +293,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   className="w-full custom-placeholder"
                   disabled={loadingCrimes}
                   displayEmpty
+                  required
                 >
                  <MenuItem value="" disabled>
                   {loadingCrimes ? "Cargando..." : "Selecciona un crimen"}
@@ -314,6 +317,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   className="w-full custom-placeholder"
                   disabled={loadingMedios}
                   displayEmpty
+                  required
                 >
                  <MenuItem value="" disabled>
                   {loadingMedios ? "Cargando..." : "Selecciona un medio"}
@@ -337,6 +341,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   className="w-full custom-placeholder"
                   disabled={loadingZonas}
                   displayEmpty
+                  required
                 >
                  <MenuItem value="" disabled>
                   {loadingZonas ? "Cargando..." : "Selecciona una zona"}
@@ -357,6 +362,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   onChange={(date) => setFormData((prev) => ({ ...prev, date }))}
                   format="DD/MM/YYYY"
                   className="w-full"
+                  required
                 />
               </div>
 
@@ -368,6 +374,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   value={formData.time}
                   onChange={(time) => setFormData((prev) => ({ ...prev, time }))}
                   className="w-full"
+                  required
                 />
               </div>
 
@@ -381,6 +388,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   onChange={handleChange}
                   className="block p-2.5 w-full text-[16px] text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-gray-500 focus:border-gray-500 hover:border-gray-900"
                   placeholder="Descripción opcional..."
+                  required
                 ></textarea>
               </div>
             </div>
@@ -389,7 +397,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
             <div className="flex flex-row items-center justify-end gap-3">
               <Button onClick={onClose} variant="outlined" class="text-gray-900 cursor-pointer border border-gray-800 hover:bg-gray-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Cancelar</Button>
-              <Button type="submit" variant="contained" class="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" disabled={loading}>
+              <Button type="submit" variant="contained" disableRipple class="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" disabled={loading}>
                 {loading ? "Creando..." : "Crear Incidencia"}
               </Button>
             </div>

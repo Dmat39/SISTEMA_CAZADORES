@@ -104,7 +104,7 @@ const IncidenciaDetalles = () => {
 
           <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
             <div className="flex flex-col">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center mb-4 gap-2">
                 <h1 className="text-2xl font-bold text-gray-900 leading-tight">
                   {name}
                 </h1>
@@ -207,7 +207,7 @@ const IncidenciaDetalles = () => {
             await updateIncidenceApi(payload, payload.id);
             fetchIncidencia();
           } catch (err) {
-            console.error("Error actualizando código:", err);
+            toast.error(`Error actualizando código: ${err?.response?.data?.message || err.message || 'Error desconocido'}`);
           }
         }}
       />
