@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getIncidenceByIdApi, updateIncidenceApi } from "../../api/operador/incidenceApi";
 import { createSubRegistroIncidenceApi } from "../../api/operador/registroIncidenceApi";
@@ -17,6 +17,7 @@ const IncidenciaDetalles = () => {
   const [showRegistroForm, setShowRegistroForm] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
   const navigate = useNavigate();
+  const hasFetched = useRef(false);
 
   // Mapeo de estado a estilos y texto
   const formatStatus = (status) => {
@@ -38,10 +39,13 @@ const IncidenciaDetalles = () => {
       setIncidencia(response.data);
     } catch (error) {
       console.error("Error al obtener detalle de incidencia:", error);
+      toast.error("Error al cargar los detalles de la incidencia: "+error.message);
     }
   }, []);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     fetchIncidencia();
   }, [fetchIncidencia]);
 

@@ -114,7 +114,6 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     };
 
     onSubmit(payload);
-    toast.success("Incidencia creada exitosamente");
     resetForm();
   };
 

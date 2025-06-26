@@ -72,20 +72,48 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
                             <TableForm
                                 data={assingments}
                                 columns={[
-                                    { label: 'Nombre', key: 'code', render: (value) => value.operator?.name ?? '—'},
-                                    { label: 'Apellidos', key: 'lastname' , render: (value) => value.operator?.lastname ?? '—'},
-                                    { label: 'Asignado por', key: 'asignedByUserId', render: (value) => value.asignedByUserId?.username ?? 'automático'},
+                                {
+                                    label: 'Nombre',
+                                    key: 'userId',
+                                    render: (v) => {
+                                        const user = v.supervisor || v.operator;
+                                        if (!user) return '—';
+                                        const isDeleted = !!user.deletedAt;
+                                        return isDeleted ? <del className='text-gray-400'>{user.name}</del> : user.name;
+                                    },
+                                },
+                                {
+                                    label: 'Apellidos',
+                                    key: 'userId',
+                                    render: (v) => {
+                                        const user = v.supervisor || v.operator;
+                                        if (!user) return '—';
+                                        const isDeleted = !!user.deletedAt;
+                                        return isDeleted ? <del className='text-gray-400'>{user.lastname}</del> : user.lastname;
+                                },
+                                },
+                                { label: 'Rol', key: 'userId', render: (v) => v.supervisor ? 'Supervisor' : v.operator ? 'Operador' : '—' },
+                                {
+                                    label: 'Asignado por',
+                                    key: 'asignedByUserId',
+                                    render: (v) => {
+                                        const user = v.asignedByUserId;
+                                        if (!user) return 'Automático';
+                                        const isDeleted = !!user.deletedAt;
+                                        return isDeleted ? <del className='text-gray-400'>{user.username}</del> : user.username;
+                                    },
+                                },
                                 ]}
                                 actions={[
                                     {
                                         title: 'Eliminar',
                                         onClick: (assignment) =>
                                         confirmDelete(assignment, (as) => {
-                                            const name = as.operator?.name ?? '';
-                                            const lastname = as.operator?.lastname ?? '';
+                                            const name = as.supervisor?.name ?? as.operator?.name ?? '';
+                                            const lastname = as.supervisor?.lastname ?? as.operator?.lastname ?? '';
                                             const fullName = `${name} ${lastname}`.trim();
 
-                                            return fullName !== '' ? fullName : 'Operador no existente';
+                                            return fullName !== '' ? fullName : 'Asignado no existente';
                                         }),
                                         icon: icons.delete,
                                         className: 'text-red-600 hover:text-red-800',

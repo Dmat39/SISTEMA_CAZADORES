@@ -20,8 +20,6 @@ const Incidence = () => {
     const [communications, setCommunications] = useState([]);
     const [selectedIncidenceId, setSelectedIncidenceId] = useState(null);
     const [selectedIncidenceName, setSelectedIncidenceName] = useState("");
-    const [page, setPage] = useState(1);
-    const [pagination, setPagination] = useState(null);
     const [inputValue, setInputValue] = useState("");
     const [showForm, setShowForm] = useState(false);
     const [selectedIncidence, setSelectedIncidence] = useState(null);
@@ -50,9 +48,10 @@ const Incidence = () => {
                 inc.code?.toLowerCase().includes(inputValue.toLowerCase())
             )
             : incidents;
-    const paginatedFilteredIncidents = isFiltering
-        ? filteredIncidents.slice((localPage - 1) * rowsPerPage, localPage * rowsPerPage)
-        : filteredIncidents;
+    const paginatedFilteredIncidents = filteredIncidents.slice(
+        (localPage - 1) * rowsPerPage,
+        localPage * rowsPerPage
+    );
 
     const localPagination = {
         total: filteredIncidents.length,
@@ -79,14 +78,13 @@ const Incidence = () => {
         }
     };
 
-    const fetchIncidents = async (pageToFetch = page) => {
+    const fetchIncidents = async () => {
         try {
             setIsLoading(true);
-            const response = await getAllIncidencesApi(pageToFetch);
-            setIncidents(response.data.data);
-            setPagination(response.data.pagination);
+            const response = await getAllIncidencesApi();
+            setIncidents(response.data);
         } catch (error) {
-            toast.error(` Error al obtener las incidencias: ${error.message}`);
+            toast.error(`Error al obtener las incidencias: ${error.message}`);
         } finally {
             setIsLoading(false);
         }
@@ -149,11 +147,6 @@ const Incidence = () => {
         }
     }
     
-    const handlePageChange = (newPage) => {
-        setPage(newPage);
-        fetchIncidents(newPage);
-    };
-
     return (
         <div className="m-4">
             <div className="bg-white rounded-xl shadow-md p-6">
@@ -215,10 +208,11 @@ const Incidence = () => {
                 ) : 
                     incidents?.length > 0 ?(
                         <TableForm
-                            data={{ data: filteredIncidents, pagination: isFiltering ? localPagination : pagination }}
+                            data={{ data: paginatedFilteredIncidents, pagination: localPagination }}
                             columns={[
                                 { label: 'Cod.', key: 'code'},
                                 { label: 'Nombre', key: 'name' },
+                                { label: 'Crimen', key: 'crime', render: (value) => value.crime?.name ?? '—'},
                                 { label: 'Descripción', key: 'description' },
                                 { label: 'Zona', key: 'zone', render: (value) => value.zone?.name ?? '—'},
                                 { label: 'Medio', key: 'comunication', render: (value) => value.comunication?.name ?? '—'},
@@ -268,9 +262,25 @@ const Incidence = () => {
                                 },
 
                                 { label: 'Observación', key: 'observation' },
-                                { label: 'Creado por', key: 'user', render: (value) => {return value.user.username} },
+                                {
+                                    label: 'Creado por',
+                                    key: 'user',
+                                    render: (value) => {
+                                        const username = value.user?.username || '—';
+                                        const isDeleted = !!value.user?.deletedAt;
+                                        return isDeleted ? <del className='text-gray-400'>{username}</del> : username;
+                                    },
+                                },
                                 { label: 'creado en ', key: 'createdAt', render: (value) => { return new Date(value.createdAt).toISOString().split('T')[0] }},
-                                { label: 'Actualizado por', key: 'userIdWhoUpdated', render: (value) => value.userWhoUpdated?.username ?? '—'},
+                                {
+                                    label: 'Actualizado por',
+                                    key: 'userIdWhoUpdated',
+                                    render: (value) => {
+                                        const username = value.userWhoUpdated?.username || '—';
+                                        const isDeleted = !!value.userWhoUpdated?.deletedAt;
+                                        return value.userWhoUpdated ? (isDeleted ? <del className='text-gray-400'>{username}</del> : username) : '—';
+                                    },
+                                },
                                 { label: 'Actualizado en', key: 'updatedAt', render: (value) => { return new Date(value.updatedAt).toISOString().split('T')[0]} },
                             ]}
                             actions={[
@@ -297,13 +307,7 @@ const Incidence = () => {
                                     className: 'text-red-600 hover:text-red-800',
                                 },
                             ]}
-                            onPageChange={(newPage) => {
-                                if (isFiltering) {
-                                setLocalPage(newPage);
-                                } else {
-                                handlePageChange(newPage);
-                                }
-                            }}
+                            onPageChange={(newPage) => setLocalPage(newPage)}
                             onRowClick={(item) => {
                                 localStorage.setItem("last_created_incidence_id", item.id);
                                 navigate("/dashboard/supervisors/incidencia/detalle");
