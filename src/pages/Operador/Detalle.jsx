@@ -63,7 +63,7 @@ const IncidenciaDetalles = () => {
       setShowRegistroForm(false);
       await fetchIncidencia();
     } catch (err) {
-      toast.error("Error al guardar el registro:", err.message);
+      toast.error("Error al guardar el registro: "+ err.message);
     }
   };
 
