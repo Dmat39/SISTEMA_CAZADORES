@@ -23,7 +23,7 @@ const IncidenciaOperador = () => {
     try {
       setIsLoading(true);
       const response = await getAllIncidencesApi();
-      setIncidencias(response.data.data || []); 
+      setIncidencias(response.data || []); 
     } catch (error) {
       console.error("Error al obtener incidencias:", error);
     } finally {

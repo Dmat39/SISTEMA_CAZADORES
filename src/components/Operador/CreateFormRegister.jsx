@@ -89,6 +89,10 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
   };
 
   const handleEmit = () => {
+    if(form.files.length <= 0){
+      toast.error("Debes subir al menos una imagen para continuar.");
+      return
+    }
     const combinedDateTime = form.date
       .hour(form.time.hour())
       .minute(form.time.minute())
@@ -164,7 +168,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
                 />
               )}
               renderOption={(props, option) => (
-                <Box component="li" {...props}>
+                <Box component="li" {...props}  key={option.id}>
                   <div>
                     <div className="font-medium">{option.name}</div>
                     <div className="text-sm text-gray-600">

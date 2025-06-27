@@ -40,6 +40,13 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
   };
 
   const handleDeleteImage = (img) => {
+    const totalImages = images.length + form.files.length;
+
+    if (totalImages <= 1) {
+      toast.error("Debe haber al menos una imagen en el registro.");
+      return;
+    }
+
     updateFormField('imagesToDelete', [...form.imagesToDelete, img.imagePath]);
     setImages(prev => prev.filter(i => i.id !== img.id));
   };
