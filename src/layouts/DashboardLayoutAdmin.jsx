@@ -9,7 +9,7 @@ const DashboardLayoutAdmin = () => {
       <SidebarAdmin />
       {/* Contenido principal */}
       <Navbar />
-      <main class="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto sm:ml-60 pt-20 h-screen">
         <Outlet />
       </main>
     </>

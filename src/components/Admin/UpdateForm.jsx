@@ -7,6 +7,7 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
         password: '',
         name: '',
         lastname: '',
+        dmi: '',
         phone: '',
     });
 
@@ -18,6 +19,7 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
                 password: data.user?.password || '',
                 name: data.name || '',
                 lastname: data.lastname || '',
+                dni: data.dni || '',
                 phone: data.phone || '',
                 id: data.id,
             });
@@ -66,12 +68,27 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
                         </div>
 
                         <div className="mb-4">
+                            <label className="block text-sm font-medium">Dni</label>
+                            <input
+                                type="text"
+                                name="dni"
+                                value={form.dni}
+                                onChange={handleChange}
+                                pattern="\d{8}"
+                                title="El DNI debe tener exactamente 8 dígitos."
+                                className="w-full border px-3 py-2 rounded mt-1"
+                            />
+                        </div>
+
+                        <div className="mb-4">
                             <label className="block text-sm font-medium">Teléfono</label>
                             <input
                                 type="text"
                                 name="phone"
                                 value={form.phone}
                                 onChange={handleChange}
+                                pattern="\d{9}"
+                                title="El número de teléfono debe tener exactamente 9 dígitos."
                                 className="w-full border px-3 py-2 rounded mt-1"
                             />
                         </div>

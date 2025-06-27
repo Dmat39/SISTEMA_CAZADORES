@@ -7,12 +7,14 @@ const CreateForm = ({ isOpen, onClose, onSubmit }) => {
         password: '',
         name: '',
         lastname: '',
+        dni:'',
         phone: '',
     });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+        const newValue = (name === "phone" || name === "dni") ? value.replace(/\D/g, "") : value;
+        setForm((prev) => ({ ...prev, [name]: newValue }));
     };
 
     const handleSubmit = (e) => {
@@ -24,6 +26,7 @@ const CreateForm = ({ isOpen, onClose, onSubmit }) => {
             password: '',
             name: '',
             lastname: '',
+            dni:'',
             phone: '',
         });
         onClose();
@@ -63,12 +66,28 @@ const CreateForm = ({ isOpen, onClose, onSubmit }) => {
                         </div>
 
                         <div className="mb-4">
+                            <label className="block text-sm font-medium">Dni</label>
+                            <input
+                                type="text"
+                                name="dni"
+                                value={form.dni}
+                                onChange={handleChange}
+                                pattern='\d{8}'
+                                title='El DNI debe tener exactamente 8 dígitos.'
+                                className="w-full border px-3 py-2 rounded mt-1"
+                                required
+                            />
+                        </div>
+
+                        <div className="mb-4">
                             <label className="block text-sm font-medium">Teléfono</label>
                             <input
                                 type="text"
                                 name="phone"
                                 value={form.phone}
                                 onChange={handleChange}
+                                pattern='\d{9}'
+                                title='El número de teléfono debe tener exactamente 9 dígitos.'
                                 className="w-full border px-3 py-2 rounded mt-1"
                                 required
                             />

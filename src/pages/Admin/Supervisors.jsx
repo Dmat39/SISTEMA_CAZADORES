@@ -29,8 +29,7 @@ const SupervisorsAdmin = () => {
             setSupervisors(data.data);
 
         } catch (error) {
-            toast.error(` Error al crear el supervisor ${error}`);
-
+            toast.error(` Error obtener supervisores: ${error.message}`);
         }
     };
 
@@ -58,7 +57,7 @@ const SupervisorsAdmin = () => {
                                         position: 'top-right',
                                     });
                                 } catch (err) {
-                                    toast.error(`Error al eliminar supervisor ${err}`);
+                                    toast.error(`Error al eliminar supervisor ${err.message}`);
                                 }
                             }}
                             className="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700"
@@ -83,7 +82,7 @@ const SupervisorsAdmin = () => {
             await updateSupervisorApi(payload, id);
             toast.success('Supervisor actualizado exitosamente!');
         } catch (error) {
-            toast.error(` Error al crear el supervisor ${error}`);
+            toast.error(` Error al actualizar el supervisor ${error.message}`);
         }
     }
 
@@ -101,13 +100,13 @@ const SupervisorsAdmin = () => {
             setShowCreate(false);
             toast.success('Supervisor creado exitosamente!');
         } catch (error) {
-            toast.error(` Error al crear el supervisor ${error}`);
-            console.error("Error al crear supervisor:", error);
+            toast.error(` Error al crear el supervisor ${error.message}`);
+            console.error("Error al crear supervisor:", error.message);
         }
     };
 
     return (
-        <div className="p-4 sm:ml-64 mt-20">
+        <div className="m-4">
             <div className="bg-white rounded-xl shadow-md p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-bold">Mantenimiento de Supervisores</h2>

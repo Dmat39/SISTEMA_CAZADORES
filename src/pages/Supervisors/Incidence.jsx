@@ -12,8 +12,11 @@ import AssignedOperators from '../../components/Supervisors/AssignedOperators.js
 import { useNavigate } from 'react-router-dom';
 import { Autocomplete, TextField } from '@mui/material';
 import CreateFormIncidence from "../../components/Operador/CreateFormIncidence";
+import { useSelector } from 'react-redux';
 
 const Incidence = () => {
+    const { role } = useSelector((state) => state.auth);
+
     const [incidents, setIncidents] = useState([]);
     const [operators, setOperators] = useState([]);
     const [zones, setZones] = useState([]);
@@ -122,10 +125,13 @@ const Incidence = () => {
         try {
             const response = await createIncidenceApi(payload);
             const newId = response?.data?.id;
-            
             if (newId) {
                 localStorage.setItem("last_created_incidence_id", newId);
-                navigate("/dashboard/supervisors/incidencia/detalle");
+                if (role === 'admin') {
+                    navigate("/dashboard/admin/incidencia/detalle");
+                } else {
+                    navigate("/dashboard/supervisors/incidencia/detalle");
+                }
             }
 
             await fetchIncidents(); 
@@ -310,7 +316,11 @@ const Incidence = () => {
                             onPageChange={(newPage) => setLocalPage(newPage)}
                             onRowClick={(item) => {
                                 localStorage.setItem("last_created_incidence_id", item.id);
-                                navigate("/dashboard/supervisors/incidencia/detalle");
+                                if (role === 'admin') {
+                                    navigate("/dashboard/admin/incidencia/detalle");
+                                } else {
+                                    navigate("/dashboard/supervisors/incidencia/detalle");
+                                }
                             }}
 
                         />

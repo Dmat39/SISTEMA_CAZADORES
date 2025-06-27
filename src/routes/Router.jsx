@@ -43,6 +43,9 @@ export default function Router() {
         <Route element={<DashboardLayoutAdmin />}>
           <Route path="/dashboard/admin" element={<PrivateRoute requiredRole="admin">  <DashboardAdmin /></PrivateRoute>} />
           <Route path="/dashboard/admin/supervisor" element={<PrivateRoute requiredRole="admin"><SupervisorsAdmin /></PrivateRoute>} />
+          <Route path="/dashboard/admin/operadores" element={<PrivateRoute requiredRole="admin"><OperatorsAdmin /></PrivateRoute>} />
+          <Route path="/dashboard/admin/incidencia" element={<PrivateRoute requiredRole="admin"><Incidence /></PrivateRoute>} />
+          <Route path="/dashboard/admin/incidencia/detalle" element={<PrivateRoute requiredRole="admin"><IncidenciaDetalle /></PrivateRoute>} />
         </Route>
 
         {/* Rutas Protegidas - Supervisor */}
@@ -50,14 +53,7 @@ export default function Router() {
           {/* <Route path="/dashboard/supervisors" element={<PrivateRoute requiredRole="supervisor"><DashboardSupervisor /></PrivateRoute>} /> */}
           <Route path="/dashboard/supervisors/operadores" element={<PrivateRoute requiredRole="supervisor"><OperatorsAdmin /></PrivateRoute>} />
           <Route path="/dashboard/supervisors/incidencia" element={<PrivateRoute requiredRole="supervisor"> <Incidence /></PrivateRoute>} />
-          <Route path="/dashboard/supervisors/incidencia/detalle" element={
-            <PrivateRoute requiredRole="supervisor">
-              <IncidenciaDetalle />
-            </PrivateRoute>
-          } />
-          {/* <Route path="/dashboard/supervisors/reportes" element={<PrivateRoute requiredRole="supervisor"> <ReportesSupervisor /></PrivateRoute>} /> */}
-          <Route path="/dashboard/supervisors/incidencia" element={<PrivateRoute requiredRole="supervisor"><IncidenciaSupervisor /></PrivateRoute>} />
-          <Route path="/dashboard/supervisors/incidencia/detalle" element={<PrivateRoute requiredRole="supervisor"><IncidenciaDetalleSupervisor /></PrivateRoute>} />
+          <Route path="/dashboard/supervisors/incidencia/detalle" element={<PrivateRoute requiredRole="supervisor"><IncidenciaDetalle /></PrivateRoute>} />
           <Route path="/dashboard/supervisors/incidencia/configuracion" element={<PrivateRoute requiredRole="supervisor"><SupervisorProfile /></PrivateRoute>} />
         </Route>
 

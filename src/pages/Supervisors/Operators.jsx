@@ -107,6 +107,7 @@ const OperatorsAdmin = () => {
             await updateOperatorApi(payload, payload.id);
             await fetchOperators();
             setShowUpdate(false);
+            setShowUpdatePwd(false);
             toast.success('Operador actualizado exitosamente!');
         } catch (error) {
             toast.error(` Error al actualizar al operador: ${error.message}`);

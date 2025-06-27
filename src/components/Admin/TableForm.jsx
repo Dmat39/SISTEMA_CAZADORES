@@ -4,7 +4,7 @@ import { icons } from '../../plugins/IconLibrary.js'; // Ajusta la ruta si es ne
 
 const TableForm = ({ data = [], onEdit, onDelete }) => {
 
-    const columns = ['Nombre', 'Apellido', 'Teléfono', 'Usuario', 'Rol', 'Acciones'];
+    const columns = ['Nombre', 'Apellido', 'DNI', 'Teléfono', 'Usuario', 'Rol', 'Acciones'];
 
     return (
         <div className="pt-6">
@@ -27,6 +27,7 @@ const TableForm = ({ data = [], onEdit, onDelete }) => {
                         <tr key={item.id || idx} className="hover:bg-gray-50">
                             <td className="px-6 py-4 text-sm text-gray-800">{item.name}</td>
                             <td className="px-6 py-4 text-sm text-gray-800">{item.lastname}</td>
+                            <td className="px-6 py-4 text-sm text-gray-800">{item.dni || '—'}</td>
                             <td className="px-6 py-4 text-sm text-gray-800">{item.phone}</td>
                             <td className="px-6 py-4 text-sm text-gray-800">{item.user?.username || '—'}</td>
                             <td className="px-6 py-4 text-sm text-gray-800">{item.user?.role || '—'}</td>
