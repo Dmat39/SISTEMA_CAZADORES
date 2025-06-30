@@ -19,3 +19,7 @@ body {
 .custom-placeholder .css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
   color: #202020 !important; /* Gris personalizado */
 }
+
+:focus {
+  outline: none ;
+}

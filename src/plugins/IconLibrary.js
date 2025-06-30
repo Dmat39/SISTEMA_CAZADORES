@@ -24,7 +24,11 @@ import {
     mdiAccountGroup,
     mdiNoteAlertOutline,
     mdiPaperclip,
-    mdiHandcuffs
+    mdiHandcuffs,
+    mdiFileDocument,
+    mdiClock,
+    mdiCheckBold,
+    mdiFlag
 } from "@mdi/js";
 
 export const icons = {
@@ -53,5 +57,9 @@ export const icons = {
     close: mdiCloseCircleOutline,
     mdiNoteAlertOutline:mdiNoteAlertOutline,
     attach: mdiPaperclip,
-    mdiHandcuffs:mdiHandcuffs
+    mdiHandcuffs:mdiHandcuffs,
+    mdiFileDocument:mdiFileDocument,
+    mdiClock:mdiClock,
+    mdiCheckBold:mdiCheckBold,
+    mdiFlag:mdiFlag
 };
