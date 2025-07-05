@@ -207,7 +207,6 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                         <TextField
                                             onKeyDown={e => e.key === 'Enter' && e.preventDefault()}
                                             {...params}
-                                            required
                                             placeholder="Buscar o ingresar código"
                                             variant="outlined"
                                             InputProps={{
@@ -363,7 +362,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                     name="status"
                                     value={form.status}
                                     onChange={handleChange}
-                                    className={`w-full border px-3 py-2 rounded mt-1 text-sm focus:ring-block w-full p-2.5
+                                    className={`w-full border px-3 py-2 rounded mt-1 text-sm focus:ring-block p-2.5
                                         ${form.status === "process" ? "bg-blue-200 focus:ring-blue-500 focus:border-blue-500 border-blue-300 text-blue-900" : ""}
                                         ${form.status === "finished" ? "bg-red-200 focus:ring-red-500 focus:border-red-500 border-red-300 text-red-900" : ""}
                                         ${form.status === "completed" ? "bg-green-200 focus:ring-green-500 focus:border-green-500 border-green-300 text-green-900" : ""}`}

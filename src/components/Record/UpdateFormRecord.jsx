@@ -52,7 +52,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
   };
 
   const confirmDelete = useDeleteConfirmation({
-    fetchData: () => {},
+    fetchData: () => { },
     deleteApiFn: deletePhotoApi,
     entityName: 'la imagen'
   });
@@ -108,7 +108,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
       }
     };
 
-  if (isOpen) document.addEventListener('paste', handlePaste);
+    if (isOpen) document.addEventListener('paste', handlePaste);
     return () => document.removeEventListener('paste', handlePaste);
   }, [isOpen, images.length, form.files.length, form.imagesToDelete.length]);
 
@@ -138,13 +138,50 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
   };
 
   const handleFileChange = (e) => {
-    const newFiles = Array.from(e.target.files);
-    const currentTotal = getCurrentImageCount() + newFiles.length;
-    if (currentTotal > MAX_IMAGES) {
-      toast.error(`Máximo ${MAX_IMAGES} imágenes por registro.`);
-      return;
+    const selectedFiles = Array.from(e.target.files);
+    const currentFiles = [...form.files];
+
+    let imageCount = currentFiles.filter(f => f.type.startsWith("image/")).length;
+    const videoExists = currentFiles.some(f => f.type.startsWith("video/"));
+
+    selectedFiles.forEach((file) => {
+      if (file.type.startsWith("image/")) {
+        if (imageCount >= MAX_IMAGES) {
+          toast.error(`Máximo ${MAX_IMAGES} imágenes por registro.`);
+          return;
+        }
+        imageCount++;
+        currentFiles.push(file);
+      } else if (file.type.startsWith("video/")) {
+        if (videoExists) {
+          toast.error("Solo se permite un video por registro.");
+          return;
+        }
+
+        // Validar duración del video
+        const video = document.createElement("video");
+        video.preload = "metadata";
+        video.onloadedmetadata = () => {
+          window.URL.revokeObjectURL(video.src);
+          if (video.duration <= 30) {
+            updateFormField("files", [...form.files, file]);
+          } else {
+            toast.error("El video no debe durar más de 30 segundos.");
+          }
+        };
+        video.src = URL.createObjectURL(file);
+      }
+    });
+
+    // Si no hay video, se actualiza directamente
+    if (!selectedFiles.some(f => f.type.startsWith("video/"))) {
+      updateFormField("files", currentFiles);
     }
-    updateFormField('files', [...form.files, ...newFiles]);
+  };
+
+  const handleRemoveFile = (indexToRemove) => {
+    const newFiles = form.files.filter((_, index) => index !== indexToRemove);
+    setForm({ ...form, files: newFiles });
   };
 
   const handleEmit = async () => {
@@ -185,7 +222,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Dialog open={isOpen} onClose={() => {}} className="relative z-50">
+      <Dialog open={isOpen} onClose={() => { }} className="relative z-50">
         <div className="fixed inset-0 bg-black/60" aria-hidden="true"></div>
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="bg-white rounded-lg shadow-lg max-w-xl w-full p-6">
@@ -274,18 +311,20 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                   <input
                     type="file"
                     multiple
-                    accept="image/png, image/jpg, image/jpeg"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-0"
+                    accept="image/png, image/jpg, image/jpeg, video/mp4"
+                    className="absolute w-full h-full opacity-0 cursor-pointer"
                     onChange={handleFileChange}
                   />
                   <div className="flex flex-col items-center space-y-2">
                     <div className="bg-gray-200 rounded-full p-2">
                       <CloudArrowUpIcon className="w-10 h-10 text-gray-600" />
                     </div>
-                    <p className="text-sm font-medium text-center">
-                      Haz clic o pega una imagen con <kbd>Ctrl</kbd> + <kbd>V</kbd>
+                    <p className="text-sm text-center font-medium">
+                      Haz clic para subir imágenes (máx. 5) o un video (máx. 30s), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
                     </p>
-                    <span className="text-xs text-gray-500">PNG, JPG, JPEG hasta 10MB cada una</span>
+                    <span className="text-xs text-gray-500">
+                      Formatos permitidos: PNG, JPG, JPEG y MP4
+                    </span>
                     {form.files.length > 0 && (
                       <div className="mt-2">
                         <p className="text-sm text-green-600">{form.files.length} archivo(s) seleccionado(s)</p>

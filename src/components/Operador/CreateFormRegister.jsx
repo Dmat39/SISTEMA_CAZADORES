@@ -79,17 +79,55 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    if (!canAddImages(selectedFiles.length)) return;
-    updateFormField("files", [...form.files, ...selectedFiles]);
+    const newFiles = [...form.files];
+
+    let imageCount = newFiles.filter(f => f.type.startsWith("image/")).length;
+    let videoExists = newFiles.some(f => f.type.startsWith("video/"));
+
+    selectedFiles.forEach((file) => {
+      if (file.type.startsWith("image/")) {
+        if (imageCount >= 5) return;
+        imageCount++;
+        newFiles.push(file);
+      } else if (file.type.startsWith("video/")) {
+        if (videoExists) return;
+
+        // Validar duración del video
+        const video = document.createElement("video");
+        video.preload = "metadata";
+        video.onloadedmetadata = () => {
+          window.URL.revokeObjectURL(video.src);
+          if (video.duration <= 30) {
+            newFiles.push(file);
+            updateFormField("files", newFiles);
+          } else {
+            toast.error("El video no debe durar más de 30 segundos.");
+          }
+        };
+        video.src = URL.createObjectURL(file);
+      }
+    });
+
+    // Si no hay video, se actualiza directamente
+    if (!selectedFiles.some(f => f.type.startsWith("video/"))) {
+      updateFormField("files", newFiles);
+    }
   };
+
+
 
   const handleCameraChange = (event, newValue) => {
     updateFormField("cameraId", newValue?.id || "");
     updateFormField("cameraName", newValue?.name || "");
   };
 
+  const handleRemoveFile = (indexToRemove) => {
+    const newFiles = form.files.filter((_, index) => index !== indexToRemove);
+    setForm({ ...form, files: newFiles });
+  };
+
   const handleEmit = () => {
-    if(form.files.length <= 0){
+    if (form.files.length <= 0) {
       toast.error("Debes subir al menos una imagen para continuar.");
       return
     }
@@ -168,7 +206,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
                 />
               )}
               renderOption={(props, option) => (
-                <Box component="li" {...props}  key={option.id}>
+                <Box component="li" {...props} key={option.id}>
                   <div>
                     <div className="font-medium">{option.name}</div>
                     <div className="text-sm text-gray-600">
@@ -232,36 +270,63 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
             <input
               type="file"
               multiple
-              accept="image/png, image/jpg, image/jpeg"
+              accept="image/png, image/jpg, image/jpeg, video/mp4"
               className="absolute w-full h-full opacity-0 cursor-pointer"
               onChange={handleFileChange}
             />
+
+
             <div className="flex flex-col items-center space-y-2">
               <div className="bg-gray-200 rounded-full p-2">
                 <CloudArrowUpIcon className="w-10 h-10 text-gray-600" />
               </div>
               <div className="text-center">
                 <p className="text-sm font-medium">
-                  Haz clic para subir imágenes o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
+                  Haz clic para subir imágenes (máx. 5) o un video (máx. 30s), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
                 </p>
                 <span className="text-xs text-gray-500">
-                  PNG, JPG, JPEG hasta 10MB cada una
+                  Formatos permitidos: PNG, JPG, JPEG y MP4
                 </span>
               </div>
-              {form.files.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-sm text-green-600">
-                    {form.files.length} archivo(s) seleccionado(s)
-                  </p>
-                  <ul className="text-xs text-gray-600 mt-1">
-                    {form.files.map((file, index) => (
-                      <li key={index}>• {file.name}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+
             </div>
           </div>
+
+          {/* Miniaturas debajo de todo */}
+          {form.files.length > 0 && (
+            <div className="mt-4">
+              <div className="flex flex-wrap gap-2">
+                {form.files.map((file, index) => (
+                  <div
+                    key={index}
+                    className="relative group w-24 h-24 rounded overflow-hidden border border-gray-300"
+                  >
+                    {file.type.startsWith("image/") ? (
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`preview-${index}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <video
+                        src={URL.createObjectURL(file)}
+                        className="w-full h-full object-cover"
+                        controls
+                      />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                      className="absolute top-0 left-0 w-full h-full bg-red-600/60 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center text-xl font-bold transition-opacity duration-200"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
 
           <div className="flex justify-end gap-3 mt-6">
             <button
