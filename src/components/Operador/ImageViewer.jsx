@@ -4,30 +4,43 @@ import { icons } from "../../plugins/IconLibrary";
 
 const ImageViewer = ({ Path, originalName, onDelete }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [mediaUrl, setMediaUrl] = useState(null);
+  const [mediaType, setMediaType] = useState(null); // 'image' | 'video'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Función auxiliar para detectar tipo
+  const getFileType = (filename) => {
+    const extension = filename.split(".").pop().toLowerCase();
+    const imageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
+    const videoTypes = ["mp4", "webm", "ogg"];
+
+    if (imageTypes.includes(extension)) return "image";
+    if (videoTypes.includes(extension)) return "video";
+    return null;
+  };
+
   useEffect(() => {
-    const fetchImage = async () => {
+    const fetchMedia = async () => {
       setLoading(true);
       try {
-        const fullImageUrl = `${import.meta.env.VITE_API_BASE_URL}/files/${Path}`;
-        const response = await fetch(fullImageUrl);
-        if (!response.ok) throw new Error("No se pudo obtener la imagen");
+        const fullUrl = `${import.meta.env.VITE_API_BASE_URL}/files/${Path}`;
+        const response = await fetch(fullUrl);
+        if (!response.ok) throw new Error("No se pudo obtener el archivo");
 
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
-        setImageUrl(url);
+        setMediaUrl(url);
+        setMediaType(getFileType(Path));
       } catch (err) {
-        console.error("Error fetching image:", err);
-        setError("Error al cargar la imagen");
+        console.error("Error fetching media:", err);
+        setError("Error al cargar el archivo");
       } finally {
         setLoading(false);
       }
     };
 
-    if (Path) fetchImage();
+    if (Path) fetchMedia();
   }, [Path]);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -38,7 +51,7 @@ const ImageViewer = ({ Path, originalName, onDelete }) => {
         <button
           type="button"
           onClick={toggleVisibility}
-          title="Ver imagen"
+          title="Ver archivo"
           className="text-gray-500 hover:text-gray-800 transition-all duration-200 ease-in cursor-pointer"
         >
           <Icon path={isVisible ? icons.eye : icons.eyeOff} size={0.9} />
@@ -48,7 +61,7 @@ const ImageViewer = ({ Path, originalName, onDelete }) => {
           <button
             type="button"
             onClick={onDelete}
-            title="Eliminar imagen"
+            title="Eliminar archivo"
             className="text-red-500 hover:text-red-600 transition-all duration-200 ease-in cursor-pointer"
           >
             <Icon path={icons.delete} size={0.9} />
@@ -59,7 +72,7 @@ const ImageViewer = ({ Path, originalName, onDelete }) => {
       {loading && <p className="text-sm text-gray-500">Cargando...</p>}
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      {isVisible && imageUrl && (
+      {isVisible && mediaUrl && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999]">
           <div className="relative">
             <div className="bg-white px-6 py-8 rounded-lg max-w-4xl max-h-[90vh] overflow-auto">
@@ -71,11 +84,24 @@ const ImageViewer = ({ Path, originalName, onDelete }) => {
                   <Icon path={icons.close} size={1.4} />
                 </button>
               </div>
-              <img
-                src={imageUrl}
-                alt={originalName}
-                className="max-w-full max-h-full object-contain"
-              />
+
+              {mediaType === "image" && (
+                <img
+                  src={mediaUrl}
+                  alt={originalName}
+                  className="max-w-full max-h-full object-contain"
+                />
+              )}
+
+              {mediaType === "video" && (
+                <video
+                  controls
+                  src={mediaUrl}
+                  className="max-w-full max-h-full"
+                >
+                  Tu navegador no soporta la reproducción de video.
+                </video>
+              )}
             </div>
           </div>
         </div>
