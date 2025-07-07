@@ -97,11 +97,11 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
         video.preload = "metadata";
         video.onloadedmetadata = () => {
           window.URL.revokeObjectURL(video.src);
-          if (video.duration <= 30) {
+          if (video.duration <= 60) {
             newFiles.push(file);
             updateFormField("files", newFiles);
           } else {
-            toast.error("El video no debe durar más de 30 segundos.");
+            toast.error("El video no debe durar más de 1 minuto.");
           }
         };
         video.src = URL.createObjectURL(file);
@@ -282,7 +282,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               </div>
               <div className="text-center">
                 <p className="text-sm font-medium">
-                  Haz clic para subir imágenes (máx. 5) o un video (máx. 30s), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
+                  Haz clic para subir imágenes (máx. 5) o un video (máx. 1 min), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
                 </p>
                 <span className="text-xs text-gray-500">
                   Formatos permitidos: PNG, JPG, JPEG y MP4

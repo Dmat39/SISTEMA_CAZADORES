@@ -163,10 +163,10 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
         video.preload = "metadata";
         video.onloadedmetadata = () => {
           window.URL.revokeObjectURL(video.src);
-          if (video.duration <= 30) {
+          if (video.duration <= 60) {
             updateFormField("files", [...form.files, file]);
           } else {
-            toast.error("El video no debe durar más de 30 segundos.");
+            toast.error("El video no debe durar más de 1 minuto.");
           }
         };
         video.src = URL.createObjectURL(file);
@@ -320,7 +320,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                       <CloudArrowUpIcon className="w-10 h-10 text-gray-600" />
                     </div>
                     <p className="text-sm text-center font-medium">
-                      Haz clic para subir imágenes (máx. 5) o un video (máx. 30s), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
+                      Haz clic para subir imágenes (máx. 5) o un video (máx. 1 min), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
                     </p>
                     <span className="text-xs text-gray-500">
                       Formatos permitidos: PNG, JPG, JPEG y MP4
