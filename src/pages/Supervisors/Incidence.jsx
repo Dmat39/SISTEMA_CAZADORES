@@ -4,20 +4,25 @@ import Icon from '@mdi/react';
 import { icons } from '../../plugins/IconLibrary.js';
 import Loading from '../../components/Loading.jsx';
 import { createIncidenceApi, deleteIncidenceApi, getAllIncidenceComunicationApi, getAllIncidencesApi, getAllIncidenceZonesApi, updateIncidenceApi } from '../../api/operador/incidenceApi.jsx';
-import TableForm from '../../components/TableForm.jsx';
+import CustomTable from '../../components/CustomTable.jsx';
 import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation.jsx';
 import UpdateFormIncidence from '../../components/Supervisors/UpdateFormIncidence.jsx';
 import { getAllOperatorApi } from '../../api/supervisor/OperatorService.jsx';
 import AssignedOperators from '../../components/Supervisors/AssignedOperators.jsx';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Autocomplete, TextField } from '@mui/material';
 import CreateFormIncidence from "../../components/Operador/CreateFormIncidence";
 import { useSelector } from 'react-redux';
+import FilterCrimer from '../../components/Supervisors/FilterCrimer.jsx';
+import DateFilter from '../../components/Supervisors/DateFilter.jsx';
 
 const Incidence = () => {
     const { role } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const [incidents, setIncidents] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
     const [operators, setOperators] = useState([]);
     const [zones, setZones] = useState([]);
     const [communications, setCommunications] = useState([]);
@@ -25,9 +30,7 @@ const Incidence = () => {
     const [selectedIncidenceName, setSelectedIncidenceName] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [showForm, setShowForm] = useState(false);
-    const [selectedIncidence, setSelectedIncidence] = useState(null);
-    const [localPage, setLocalPage] = useState(1);
-    const navigate = useNavigate();
+    
     const rowsPerPage = 10;
 
     const fetched = useRef(false);
@@ -36,31 +39,17 @@ const Incidence = () => {
     const [showUpdate, setShowUpdate] = useState(false);
     const [showAssignedOperators, setShowAssignedOperators] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const isFiltering = selectedIncidence || inputValue.trim();
+
+    // Obtener parámetros de URL para paginación
+    const searchParams = new URLSearchParams(location.search);
+    const currentPage = parseInt(searchParams.get('page')) || 1;
+    const limit = parseInt(searchParams.get('limit')) || rowsPerPage;
+    const crimeIds = searchParams.getAll('crimeIds') || []; // Obtener array de crimeIds
+    const selectedDate = searchParams.get('date') || ''; // Obtener fecha seleccionada
 
     const openModalEdit = (payload) => {
         setDataEdit(payload);
         setShowUpdate(true);
-    };
-
-    const filteredIncidents = selectedIncidence
-        ? [selectedIncidence]
-        : inputValue.trim()
-        ? incidents.filter((inc) =>
-            inc.name?.toLowerCase().includes(inputValue.toLowerCase()) ||
-                inc.code?.toLowerCase().includes(inputValue.toLowerCase())
-            )
-            : incidents;
-    const paginatedFilteredIncidents = filteredIncidents.slice(
-        (localPage - 1) * rowsPerPage,
-        localPage * rowsPerPage
-    );
-
-    const localPagination = {
-        total: filteredIncidents.length,
-        perPage: rowsPerPage,
-        page: localPage,
-        totalPages: Math.ceil(filteredIncidents.length / rowsPerPage) || 1,
     };
 
     const fetchZones = async () => {
@@ -84,9 +73,24 @@ const Incidence = () => {
     const fetchIncidents = async () => {
         try {
             setIsLoading(true);
-            const response = await getAllIncidencesApi();
-            setIncidents(response.data);
+            const params = {
+                page: currentPage,
+                limit: limit,
+                // Agregar búsqueda si hay input
+                ...(inputValue.trim() && { search: inputValue.trim() }),
+                // Agregar filtro de crímenes si están seleccionados
+                ...(crimeIds.length > 0 && { crimeIds: crimeIds }),
+                // Agregar filtro de fecha si está seleccionada
+                ...(selectedDate && { date: selectedDate })
+            };
+            
+            const response = await getAllIncidencesApi(params);
+            // La respuesta tiene estructura: { data: { data: [...], totalCount: ..., totalPages: ... } }
+            const incidentsData = response.data.data || [];
+            setIncidents(incidentsData);
+            setTotalCount(response.data.totalCount || 0);
         } catch (error) {
+            console.error('Error fetching incidents:', error);
             toast.error(`Error al obtener las incidencias: ${error.message}`);
         } finally {
             setIsLoading(false);
@@ -111,15 +115,35 @@ const Incidence = () => {
     useEffect(() => {
         if (fetched.current) return;
         fetched.current = true;
-        fetchIncidents();
+        // Solo cargar datos auxiliares en el primer mount
+        // fetchIncidents se maneja en los otros useEffect
         fetchOperators();
         fetchZones();
         fetchCommunications();
     }, []);
 
+    // Función para manejar cambio de página/límite
+    const handlePageLimitChange = (newPage, newLimit) => {
+        const searchParams = new URLSearchParams(location.search);
+        
+        if (newLimit !== limit) {
+            searchParams.set('limit', newLimit.toString());
+            searchParams.set('page', '1'); // Reset a página 1 cuando cambia el límite
+        } else {
+            searchParams.set('page', newPage.toString());
+        }
+        
+        navigate({ search: searchParams.toString() });
+    };
+
+    // Ejecutar fetchIncidents cuando cambien las dependencias
     useEffect(() => {
-        setLocalPage(1);
-    }, [inputValue, selectedIncidence]);
+        const timer = setTimeout(() => {
+            fetchIncidents();
+        }, inputValue ? 500 : 0); // Debounce solo si hay búsqueda
+
+        return () => clearTimeout(timer);
+    }, [currentPage, limit, inputValue, JSON.stringify(crimeIds), selectedDate]); // Agregar selectedDate como dependencia
     
     const handleCreateIncidencia = async (payload) => {
         try {
@@ -161,50 +185,39 @@ const Incidence = () => {
                         <h2 className="text-2xl font-bold">Incidencias</h2>
                         <p className="text-gray-600">Gestiona y organiza todas tus incidencias</p>
                     </div>
-                    <div className='flex flex-col md:flex-row items-center w-full max-w-[30rem]'>
-                        <div className="mt-2 md:mt-0 w-full">
-                            <Autocomplete
-                                freeSolo
-                                options={incidents}
-                                value={null}
-                                inputValue={inputValue}
-                                onInputChange={(event, newInputValue) => {
-                                    setInputValue(newInputValue);
-                                    if (newInputValue === '') {
-                                    setSelectedIncidence(null);
-                                    }
-                                }}
-                                onChange={(event, newValue) => {
-                                    if (typeof newValue === 'string') {
-                                    setInputValue(newValue);
-                                    setSelectedIncidence(null);
-                                    } else if (newValue) {
-                                    const label = newValue.code ? `${newValue.code} - ${newValue.name}` : newValue.name;
-                                    setInputValue(label);
-                                    setSelectedIncidence(newValue);
-                                    } else {
-                                    setInputValue('');
-                                    setSelectedIncidence(null);
-                                    }
-                                }}
-                                getOptionLabel={(option) =>
-                                    option?.code ? `${option.code} - ${option.name}` : option?.name || ""
-                                }
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                sx={{ width: '100%' }}
-                                renderInput={(params) => (
-                                    <TextField {...params} label="Buscar incidencia" size="small" />
-                                )}
+                    <div className='flex flex-col md:flex-row items-center w-full max-w-[60rem] gap-2'>
+                        {/* Filtro de fecha */}
+                        <DateFilter />
+                        
+                        {/* Filtro de crímenes */}
+                        <FilterCrimer />
+                        
+                        {/* Campo de búsqueda */}
+                        <div className="mt-2 md:mt-0 w-full min-w-[280px]">
+                            <div className='relative w-full'>
+                                <Icon
+                                    path={icons.searchIcon}
+                                    size={0.8}
+                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10'
                                 />
-
+                                <input
+                                    type="text"
+                                    placeholder="Buscar incidencia..."
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    className="w-full h-10 pl-3 pr-4 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                />
+                            </div>
                         </div>
+                        
+                        {/* Botón agregar */}
                         <button
-                        onClick={() => setShowForm(true)}
-                        className="mt-2 md:mt-0 ml-0 md:ml-2 cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
-                        type="button"
+                            onClick={() => setShowForm(true)}
+                            className="mt-2 md:mt-0 ml-0 md:ml-2 cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                            type="button"
                         >
-                        <Icon path={icons.add} size={1} />
-                        Agregar Incidencias
+                            <Icon path={icons.add} size={1} />
+                            Agregar
                         </button>
                     </div>
                 </div>
@@ -213,8 +226,9 @@ const Incidence = () => {
                     <Loading message= "Cargando Incidencias"/>
                 ) : 
                     incidents?.length > 0 ?(
-                        <TableForm
-                            data={{ data: paginatedFilteredIncidents, pagination: localPagination }}
+                        <CustomTable
+                            data={incidents}
+                            loading={isLoading}
                             columns={[
                                 { label: 'Cod.', key: 'code'},
                                 { label: 'Nombre', key: 'name' },
@@ -266,7 +280,6 @@ const Incidence = () => {
                                         );
                                     }
                                 },
-
                                 { label: 'Observación', key: 'observation' },
                                 {
                                     label: 'Creado por',
@@ -297,24 +310,27 @@ const Incidence = () => {
                                         setSelectedIncidenceName(incidence.name);
                                         setShowAssignedOperators(true);
                                     },
-                                    icon: icons.mdiAccountGroup,
+                                    icon: <Icon path={icons.mdiAccountGroup} size={0.8} />,
                                     className: 'text-black-600 hover:text-black-800',
                                 },
                                 {
                                     title: 'Editar',
                                     onClick: openModalEdit,
-                                    icon: icons.edit,
+                                    icon: <Icon path={icons.edit} size={0.8} />,
                                     className: 'text-blue-600 hover:text-blue-800',
                                 },
                                 {
                                     title: 'Eliminar',
                                     onClick: (op) => confirmDelete(op, (p) => `${p.code}: ${p.name}`),
-                                    icon: icons.delete,
+                                    icon: <Icon path={icons.delete} size={0.8} />,
                                     className: 'text-red-600 hover:text-red-800',
                                 },
                             ]}
-                            onPageChange={(newPage) => setLocalPage(newPage)}
-                            onRowClick={(item) => {
+                            count={totalCount}
+                            page={currentPage}
+                            limit={limit}
+                            handlePageLimitChange={handlePageLimitChange}
+                            rowOnClick={(item) => {
                                 localStorage.setItem("last_created_incidence_id", item.id);
                                 if (role === 'admin') {
                                     navigate("/dashboard/admin/incidencia/detalle");
@@ -322,7 +338,6 @@ const Incidence = () => {
                                     navigate("/dashboard/supervisors/incidencia/detalle");
                                 }
                             }}
-
                         />
                     ) : (
                         <div>

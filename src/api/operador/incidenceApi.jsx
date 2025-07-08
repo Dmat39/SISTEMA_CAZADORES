@@ -23,9 +23,27 @@ export const createIncidenceApi = async (incidenceData) => {
 }
 
 // Función para obtener todas las incidencias
-export const getAllIncidencesApi = async () => {
+export const getAllIncidencesApi = async (params = {}) => {
   try {
-    const response = await mainApi.get('/incidence/all');
+    // Construir query string con los parámetros
+    const queryParams = new URLSearchParams();
+    
+    if (params.page) queryParams.append('page', params.page);
+    if (params.limit) queryParams.append('limit', params.limit);
+    if (params.date) queryParams.append('date', params.date);
+    if (params.search) queryParams.append('search', params.search);
+    
+    // Manejar múltiples crimeIds
+    if (params.crimeIds && Array.isArray(params.crimeIds)) {
+      params.crimeIds.forEach(crimeId => {
+        queryParams.append('crimeIds', crimeId);
+      });
+    }
+    
+    const queryString = queryParams.toString();
+    const url = queryString ? `/incidence/all?${queryString}` : '/incidence/all';
+    
+    const response = await mainApi.get(url);
     return response.data;
   } catch (error) {
     console.log("Error fetching incidences:", error);
