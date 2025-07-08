@@ -1,5 +1,5 @@
 // src/Router.jsx
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // LAYOUTS
 import DashboardLayoutAdmin from "../layouts/DashboardLayoutAdmin";
@@ -29,43 +29,64 @@ import IncidenciaDetalleSupervisor from "../pages/Supervisors/Detalle"
 
 import PrivateRoute from "../routes/PrivateRoute";
 import Incidence from "../pages/Supervisors/Incidence";
+import PublicRouter from "./PublicRoute";
 
 export default function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rutas Publicas */}
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/login" element={<LoginPage />} />
+
+        {/* Rutas Públicas */}
+        <Route path="/login" element={<PublicRouter element={<LoginPage />} />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        <Route path="/" element={<Navigate to="/login" />} />
 
-        {/* Rutas Protegidas - Admin */}
-        <Route element={<DashboardLayoutAdmin />}>
-          <Route path="/dashboard/admin" element={<PrivateRoute requiredRole="admin">  <DashboardAdmin /></PrivateRoute>} />
-          <Route path="/dashboard/admin/supervisor" element={<PrivateRoute requiredRole="admin"><SupervisorsAdmin /></PrivateRoute>} />
-          <Route path="/dashboard/admin/operadores" element={<PrivateRoute requiredRole="admin"><OperatorsAdmin /></PrivateRoute>} />
-          <Route path="/dashboard/admin/incidencia" element={<PrivateRoute requiredRole="admin"><Incidence /></PrivateRoute>} />
-          <Route path="/dashboard/admin/incidencia/detalle" element={<PrivateRoute requiredRole="admin"><IncidenciaDetalle /></PrivateRoute>} />
+        {/* Rutas protegidas - ADMIN */}
+        <Route
+          path="/dashboard/admin"
+          element={
+            <PrivateRoute requiredRole="admin">
+              <DashboardLayoutAdmin />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<DashboardAdmin />} />
+          <Route path="supervisor" element={<SupervisorsAdmin />} />
+          <Route path="operadores" element={<OperatorsAdmin />} />
+          <Route path="incidencia" element={<Incidence />} />
+          <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
         </Route>
 
-        {/* Rutas Protegidas - Supervisor */}
-        <Route element={<DashboardLayoutSupervisor />}>
-          {/* <Route path="/dashboard/supervisors" element={<PrivateRoute requiredRole="supervisor"><DashboardSupervisor /></PrivateRoute>} /> */}
-          <Route path="/dashboard/supervisors/operadores" element={<PrivateRoute requiredRole="supervisor"><OperatorsAdmin /></PrivateRoute>} />
-          <Route path="/dashboard/supervisors/incidencia" element={<PrivateRoute requiredRole="supervisor"> <Incidence /></PrivateRoute>} />
-          <Route path="/dashboard/supervisors/incidencia/detalle" element={<PrivateRoute requiredRole="supervisor"><IncidenciaDetalle /></PrivateRoute>} />
-          <Route path="/dashboard/supervisors/incidencia/configuracion" element={<PrivateRoute requiredRole="supervisor"><SupervisorProfile /></PrivateRoute>} />
+        {/* Rutas protegidas - SUPERVISOR */}
+        <Route
+          path="/dashboard/supervisors"
+          element={
+            <PrivateRoute requiredRole="supervisor">
+              <DashboardLayoutSupervisor />
+            </PrivateRoute>
+          }
+        >
+          <Route path="operadores" element={<OperatorsAdmin />} />
+          <Route path="incidencia" element={<Incidence />} />
+          <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
+          <Route path="incidencia/configuracion" element={<SupervisorProfile />} />
         </Route>
 
-        {/* Rutas Protegidas - Operador */}
-        <Route element={<DashboardLayoutOperador />}>
-          {/* <Route path="/dashboard/operador" element={<PrivateRoute requiredRole="operator"><DashboardOperador /></PrivateRoute>} /> */}
-          <Route path="/dashboard/operador/incidencia" element={<PrivateRoute requiredRole="operator"><IncidenciaOperador /></PrivateRoute>} />
-          <Route path="/dashboard/operador/incidencia/detalle" element={<PrivateRoute requiredRole="operator"><IncidenciaDetalle /></PrivateRoute>} />
-          <Route path="/dashboard/operador/incidencia/configuracion" element={<PrivateRoute requiredRole="operator"><ConfigurationProfile /></PrivateRoute>} />
+        {/* Rutas protegidas - OPERADOR */}
+        <Route
+          path="/dashboard/operador"
+          element={
+            <PrivateRoute requiredRole="operator">
+              <DashboardLayoutOperador />
+            </PrivateRoute>
+          }
+        >
+          <Route path="incidencia" element={<IncidenciaOperador />} />
+          <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
+          <Route path="incidencia/configuracion" element={<ConfigurationProfile />} />
         </Route>
 
-        {/* Página 404 personalizada */}
+        {/* Página 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

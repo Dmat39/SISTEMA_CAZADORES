@@ -1,31 +1,14 @@
 import { useNavigate, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import useLogin  from "../hooks/Login/useLogin";
+import useLogin from "../hooks/Login/useLogin";
 import LoginForm from "../components/Login/LoginForm";
 
 const LoginPage = () => {
   const { handleLogin, loading, error } = useLogin();
   const navigate = useNavigate();
-  const authorized = useSelector((state) => state.auth?.authorized);
-
-  if (authorized) return <Navigate to="/dashboard" />;
 
   const onSubmit = async (credentials) => {
-    const result = await handleLogin(credentials);
-    if (result.success) {
-      const redirectPath = 
-        result.role === "admin"
-        ? "/dashboard/admin" 
-        : result.role === "supervisor"
-        // ? "/dashboard/supervisors"
-        ? "/dashboard/supervisors/operadores"
-        // : "/dashboard/operador";
-        : "/dashboard/operador/incidencia";
-        navigate(redirectPath);
-        console.log('Redirigiendo a:', redirectPath); // Depuración
-    } else {
-      console.log('Login falló, no se redirige:', error);
-    }
+    await handleLogin(credentials);
   };
 
   return (
