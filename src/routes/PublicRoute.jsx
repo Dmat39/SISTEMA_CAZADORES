@@ -9,7 +9,7 @@ const PublicRouter = ({ element }) => {
   const getRedirectPath = () => {
     switch (role) {
       case 'admin':
-        return '/dashboard/admin';
+        return '/dashboard/admin/incidencia';
       case 'supervisor':
         return '/dashboard/supervisors/incidencia';
       case 'operador':

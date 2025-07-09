@@ -105,13 +105,13 @@ const CustomTable = ({
     };
 
     return (
-        <div className='w-full relative'>
+        <div className='w-full relative flex-1 flex flex-col min-h-0'>
             <div className={`flex justify-center items-center bg-white/80 z-20 h-full w-full py-3 absolute
                 transition-opacity duration-300 ease-in-out ${loading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <CircularProgress size={30} thickness={5} className='!text-[#4052af]' />
             </div>
 
-            <div className='w-full py-3 overflow-auto'>
+            <div className='w-full flex-1 flex flex-col min-h-0 py-3'>
                 <div className='flex justify-center items-center mb-1'>
                     <CustomTablePagination 
                         count={count} 
@@ -120,7 +120,8 @@ const CustomTable = ({
                         handlePageLimitChange={handlePageLimitChange}
                     />
                 </div>
-                <Table size='small' className='text-nowrap'>
+                <div className='flex-1 overflow-auto min-h-0'>
+                    <Table size='small' className='text-nowrap'>
                     <TableHead className='sticky top-0 z-10 bg-neutral-200'>
                         <TableRow>
                             <TableCell
@@ -267,6 +268,7 @@ const CustomTable = ({
                         <span className='text-xs text-gray-500 italic'>{noDataText}</span>
                     </div>
                 )}
+                </div>
                 <div className='flex justify-center items-center mt-1'>
                     <CustomTablePagination 
                         count={count} 

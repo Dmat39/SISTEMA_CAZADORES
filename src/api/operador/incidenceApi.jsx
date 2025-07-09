@@ -33,6 +33,10 @@ export const getAllIncidencesApi = async (params = {}) => {
     if (params.date) queryParams.append('date', params.date);
     if (params.search) queryParams.append('search', params.search);
     
+    // Manejar parámetros de rango de fechas
+    if (params.start) queryParams.append('start', params.start);
+    if (params.end) queryParams.append('end', params.end);
+    
     // Manejar múltiples crimeIds
     if (params.crimeIds && Array.isArray(params.crimeIds)) {
       params.crimeIds.forEach(crimeId => {

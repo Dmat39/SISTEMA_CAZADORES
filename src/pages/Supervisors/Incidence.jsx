@@ -15,6 +15,7 @@ import CreateFormIncidence from "../../components/Operador/CreateFormIncidence";
 import { useSelector } from 'react-redux';
 import FilterCrimer from '../../components/Supervisors/FilterCrimer.jsx';
 import DateFilter from '../../components/Supervisors/DateFilter.jsx';
+import DateRangeFilter from '../../components/Supervisors/DateRangeFilter.jsx';
 
 const Incidence = () => {
     const { role } = useSelector((state) => state.auth);
@@ -46,6 +47,8 @@ const Incidence = () => {
     const limit = parseInt(searchParams.get('limit')) || rowsPerPage;
     const crimeIds = searchParams.getAll('crimeIds') || []; // Obtener array de crimeIds
     const selectedDate = searchParams.get('date') || ''; // Obtener fecha seleccionada
+    const startDate = searchParams.get('start') || ''; // Obtener fecha de inicio del rango
+    const endDate = searchParams.get('end') || ''; // Obtener fecha de fin del rango
 
     const openModalEdit = (payload) => {
         setDataEdit(payload);
@@ -81,7 +84,10 @@ const Incidence = () => {
                 // Agregar filtro de crímenes si están seleccionados
                 ...(crimeIds.length > 0 && { crimeIds: crimeIds }),
                 // Agregar filtro de fecha si está seleccionada
-                ...(selectedDate && { date: selectedDate })
+                ...(selectedDate && { date: selectedDate }),
+                // Agregar filtro de rango de fechas si están seleccionadas
+                ...(startDate && { start: startDate }),
+                ...(endDate && { end: endDate })
             };
             
             const response = await getAllIncidencesApi(params);
@@ -143,7 +149,7 @@ const Incidence = () => {
         }, inputValue ? 500 : 0); // Debounce solo si hay búsqueda
 
         return () => clearTimeout(timer);
-    }, [currentPage, limit, inputValue, JSON.stringify(crimeIds), selectedDate]); // Agregar selectedDate como dependencia
+    }, [currentPage, limit, inputValue, JSON.stringify(crimeIds), selectedDate, startDate, endDate]); // Agregar startDate y endDate como dependencias
     
     const handleCreateIncidencia = async (payload) => {
         try {
@@ -178,22 +184,25 @@ const Incidence = () => {
     }
     
     return (
-        <div className="m-4">
-            <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="m-4 h-[calc(100vh-2rem)] flex flex-col">
+            <div className="bg-white rounded-xl shadow-md p-6 flex-1 flex flex-col">
                 <div className="flex flex-col md:flex-row items-center justify-between mb-6">
                     <div className="block">
                         <h2 className="text-2xl font-bold">Incidencias</h2>
                         <p className="text-gray-600">Gestiona y organiza todas tus incidencias</p>
                     </div>
-                    <div className='flex flex-col md:flex-row items-center w-full max-w-[60rem] gap-2'>
+                    <div className='flex flex-col md:flex-row items-center w-full max-w-[90rem] gap-2'>
+                        {/* Filtro de rango de fechas */}
+                        <DateRangeFilter />
+                        
                         {/* Filtro de fecha */}
-                        <DateFilter />
+                        {/* <DateFilter /> */}
                         
                         {/* Filtro de crímenes */}
                         <FilterCrimer />
                         
                         {/* Campo de búsqueda */}
-                        <div className="mt-2 md:mt-0 w-full min-w-[280px]">
+                        <div className="mt-2 md:mt-0 w-full min-w-[100px]">
                             <div className='relative w-full'>
                                 <Icon
                                     path={icons.searchIcon}
@@ -205,7 +214,7 @@ const Incidence = () => {
                                     placeholder="Buscar incidencia..."
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
-                                    className="w-full h-10 pl-3 pr-4 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    className="w-full h-10 pl-3 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -222,11 +231,12 @@ const Incidence = () => {
                     </div>
                 </div>
                 <hr className='border-gray-200' />
-                {isLoading ? (
-                    <Loading message= "Cargando Incidencias"/>
-                ) : 
-                    incidents?.length > 0 ?(
-                        <CustomTable
+                <div className="flex-1 flex flex-col min-h-0">
+                    {isLoading ? (
+                        <Loading message= "Cargando Incidencias"/>
+                    ) : 
+                        incidents?.length > 0 ?(
+                            <CustomTable
                             data={incidents}
                             loading={isLoading}
                             columns={[
@@ -236,8 +246,8 @@ const Incidence = () => {
                                 { label: 'Descripción', key: 'description' },
                                 { label: 'Zona', key: 'zone', render: (value) => value.zone?.name ?? '—'},
                                 { label: 'Medio', key: 'comunication', render: (value) => value.comunication?.name ?? '—'},
-                                { label: 'Fecha incidente', key: 'date', render: (value) =>{return new Date(value.date).toISOString().split('T')[0] }},
-                                { label: 'Hora incidente', key: 'date', 
+                                { label: 'Fecha incidente', key: 'incidentDate', render: (value) =>{return new Date(value.date).toISOString().split('T')[0] }},
+                                { label: 'Hora incidente', key: 'incidentTime', 
                                       render: (value) => {
                                         const date = new Date(value.date);
                                         const hours = date.getHours();
@@ -355,6 +365,7 @@ const Incidence = () => {
                         </div>
                     )
                 }
+                </div>
             </div>
 
             <CreateFormIncidence
