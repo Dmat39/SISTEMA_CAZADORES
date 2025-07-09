@@ -121,11 +121,15 @@ const CustomTable = ({
                     />
                 </div>
                 <div className='flex-1 overflow-auto min-h-0'>
-                    <Table size='small' className='text-nowrap'>
+                    <Table size='small' className='text-nowrap min-w-[800px]'>
                     <TableHead className='sticky top-0 z-10 bg-neutral-200'>
                         <TableRow>
                             <TableCell
-                                sx={{ fontWeight: 600 }}
+                                sx={{ 
+                                    fontWeight: 600,
+                                    minWidth: '60px',
+                                    padding: { xs: '8px 4px', sm: '16px' }
+                                }}
                                 align={'left'}
                             >
                                 <span
@@ -141,7 +145,11 @@ const CustomTable = ({
                             {headers.map((column) => (
                                 <TableCell
                                     key={column.key}
-                                    sx={{ fontWeight: 600 }}
+                                    sx={{ 
+                                        fontWeight: 600,
+                                        padding: { xs: '8px 4px', sm: '16px' },
+                                        minWidth: '100px'
+                                    }}
                                     align={'left'}
                                 >
                                     <TableSortLabel
@@ -160,7 +168,16 @@ const CustomTable = ({
                                 </TableCell>
                             ))}
                             {(actions.length > 0 || typeof onEdit === 'function' || typeof onDelete === 'function') && (
-                                <TableCell sx={{ fontWeight: 600 }} align={'center'}>Acciones</TableCell>
+                                <TableCell 
+                                    sx={{ 
+                                        fontWeight: 600, 
+                                        padding: { xs: '8px 4px', sm: '16px' },
+                                        minWidth: '120px'
+                                    }} 
+                                    align={'center'}
+                                >
+                                    Acciones
+                                </TableCell>
                             )}
                         </TableRow>
                     </TableHead>
@@ -173,7 +190,14 @@ const CustomTable = ({
                                     key={row.id || row.dni || row.codigo}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
-                                    <TableCell>{row.index}</TableCell>
+                                    <TableCell 
+                                        sx={{ 
+                                            padding: { xs: '8px 4px', sm: '16px' },
+                                            fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                                        }}
+                                    >
+                                        {row.index}
+                                    </TableCell>
                                     {headers.map((column) => {
                                         const cellValue = getCellValue(row, column);
                                         
@@ -181,7 +205,11 @@ const CustomTable = ({
                                             <TableCell
                                                 key={column.key}
                                                 align={'left'}
-                                                className='!text-xs text-wrap'
+                                                sx={{ 
+                                                    padding: { xs: '8px 4px', sm: '16px' },
+                                                    fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                                                }}
+                                                className='text-wrap'
                                             >
                                                 {/* Verificar si el valor es un arreglo */}
                                                 {Array.isArray(cellValue) ? (
@@ -207,8 +235,13 @@ const CustomTable = ({
                                         );
                                     })}
                                     {(actions.length > 0 || typeof onEdit === 'function' || typeof onDelete === 'function') && (
-                                        <TableCell align="center">
-                                            <div className="flex justify-center space-x-2">
+                                        <TableCell 
+                                            align="center"
+                                            sx={{ 
+                                                padding: { xs: '8px 4px', sm: '16px' }
+                                            }}
+                                        >
+                                            <div className="flex justify-center space-x-1 sm:space-x-2">
                                                 {/* Acciones personalizadas */}
                                                 {actions.map((action, actIdx) => (
                                                     <Tooltip key={actIdx} title={action.title} arrow>
@@ -264,8 +297,8 @@ const CustomTable = ({
                     )}
                 </Table>
                 {sortedData.length === 0 && (
-                    <div className='flex justify-center py-2 sticky left-0'>
-                        <span className='text-xs text-gray-500 italic'>{noDataText}</span>
+                    <div className='flex justify-center py-8 sticky left-0'>
+                        <span className='text-xs sm:text-sm text-gray-500 italic text-center px-4'>{noDataText}</span>
                     </div>
                 )}
                 </div>

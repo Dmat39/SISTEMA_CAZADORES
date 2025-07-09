@@ -14,20 +14,48 @@ const CustomTablePagination = ({ count, page, limit, handlePageLimitChange }) =>
     };
 
     return (
-        <Box display="flex" justifyContent="space-between" alignItems="center" gap={2} sx={{ minWidth: 300, width: '100%',marginY: 1 }}>
+        <Box 
+            sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', md: 'row' },
+                justifyContent: { md: 'space-between' },
+                alignItems: { xs: 'stretch', md: 'center' },
+                gap: { xs: 2, md: 2 },
+                width: '100%',
+                marginY: 1
+            }}
+        >
             {/* Lado izquierdo: Información de resultados + selector de filas */}
-            <Box display="flex" alignItems="center" gap={2}>
-                <Typography variant="body2" color="text.secondary">
-                    Mostrando {Math.min((page - 1) * limit + 1, count)} - {Math.min(page * limit, count)} de {count} resultados
+            <Box 
+                display="flex" 
+                flexDirection={{ xs: 'column', sm: 'row' }}
+                alignItems={{ xs: 'stretch', sm: 'center' }}
+                gap={{ xs: 1, sm: 2 }}
+                sx={{ flex: { md: 1 } }}
+            >
+                <Typography 
+                    variant="body2" 
+                    color="text.secondary"
+                    sx={{ 
+                        fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                        textAlign: { xs: 'center', sm: 'left' },
+                        whiteSpace: { xs: 'normal', sm: 'nowrap' }
+                    }}
+                >
+                    <Box component="span" sx={{ display: { xs: 'block', sm: 'inline' } }}>
+                        Mostrando {Math.min((page - 1) * limit + 1, count)} - {Math.min(page * limit, count)}
+                    </Box>
+                    <Box component="span" sx={{ display: { xs: 'block', sm: 'inline' } }}>
+                        {' '}de {count} resultados
+                    </Box>
                 </Typography>
                 
-                <FormControl size="small" variant="outlined">
+                <FormControl size="small" variant="outlined" sx={{ minWidth: { xs: '100%', sm: 80 } }}>
                     <InputLabel>Filas</InputLabel>
                     <Select
                         value={limit}
                         onChange={handleLimitChange}
                         label="Filas"
-                        sx={{ minWidth: 80 }}
                     >
                         <MenuItem value={5} disabled={count <= 5}>5</MenuItem>
                         <MenuItem value={10} disabled={count <= 10}>10</MenuItem>
@@ -39,7 +67,13 @@ const CustomTablePagination = ({ count, page, limit, handlePageLimitChange }) =>
             </Box>
 
             {/* Lado derecho: Paginación */}
-            <Box>
+            <Box 
+                sx={{ 
+                    display: 'flex',
+                    justifyContent: { xs: 'center', md: 'flex-end' },
+                    mt: { xs: 1, md: 0 }
+                }}
+            >
                 <Pagination
                     count={totalPages}
                     page={page}
@@ -47,8 +81,15 @@ const CustomTablePagination = ({ count, page, limit, handlePageLimitChange }) =>
                     variant="outlined"
                     shape="rounded"
                     size="small"
-                    showFirstButton
-                    showLastButton
+                    showFirstButton={totalPages > 3}
+                    showLastButton={totalPages > 3}
+                    siblingCount={0}
+                    boundaryCount={1}
+                    sx={{
+                        '& .MuiPagination-ul': {
+                            flexWrap: 'nowrap'
+                        }
+                    }}
                 />
             </Box>
         </Box>

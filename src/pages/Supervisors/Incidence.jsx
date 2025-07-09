@@ -184,14 +184,14 @@ const Incidence = () => {
     }
     
     return (
-        <div className="m-4 h-[calc(100vh-2rem)] flex flex-col">
-            <div className="bg-white rounded-xl shadow-md p-6 flex-1 flex flex-col">
-                <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-                    <div className="block">
-                        <h2 className="text-2xl font-bold">Incidencias</h2>
-                        <p className="text-gray-600">Gestiona y organiza todas tus incidencias</p>
+        <div className="m-2 sm:m-4 h-[calc(100vh-1rem)] sm:h-[calc(100vh-2rem)] flex flex-col">
+            <div className="bg-white rounded-xl shadow-md p-3 sm:p-6 flex-1 flex flex-col">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 sm:mb-6">
+                    <div className="block mb-4 lg:mb-0">
+                        <h2 className="text-xl sm:text-2xl font-bold">Incidencias</h2>
+                        <p className="text-sm sm:text-base text-gray-600">Gestiona y organiza todas tus incidencias</p>
                     </div>
-                    <div className='flex flex-col md:flex-row items-center w-full max-w-[90rem] gap-2'>
+                    <div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-end w-full lg:max-w-[60rem] xl:max-w-[70rem] gap-2 mt-2 sm:mt-0'>
                         {/* Filtro de rango de fechas */}
                         <DateRangeFilter />
                         
@@ -202,7 +202,7 @@ const Incidence = () => {
                         <FilterCrimer />
                         
                         {/* Campo de búsqueda */}
-                        <div className="mt-2 md:mt-0 w-full min-w-[100px]">
+                        <div className="w-full sm:flex-1 sm:min-w-[200px] lg:max-w-[300px]">
                             <div className='relative w-full'>
                                 <Icon
                                     path={icons.searchIcon}
@@ -214,7 +214,7 @@ const Incidence = () => {
                                     placeholder="Buscar incidencia..."
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
-                                    className="w-full h-10 pl-3 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    className="w-full h-10 pl-10 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -222,11 +222,11 @@ const Incidence = () => {
                         {/* Botón agregar */}
                         <button
                             onClick={() => setShowForm(true)}
-                            className="mt-2 md:mt-0 ml-0 md:ml-2 cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                            className="w-full sm:w-auto cursor-pointer flex flex-row items-center justify-center text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out whitespace-nowrap"
                             type="button"
                         >
-                            <Icon path={icons.add} size={1} />
-                            Agregar
+                            <span className="block sm:hidden">Agregar Incidencias</span>
+                            <span className="hidden sm:block">Agregar</span>
                         </button>
                     </div>
                 </div>
@@ -350,17 +350,21 @@ const Incidence = () => {
                             }}
                         />
                     ) : (
-                        <div>
-                            <div className="flex flex-col items-center justify-center max-w-4xl mx-auto h-150">
-                                <div className="flex flex-col items-center justify-center">
-                                    <Icon path={icons.mdiNoteAlertOutline} size={2} />
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                        No hay incidencias registradas
-                                    </h3>
-                                    <p className="text-gray-500 mb-6">
-                                        Aún no se han reportado incidencias por parte de los operadores
-                                    </p>
-                                </div>
+                        <div className="flex-1 flex items-center justify-center">
+                            <div className="flex flex-col items-center justify-center text-center px-4 py-8">
+                                <Icon path={icons.mdiNoteAlertOutline} size={2} className="mb-4 text-gray-400" />
+                                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                                    No hay incidencias registradas
+                                </h3>
+                                <p className="text-sm sm:text-base text-gray-500 mb-6 max-w-md">
+                                    Aún no se han reportado incidencias por parte de los operadores
+                                </p>
+                                <button
+                                    onClick={() => setShowForm(true)}
+                                    className="inline-flex items-center px-4 py-2 bg-gray-900 hover:bg-[#32A3B5] text-white rounded-lg text-sm font-medium transition-colors duration-200"
+                                >
+                                    Crear primera incidencia
+                                </button>
                             </div>
                         </div>
                     )
