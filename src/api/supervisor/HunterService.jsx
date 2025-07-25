@@ -1,7 +1,7 @@
 import config from "../config";
 
 // Función para obtener todos los cazadores
-export const getAllHuntersApi = async (page = 1, limit = 10) => {
+export const getAllHuntersApi = async (page = 0, limit = 50) => {
   try {
     const response = await config.get('/hunter/all', {
       params: { page, limit }

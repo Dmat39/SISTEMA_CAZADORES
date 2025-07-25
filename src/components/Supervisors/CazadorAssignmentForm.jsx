@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Autocomplete, TextField } from '@mui/material';
 
 const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) => {
   const [form, setForm] = useState({ 
     userId: '',
     userType: 'hunter'
   });
+  const [selectedCazador, setSelectedCazador] = useState(null);
+  const [inputValue, setInputValue] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,12 +17,12 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.userId || !incidenceId) {
+    if (!selectedCazador || !incidenceId) {
         toast.error('Debes seleccionar un cazador');
         return;
     }
     onSubmit?.({ 
-      userId: form.userId, 
+      userId: selectedCazador.user.id, 
       incidenceId,
       userType: form.userType 
     });
@@ -27,6 +30,8 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
       userId: '',
       userType: 'hunter'
     });
+    setSelectedCazador(null);
+    setInputValue('');
   };
 
   const handleCancel = () => {
@@ -34,6 +39,8 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
       userId: '',
       userType: 'hunter'
     });
+    setSelectedCazador(null);
+    setInputValue('');
     onClose();
   };
 
@@ -41,20 +48,45 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
     <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
       <h3 className="text-md font-semibold mb-4">Asignar nuevo cazador</h3>
       <form onSubmit={handleSubmit} >
-        <div className="mb-4 justify-items-center">
-          <select
-            name="userId"
-            value={form.userId}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          >
-            <option value="" disabled hidden>Selecciona un cazador</option>
-            {cazadores.map((cazador) => (
-                <option key={cazador.user.id} value={cazador.user.id}>
-                    {cazador.name} {cazador.lastname}
-                </option>
-            ))}
-          </select>
+        <div className="mb-4">
+          <Autocomplete
+            freeSolo
+            options={cazadores}
+            value={selectedCazador}
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue) => {
+              setInputValue(newInputValue);
+              if (newInputValue === '') {
+                setSelectedCazador(null);
+              }
+            }}
+            onChange={(event, newValue) => {
+              if (typeof newValue === 'string') {
+                setInputValue(newValue);
+                setSelectedCazador(null);
+              } else if (newValue) {
+                const label = `${newValue.name} ${newValue.lastname}`;
+                setInputValue(label);
+                setSelectedCazador(newValue);
+              } else {
+                setInputValue('');
+                setSelectedCazador(null);
+              }
+            }}
+            getOptionLabel={(option) =>
+              option?.name ? `${option.name} ${option.lastname}` : ''
+            }
+            isOptionEqualToValue={(option, value) => option?.user?.id === value?.user?.id}
+            sx={{ width: '100%' }}
+            renderInput={(params) => (
+              <TextField 
+                {...params} 
+                label="" 
+                size="small"
+                placeholder="Selecciona un cazador"
+              />
+            )}
+          />
         </div>
 
         <div className="flex justify-end gap-2">

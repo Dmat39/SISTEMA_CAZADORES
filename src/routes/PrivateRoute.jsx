@@ -6,7 +6,21 @@ const PrivateRoute = ({ children, requiredRole }) => {
   const { authorized, role } = useSelector((state) => state.auth);
 
   if (!authorized) return <Navigate to="/login" />;
-  if (requiredRole && role !== requiredRole) return <Navigate to="/unauthorized" />;
+  
+  // Función para verificar si el rol tiene acceso
+  const hasAccess = () => {
+    if (!requiredRole) return true;
+    
+    // Permitir que CAZADOR acceda a rutas de OPERATOR
+    if (requiredRole === 'operator' && (role === 'operator' || role === 'cazador')) {
+      return true;
+    }
+    
+    // Para otros roles, verificación exacta
+    return role === requiredRole;
+  };
+
+  if (!hasAccess()) return <Navigate to="/unauthorized" />;
 
   return children;
 };

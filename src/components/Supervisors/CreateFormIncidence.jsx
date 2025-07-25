@@ -108,7 +108,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
         >
           <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-300">
             <h3 className="text-2xl font-semibold text-gray-900">Nueva Incidencia</h3>
-            <Button onClick={onClose} class="text-white bg-gray-500 flex flex-row items-center justify-center hover:bg-gray-700 rounded-md w-8 h-8 cursor-pointer">
+            <Button onClick={onClose} className="text-white bg-gray-500 flex flex-row items-center justify-center hover:bg-gray-700 rounded-md w-8 h-8 cursor-pointer">
               <span className="sr-only">Cerrar</span>X
             </Button>
           </div>
@@ -204,8 +204,8 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
             {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
             <div className="flex flex-row items-center justify-end gap-3">
-              <Button onClick={onClose} variant="outlined" class="text-gray-900 cursor-pointer border border-gray-800 hover:bg-gray-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Cancelar</Button>
-              <Button type="submit" variant="contained" class="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" disabled={loading}>
+              <Button onClick={onClose} variant="outlined" className="text-gray-900 cursor-pointer border border-gray-800 hover:bg-gray-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Cancelar</Button>
+              <Button type="submit" variant="contained" className="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" disabled={loading}>
                 {loading ? "Creando..." : "Crear Incidencia"}
               </Button>
             </div>

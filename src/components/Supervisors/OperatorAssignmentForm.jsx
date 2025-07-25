@@ -1,8 +1,16 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Autocomplete, TextField } from '@mui/material';
 
 const OperatorAssignmentForm = ({ onClose, onSubmit, operators, incidenceId }) => {
-  const [form, setForm] = useState({ userId: '' });
+  const [form, setForm] = useState({ 
+    userId: '', 
+    userType: 'operator' 
+  });
+
+  const [selectedOperator, setSelectedOperator] = useState(null);
+  const [inputValue, setInputValue] = useState('');
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -11,16 +19,29 @@ const OperatorAssignmentForm = ({ onClose, onSubmit, operators, incidenceId }) =
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.userId || !incidenceId) {
+    if (!selectedOperator || !incidenceId) {
         toast.error('Debes seleccionar un operador');
         return;
     }
-    onSubmit?.({ userId: form.userId, incidenceId });
-    setForm({ userId: '' });
+    onSubmit?.({ 
+      userId: selectedOperator.user.id, 
+      incidenceId,
+      userType: form.userType 
+    });
+    setForm({ 
+      userId: '',
+      userType:'hunter' 
+    });
+    setSelectedOperator(null);
+    setInputValue('');
   };
 
   const handleCancel = () => {
-    setForm({ userId: '' });
+    setForm({ 
+      userId: '',
+      userType: 'operator' });
+    setSelectedOperator(null);
+    setInputValue('');
     onClose();
   };
 
@@ -28,20 +49,45 @@ const OperatorAssignmentForm = ({ onClose, onSubmit, operators, incidenceId }) =
     <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
       <h3 className="text-md font-semibold mb-4">Asignar nuevo operador</h3>
       <form onSubmit={handleSubmit} >
-        <div className="mb-4 justify-items-center">
-          <select
-            name="userId"
-            value={form.userId}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          >
-            <option value="" disabled hidden>Selecciona un operador</option>
-            {operators.map((op) => (
-                <option key={op.user.id} value={op.user.id}>
-                    {op.name} {op.lastname}
-                </option>
-            ))}
-          </select>
+        <div className="mb-4">
+        <Autocomplete
+            freeSolo
+            options={operators}
+            value={selectedOperator}
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue) => {
+              setInputValue(newInputValue);
+              if (newInputValue === '') {
+                setSelectedOperator(null);
+              }
+            }}
+            onChange={(event, newValue) => {
+              if (typeof newValue === 'string') {
+                setInputValue(newValue);
+                setSelectedCazador(null);
+              } else if (newValue) {
+                const label = `${newValue.name} ${newValue.lastname}`;
+                setInputValue(label);
+                setSelectedOperator(newValue);
+              } else {
+                setInputValue('');
+                setSelectedOperator(null);
+              }
+            }}
+            getOptionLabel={(option) =>
+              option?.name ? `${option.name} ${option.lastname}` : ''
+            }
+            isOptionEqualToValue={(option, value) => option?.user?.id === value?.user?.id}
+            sx={{ width: '100%' }}
+            renderInput={(params) => (
+              <TextField 
+                {...params} 
+                label="" 
+                size="small"
+                placeholder="Selecciona un operador"
+              />
+            )}
+          />
         </div>
 
         <div className="flex justify-end gap-2">

@@ -22,8 +22,13 @@ const IncidenciaOperador = () => {
   const fetchIncidencias = async () => {
     try {
       setIsLoading(true);
-      const response = await getAllIncidencesApi();
-      setIncidencias(response.data || []); 
+      // Enviar parámetros de paginación como en Supervisors
+      const params = {
+        page: 0, // Empezar desde la página 0
+        limit: 10 //Limite razonable para operadores
+      };
+      const response = await getAllIncidencesApi(params);
+      setIncidencias(response.data?.data || response.data || []); 
     } catch (error) {
       console.error("Error al obtener incidencias:", error);
     } finally {

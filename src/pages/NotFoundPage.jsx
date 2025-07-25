@@ -15,6 +15,7 @@ const NotFoundPage = () => {
         // return '/dashboard/supervisors';
         return '/dashboard/supervisors/operadores';
       case 'operator':
+      case 'cazador':
         // return '/dashboard/operador';
         return '/dashboard/operador/incidencia';
       default:
