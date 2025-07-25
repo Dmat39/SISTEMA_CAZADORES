@@ -1,8 +1,14 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {  FaUserGroup } from "react-icons/fa6";
 import { MdDashboard } from "react-icons/md";
 
 const SidebarAdmin = () => {
+  const navigate = useNavigate();
+
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
   return (
     <aside
       id="logo-sidebar"
@@ -14,7 +20,7 @@ const SidebarAdmin = () => {
           <li>
             <NavLink to="/dashboard/admin" end className="flex items-center p-2 text-gray-900 rounded-md dark:text-white hover:bg-[#32A3B5] group transition-all ease-in-out duration-300">
               <MdDashboard className="w-5 h-5 text-gray-400 group-hover:text-white"/>
-              <span class="ms-3 text-[#737791] group-hover:text-white">Dashboard</span>
+              <span className="ms-3 text-[#737791] group-hover:text-white">Dashboard</span>
             </NavLink>
           </li>
           <li>
@@ -33,6 +39,14 @@ const SidebarAdmin = () => {
             <NavLink to="/dashboard/admin/incidencia" end className="flex items-center p-2 text-gray-900 rounded-md dark:text-white hover:bg-[#32A3B5] group transition-all ease-in-out duration-300">
               <FaUserGroup className="w-5 h-5 text-gray-400 group-hover:text-white"/>
               <span className="ms-3 text-[#737791] group-hover:text-white">Incidencias</span>
+            </NavLink>
+          </li>
+
+          {/* Nuevo botón de Cazadores */}
+          <li>
+            <NavLink to="/dashboard/admin/cazadores" end className="flex items-center p-2 text-gray-900 rounded-md dark:text-white hover:bg-[#32A3B5] group transition-all ease-in-out duration-300">
+              <FaUserGroup className="w-5 h-5 text-gray-400 group-hover:text-white"/>
+              <span className="ms-3 text-[#737791] group-hover:text-white">Cazadores</span>
             </NavLink>
           </li>
         </ul>

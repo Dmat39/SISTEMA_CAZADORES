@@ -4,22 +4,33 @@ import { toast } from 'sonner';
 import TableForm from '../TableForm';
 import Loading from '../Loading';
 import { assignOperatorApi, deleteAssignApi, getAllAssignedOperatorsApi } from '../../api/supervisor/SupervidorService';
+import { getAllHuntersApi } from '../../api/supervisor/HunterService.jsx'; // Import hunter API
 import { icons } from '../../plugins/IconLibrary';
 import Icon from '@mdi/react';
 import OperatorAssignmentForm from './OperatorAssignmentForm';
+import CazadorAssignmentForm from './CazadorAssignmentForm';
 import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation';
 
-const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, incidenceName }) => {
+const AssignedOperators = ({ 
+    isOpen, 
+    onClose, 
+    onSubmit, 
+    operators, 
+    incidenceId, 
+    incidenceName 
+}) => {
     const [assingments, setAssingments] = useState([]);
     const [showOperatorAssignForm, setShowOperatorAssignForm] = useState(false);
+    const [showCazadorAssignForm, setShowCazadorAssignForm] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [cazadores, setCazadores] = useState([]); // New state for cazadores
 
     const fetchAssingments = async () => {
         try {
             setIsLoading(true);
             setAssingments([]);
             const data = await getAllAssignedOperatorsApi(incidenceId);
-            setAssingments(data.data);
+            setAssingments(data.data.assignments);
         } catch (error) {
             toast.error(`${error.message}`);
         } finally {
@@ -27,10 +38,27 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
         }
     };
 
+    // New function to fetch cazadores
+    const fetchCazadores = async () => {
+        try {
+            const response = await getAllHuntersApi();
+            setCazadores(response.data.data);
+        } catch (error) {
+            toast.error(`Error al cargar cazadores: ${error.message}`);
+        }
+    };
+
     useEffect(() => {
         if (!isOpen || !incidenceId) return;
         fetchAssingments();
     }, [isOpen, incidenceId]);
+
+    // Fetch cazadores when the modal is opened
+    useEffect(() => {
+        if (isOpen && showCazadorAssignForm) {
+            fetchCazadores();
+        }
+    }, [isOpen, showCazadorAssignForm]);
 
     const confirmDelete = useDeleteConfirmation({
         fetchData: fetchAssingments,
@@ -40,12 +68,29 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
 
     const handleAssignOperator = async (payload) => {
         try {
-            await assignOperatorApi(payload);
+            await assignOperatorApi({
+                ...payload,
+                userType: 'operator'
+            });
             toast.success('Operador asignado exitosamente!');
             await fetchAssingments();
             setShowOperatorAssignForm(false);
         } catch (error) {
             toast.error(`Error al asignar operador: ${error.message}`);
+        }
+    };
+
+    const handleAssignCazador = async (payload) => {
+        try {
+            console.log('Payload para asignar cazador:', payload); // Log the payload
+            const response = await assignOperatorApi(payload);
+            console.log('Respuesta de asignación:', response); // Log the response
+            toast.success('Cazador asignado exitosamente!');
+            await fetchAssingments();
+            setShowCazadorAssignForm(false);
+        } catch (error) {
+            console.error('Error completo al asignar cazador:', error);
+            toast.error(`Error al asignar cazador: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -56,65 +101,71 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
             <div className="fixed inset-0 flex items-center justify-center p-4">
                 <Dialog.Panel className="bg-white rounded-lg shadow-lg max-w-6xl w-full p-6">
                     <div className='mb-2 flex'>
-                        <Dialog.Title className="text-lg font-bold">Operadores asignados a: <span className="text-gray-500 ml-4">{incidenceName}</span></Dialog.Title>
-                        <button type="button" onClick={onClose} class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
-                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        <Dialog.Title className="text-lg font-bold">Personal asignado a: <span className="text-gray-500 ml-4">{incidenceName}</span></Dialog.Title>
+                        <button type="button" onClick={onClose} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                             </svg>
-                            <span class="sr-only">Close modal</span>
+                            <span className="sr-only">Close modal</span>
                         </button>
                     </div>
-                    <hr className='border-gray-200 mb-4'/>
+                    <hr className='border-gray-200 mb-4' />
                     {isLoading ? (
-                        <Loading message= "Cargando Operadores"/>
+                        <Loading message="Cargando Operadores" />
                     ) : (
                         <div>
                             <TableForm
                                 data={assingments}
                                 columns={[
-                                {
-                                    label: 'Nombre',
-                                    key: 'userId',
-                                    render: (v) => {
-                                        const user = v.supervisor || v.operator;
-                                        if (!user) return '—';
-                                        const isDeleted = !!user.deletedAt;
-                                        return isDeleted ? <del className='text-gray-400'>{user.name}</del> : user.name;
+                                    {
+                                        label: 'Nombre',
+                                        key: 'assign',
+                                        render: (v) => {
+                                            const user = v.assign;
+                                            if (!user) return '—';
+                                            return user.name || '—';
+                                        },
                                     },
-                                },
-                                {
-                                    label: 'Apellidos',
-                                    key: 'userId',
-                                    render: (v) => {
-                                        const user = v.supervisor || v.operator;
-                                        if (!user) return '—';
-                                        const isDeleted = !!user.deletedAt;
-                                        return isDeleted ? <del className='text-gray-400'>{user.lastname}</del> : user.lastname;
-                                },
-                                },
-                                { label: 'Rol', key: 'userId', render: (v) => v.supervisor ? 'Supervisor' : v.operator ? 'Operador' : '—' },
-                                {
-                                    label: 'Asignado por',
-                                    key: 'asignedByUserId',
-                                    render: (v) => {
-                                        const user = v.asignedByUserId;
-                                        if (!user) return 'Automático';
-                                        const isDeleted = !!user.deletedAt;
-                                        return isDeleted ? <del className='text-gray-400'>{user.username}</del> : user.username;
+                                    {
+                                        label: 'Apellidos',
+                                        key: 'assign',
+                                        render: (v) => {
+                                            const user = v.assign;
+                                            if (!user) return '—';
+                                            return user.lastname || '—';
+                                        },
                                     },
-                                },
+                                    { 
+                                        label: 'Rol', 
+                                        key: 'assign', 
+                                        render: (v) => {
+                                            const user = v.assign;
+                                            if (!user) return '—';
+                                            return user.role || '—';
+                                        }
+                                    },
+                                    {
+                                        label: 'Asignado por',
+                                        key: 'asignedByUserId',
+                                        render: (v) => {
+                                            const user = v.asignedByUserId;
+                                            if (!user) return 'Automático';
+                                            const isDeleted = !!user.deletedAt;
+                                            return isDeleted ? <del className='text-gray-400'>{user.username}</del> : user.username;
+                                        },
+                                    },
                                 ]}
                                 actions={[
                                     {
                                         title: 'Eliminar',
                                         onClick: (assignment) =>
-                                        confirmDelete(assignment, (as) => {
-                                            const name = as.supervisor?.name ?? as.operator?.name ?? '';
-                                            const lastname = as.supervisor?.lastname ?? as.operator?.lastname ?? '';
-                                            const fullName = `${name} ${lastname}`.trim();
+                                            confirmDelete(assignment, (as) => {
+                                                const name = as.assign?.name ?? '';
+                                                const lastname = as.assign?.lastname ?? '';
+                                                const fullName = `${name} ${lastname}`.trim();
 
-                                            return fullName !== '' ? fullName : 'Asignado no existente';
-                                        }),
+                                                return fullName !== '' ? fullName : 'Asignado no existente';
+                                            }),
                                         icon: icons.delete,
                                         className: 'text-red-600 hover:text-red-800',
                                     },
@@ -127,16 +178,33 @@ const AssignedOperators = ({ isOpen, onClose, onSubmit, operators, incidenceId, 
                                     onClose={() => setShowOperatorAssignForm(false)}
                                     onSubmit={handleAssignOperator}
                                 />
-                            ):(
+                            ) : showCazadorAssignForm ? (
+                                <CazadorAssignmentForm
+                                    cazadores={cazadores}
+                                    incidenceId={incidenceId}
+                                    onClose={() => setShowCazadorAssignForm(false)}
+                                    onSubmit={handleAssignCazador}
+                                />
+                            ) : (
                                 <div className='justify-self-end mt-4'>
-                                    <button
-                                        onClick={() => setShowOperatorAssignForm(true)}
-                                        className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
-                                        type="button"
-                                    >
-                                        <Icon path={icons.add} size={1} />
-                                        Asignar nuevo operador
-                                    </button> 
+                                    <div className='justify-row flex gap-2'>
+                                        <button
+                                            onClick={() => setShowOperatorAssignForm(true)}
+                                            className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                                            type="button"
+                                        >
+                                            <Icon path={icons.add} size={1} />
+                                            Asignar nuevo operador
+                                        </button>
+                                        <button
+                                            onClick={() => setShowCazadorAssignForm(true)}
+                                            className="cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out"
+                                            type="button"
+                                        >
+                                            <Icon path={icons.add} size={1} />
+                                            Asignar nuevo cazador
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                         </div>

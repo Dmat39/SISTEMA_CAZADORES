@@ -46,7 +46,7 @@ export const updateSupervisorApi = async (payload,  id) => {
 
 export const assignOperatorApi = async (payload) => {
   try {
-    const response = await config.post(`/incidence/assign-operator` , payload);
+    const response = await config.post(`/incidence/assign-incidence` , payload);
     return response.data;
   } catch (error) {
     console.log("Error assigning operators: ", error);

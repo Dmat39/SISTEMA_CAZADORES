@@ -14,9 +14,13 @@ import NotFoundPage from "../pages/NotFoundPage";
 // PAGES ADMIN
 import DashboardAdmin from "../pages/Admin/Dashboard";
 import SupervisorsAdmin from "../pages/Admin/Supervisors";
+import OperatorsAdmin from "../pages/Supervisors/Operators";
+import CazadoresAdmin from "../pages/Admin/Cazadores";
+// Nueva importación para Cazadores Supervisor
+import CazadoresSupervisor from "../pages/Supervisors/Cazadores";
+
 // PAGES SUPERVISOR
 import DashboardSupervisor from "../pages/Supervisors/Dashboard";
-import OperatorsAdmin from "../pages/Supervisors/Operators";
 import ReportesSupervisor from "../pages/Supervisors/Reportes";
 // PAGES OPERADOR
 import DashboardOperador from "../pages/Operador/Dashboard";
@@ -55,6 +59,8 @@ export default function Router() {
           <Route path="operadores" element={<OperatorsAdmin />} />
           <Route path="incidencia" element={<Incidence />} />
           <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
+          {/* Nueva ruta para Cazadores */}
+          <Route path="cazadores" element={<CazadoresAdmin />} />
         </Route>
 
         {/* Rutas protegidas - SUPERVISOR */}
@@ -70,6 +76,8 @@ export default function Router() {
           <Route path="incidencia" element={<Incidence />} />
           <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
           <Route path="incidencia/configuracion" element={<SupervisorProfile />} />
+          {/* Ruta de Cazadores para Supervisor */}
+          <Route path="cazadores" element={<CazadoresSupervisor />} />
         </Route>
 
         {/* Rutas protegidas - OPERADOR */}
