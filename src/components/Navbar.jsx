@@ -29,12 +29,12 @@ const Navbar = () => {
   };
 
   const handleConfiguration = () => {
-    if(role === 'operator'){
- navigate("/dashboard/operador/incidencia/configuracion")
-    }else{
-       navigate("/dashboard/supervisors/incidencia/configuracion") 
+    if (role === 'operator') {
+      navigate("/dashboard/operador/incidencia/configuracion")
+    } else {
+      navigate("/dashboard/supervisors/incidencia/configuracion")
     }
-   
+
   }
 
   return (
