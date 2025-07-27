@@ -157,7 +157,8 @@ const Incidence = () => {
             const newId = response?.data?.id;
             if (newId) {
                 localStorage.setItem("last_created_incidence_id", newId);
-                if (role === 'admin') {
+                const normalizedRole = role?.toLowerCase();
+                if (normalizedRole === 'admin') {
                     navigate("/dashboard/admin/incidencia/detalle");
                 } else {
                     navigate("/dashboard/supervisors/incidencia/detalle");
@@ -342,7 +343,8 @@ const Incidence = () => {
                             handlePageLimitChange={handlePageLimitChange}
                             rowOnClick={(item) => {
                                 localStorage.setItem("last_created_incidence_id", item.id);
-                                if (role === 'admin') {
+                                const normalizedRole = role?.toLowerCase();
+                                if (normalizedRole === 'admin') {
                                     navigate("/dashboard/admin/incidencia/detalle");
                                 } else {
                                     navigate("/dashboard/supervisors/incidencia/detalle");

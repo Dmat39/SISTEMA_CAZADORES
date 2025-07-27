@@ -19,6 +19,11 @@ const useLogin = () => {
 
       if (token && user) {
         const {id, username, role } = user;
+        
+        // Debug logging - remover después del deploy
+        console.log('Login Debug - Role from backend:', role);
+        console.log('Login Debug - Role normalized:', role.toLowerCase());
+        
         dispatch(
           setAuth({
             token,

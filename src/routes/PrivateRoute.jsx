@@ -11,13 +11,17 @@ const PrivateRoute = ({ children, requiredRole }) => {
   const hasAccess = () => {
     if (!requiredRole) return true;
     
+    // Normalizar roles a minúsculas para comparación case-insensitive
+    const normalizedRole = role?.toLowerCase();
+    const normalizedRequiredRole = requiredRole?.toLowerCase();
+    
     // Permitir que CAZADOR acceda a rutas de OPERATOR
-    if (requiredRole === 'operator' && (role === 'operator' || role === 'cazador')) {
+    if (normalizedRequiredRole === 'operator' && (normalizedRole === 'operator' || normalizedRole === 'cazador')) {
       return true;
     }
     
-    // Para otros roles, verificación exacta
-    return role === requiredRole;
+    // Para otros roles, verificación exacta (case-insensitive)
+    return normalizedRole === normalizedRequiredRole;
   };
 
   if (!hasAccess()) return <Navigate to="/unauthorized" />;

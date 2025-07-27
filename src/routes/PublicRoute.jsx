@@ -7,11 +7,17 @@ const PublicRouter = ({ element }) => {
 
   // Determina la URL a redirigir si ya está autorizado
   const getRedirectPath = () => {
-    switch (role) {
+    // Normalizar rol para comparación case-insensitive
+    const normalizedRole = role?.toLowerCase();
+    
+    switch (normalizedRole) {
       case 'admin':
         return '/dashboard/admin/incidencia';
       case 'supervisor':
         return '/dashboard/supervisors/incidencia';
+      case 'operator':
+      case 'cazador':
+        return '/dashboard/operador/incidencia';
       case 'operador':
       default:
         return '/dashboard/operador/incidencia';

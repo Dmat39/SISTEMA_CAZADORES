@@ -29,7 +29,8 @@ const Navbar = () => {
   };
 
   const handleConfiguration = () => {
-    if (role === 'operator') {
+    const normalizedRole = role?.toLowerCase();
+    if (normalizedRole === 'operator' || normalizedRole === 'cazador') {
       navigate("/dashboard/operador/incidencia/configuracion")
     } else {
       navigate("/dashboard/supervisors/incidencia/configuracion")
@@ -76,7 +77,11 @@ const Navbar = () => {
             <div className='flex flex-row items-center'>
               <div className='flex flex-col me-3 items-center'>
                 <span className='text-[18px] text-gray-900 font-medium'>{username || "Usuario"}</span>
-                <span className='text-[13px] text-gray-500 font-medium'>{role === 'operator' ? 'operador' : role || 'Desconocido'}</span>
+                <span className='text-[13px] text-gray-500 font-medium'>{
+                  role?.toLowerCase() === 'operator' || role?.toLowerCase() === 'cazador' 
+                    ? 'operador' 
+                    : role || 'Desconocido'
+                }</span>
               </div>
               <button
                 type='button'
