@@ -21,6 +21,7 @@ import {
 // Imports adicionales
 import { ArrowUpIcon, ArrowDownIcon, Search } from "lucide-react"
 import { incidenceStatistics, incidenceGeneral } from "../../api/dashboard/DashboardApi"
+import { useNavigate, useLocation } from 'react-router-dom'
 
 // Datos simulados para las métricas
 const weeklyData = [
@@ -305,6 +306,9 @@ const DashboardDateRangeFilter = ({ startDate, endDate, onDateChange }) => {
 }
 
 export default function Component() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const [timeFilter, setTimeFilter] = useState("monthly")
   const [userType, setUserType] = useState("cazador")
 
@@ -314,11 +318,14 @@ export default function Component() {
   const [sortDirection, setSortDirection] = useState("desc")
   const [personalData, setPersonalData] = useState([])
   const [loading, setLoading] = useState(false)
-  const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [startDate, setStartDate] = useState("")
-  const [limit, setLimit] = useState(10) // Nuevo estado para el límite de elementos por página
+
+  // Obtener parámetros de URL para paginación
+  const searchParams = new URLSearchParams(location.search)
+  const currentPage = parseInt(searchParams.get('page')) || 1
+  const limit = parseInt(searchParams.get('limit')) || 10
 
   // Estados para los datos generales
   const [generalData, setGeneralData] = useState({
@@ -417,8 +424,12 @@ export default function Component() {
 
   // useEffect para cargar datos cuando cambien los filtros
   useEffect(() => {
-    loadPersonalData()
-  }, [currentPage, searchTerm, userType, startDate, limit])
+    const timer = setTimeout(() => {
+      loadPersonalData()
+    }, searchTerm ? 500 : 0) // Debounce solo si hay búsqueda
+
+    return () => clearTimeout(timer)
+  }, [currentPage, limit, searchTerm, userType, startDate])
 
   // Calcular métricas totales
   const totalAsignadas = currentData.reduce((acc, item) => acc + item.cazadorAsignadas + item.operadorAsignadas, 0)
@@ -465,32 +476,34 @@ export default function Component() {
     }
   }
 
-  // Funciones para manejar la paginación
-  const handlePageChange = (newPage) => {
-    if (newPage >= 0 && newPage < totalPages) {
-      setCurrentPage(newPage)
-    }
-  }
+  // Función para manejar cambio de página/límite
+  const handlePageLimitChange = (newPage, newLimit) => {
+    const searchParams = new URLSearchParams(location.search)
 
-  const handleLimitChange = (newLimit) => {
-    setLimit(newLimit)
-    setCurrentPage(0) // Reset to first page when changing limit
+    if (newLimit !== limit) {
+      searchParams.set('limit', newLimit.toString())
+      searchParams.set('page', '1') // Reset a página 1 cuando cambia el límite
+    } else {
+      searchParams.set('page', newPage.toString())
+    }
+
+    navigate({ search: searchParams.toString() })
   }
 
   // Generar array de páginas para mostrar
   const getPageNumbers = () => {
     const pages = []
     const maxPagesToShow = 5
-    let startPage = Math.max(0, currentPage - Math.floor(maxPagesToShow / 2))
-    let endPage = Math.min(totalPages - 1, startPage + maxPagesToShow - 1)
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2))
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1)
 
     // Ajustar startPage si estamos cerca del final
     if (endPage - startPage < maxPagesToShow - 1) {
-      startPage = Math.max(0, endPage - maxPagesToShow + 1)
+      startPage = Math.max(1, endPage - maxPagesToShow + 1)
     }
 
     for (let i = startPage; i <= endPage; i++) {
-      pages.push(i)
+      pages.push(i - 1) // Restamos 1 para mantener compatibilidad con el array de 0-indexed
     }
 
     return pages
@@ -499,7 +512,10 @@ export default function Component() {
   // Debounce para la búsqueda
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setCurrentPage(0) // Reset page when searching
+      // Reset a página 1 cuando se busca
+      const searchParams = new URLSearchParams(location.search)
+      searchParams.set('page', '1')
+      navigate({ search: searchParams.toString() })
     }, 500)
 
     return () => clearTimeout(timeoutId)
@@ -838,12 +854,26 @@ export default function Component() {
             </div>
 
             <div className="flex items-center space-x-2">
+              <select
+                value={limit}
+                onChange={(e) => handlePageLimitChange(1, parseInt(e.target.value))}
+                className="w-[100px] p-2 border rounded-md"
+                title="Elementos por página"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => {
                   setStartDate(e.target.value)
-                  setCurrentPage(0)
+                  // Reset a página 1 cuando cambia el filtro
+                  const searchParams = new URLSearchParams(location.search)
+                  searchParams.set('page', '1')
+                  navigate({ search: searchParams.toString() })
                 }}
                 className="w-[150px] p-2 border rounded-md"
                 title="Fecha de inicio"
@@ -853,7 +883,10 @@ export default function Component() {
                 value={userType}
                 onChange={(e) => {
                   setUserType(e.target.value)
-                  setCurrentPage(0) // Reset page when changing filter
+                  // Reset a página 1 cuando cambia el filtro
+                  const searchParams = new URLSearchParams(location.search)
+                  searchParams.set('page', '1')
+                  navigate({ search: searchParams.toString() })
                 }}
               >
                 <option value="cazador">Cazadores</option>
@@ -865,7 +898,7 @@ export default function Component() {
                   placeholder="Buscar persona..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 w-[200px] p-2 border rounded-md"
+                  className="pl-8 w-[300px] p-2 border rounded-md"
                 />
               </div>
             </div>
@@ -996,8 +1029,11 @@ export default function Component() {
 
           <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
             <div>
-              Mostrando {sortedPersonalData.length} de {totalCount} personas
-              {totalPages > 1 && ` (Página ${currentPage + 1} de ${totalPages})`}
+              {totalCount > 0 ? (
+                <>Elementos por página: {limit}</>
+              ) : (
+                "No hay datos para mostrar"
+              )}
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
@@ -1015,28 +1051,69 @@ export default function Component() {
             </div>
           </div>
 
-          {/* Controles de paginación */}
+          {/* Controles de paginación mejorados */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center space-x-2 mt-4">
-              <button
-                onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
-                disabled={currentPage === 0 || loading}
-                className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Anterior
-              </button>
+            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 mt-4">
+              {/* Información de paginación */}
+              <div className="text-sm text-gray-500">
+                Mostrando {(currentPage - 1) * limit + 1} - {Math.min(currentPage * limit, totalCount)} de {totalCount} resultados
+              </div>
 
-              <span className="text-sm text-gray-500">
-                Página {currentPage + 1} de {totalPages}
-              </span>
+              {/* Controles de navegación */}
+              <div className="flex items-center space-x-1">
+                {/* Botón Primera página */}
+                <button
+                  onClick={() => handlePageLimitChange(1, limit)}
+                  disabled={currentPage === 1 || loading}
+                  className="px-2 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Primera página"
+                >
+                  ««
+                </button>
 
-              <button
-                onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
-                disabled={currentPage >= totalPages - 1 || loading}
-                className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Siguiente
-              </button>
+                {/* Botón Anterior */}
+                <button
+                  onClick={() => handlePageLimitChange(Math.max(1, currentPage - 1), limit)}
+                  disabled={currentPage === 1 || loading}
+                  className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Anterior
+                </button>
+
+                {/* Números de página */}
+                {getPageNumbers().map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageLimitChange(pageNum + 1, limit)}
+                    disabled={loading}
+                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:cursor-not-allowed ${currentPage === pageNum + 1
+                        ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                        : 'bg-white text-gray-700'
+                      }`}
+                  >
+                    {pageNum + 1}
+                  </button>
+                ))}
+
+                {/* Botón Siguiente */}
+                <button
+                  onClick={() => handlePageLimitChange(Math.min(totalPages, currentPage + 1), limit)}
+                  disabled={currentPage >= totalPages || loading}
+                  className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Siguiente
+                </button>
+
+                {/* Botón Última página */}
+                <button
+                  onClick={() => handlePageLimitChange(totalPages, limit)}
+                  disabled={currentPage >= totalPages || loading}
+                  className="px-2 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Última página"
+                >
+                  »»
+                </button>
+              </div>
             </div>
           )}
         </div>
