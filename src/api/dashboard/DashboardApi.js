@@ -19,3 +19,15 @@ export const incidenceStatistics = (params = {}) => {
 
     return mainApi.get(url);
 };
+
+export const incidenceGeneral = (params = {}) => {
+    const queryParams = new URLSearchParams();
+
+    if (params.start) queryParams.append('start', params.start);
+    if (params.end) queryParams.append('end', params.end);
+
+    const queryString = queryParams.toString();
+    const url = queryString ? `/incidence/general?${queryString}` : '/incidence/general';
+
+    return mainApi.get(url);
+};

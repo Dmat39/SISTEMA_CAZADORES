@@ -20,7 +20,7 @@ import {
 
 // Imports adicionales
 import { ArrowUpIcon, ArrowDownIcon, Search } from "lucide-react"
-import { incidenceStatistics } from "../../api/dashboard/DashboardApi"
+import { incidenceStatistics, incidenceGeneral } from "../../api/dashboard/DashboardApi"
 
 // Datos simulados para las métricas
 const weeklyData = [
@@ -48,9 +48,265 @@ const conversionData = [
 
 const COLORS = ["#3b82f6", "#10b981"]
 
+// Componente DateRangeFilter adaptado para el Dashboard
+const DashboardDateRangeFilter = ({ startDate, endDate, onDateChange }) => {
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+    key: 'selection'
+  })
+  const [tempDateRange, setTempDateRange] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+    key: 'selection'
+  })
+  const [isOpen, setIsOpen] = useState(false)
+  const [displayValue, setDisplayValue] = useState('')
+
+  // Helpers para fechas
+  const formatDateToLocal = (date) => {
+    const year = date.getFullYear()
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const day = date.getDate().toString().padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  const parseDateFromLocal = (dateString) => {
+    if (!dateString) return new Date()
+    const [year, month, day] = dateString.split('-').map(Number)
+    return new Date(year, month - 1, day)
+  }
+
+  const formatDisplayDate = (date) => {
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
+  }
+
+  // Opciones de selección rápida
+  const quickSelectOptions = [
+    { label: 'Hoy', getValue: () => ({ startDate: new Date(), endDate: new Date() }) },
+    {
+      label: 'Ayer', getValue: () => {
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 1)
+        return { startDate: yesterday, endDate: yesterday }
+      }
+    },
+    {
+      label: 'Últimos 7 días', getValue: () => {
+        const today = new Date()
+        const weekAgo = new Date()
+        weekAgo.setDate(weekAgo.getDate() - 6)
+        return { startDate: weekAgo, endDate: today }
+      }
+    },
+    {
+      label: 'Últimos 30 días', getValue: () => {
+        const today = new Date()
+        const monthAgo = new Date()
+        monthAgo.setDate(monthAgo.getDate() - 29)
+        return { startDate: monthAgo, endDate: today }
+      }
+    },
+    {
+      label: 'Este mes', getValue: () => {
+        const today = new Date()
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
+        return { startDate: firstDay, endDate: today }
+      }
+    }
+  ]
+
+  // Actualizar display value
+  const updateDisplayValue = (startDate, endDate) => {
+    if (!startDate || !endDate) {
+      setDisplayValue('')
+      return
+    }
+    const startStr = formatDisplayDate(startDate)
+    const endStr = formatDisplayDate(endDate)
+    setDisplayValue(startStr === endStr ? startStr : `${startStr} - ${endStr}`)
+  }
+
+  // Sincronizar con props
+  useEffect(() => {
+    if (startDate || endDate) {
+      const start = startDate ? parseDateFromLocal(startDate) : new Date()
+      const end = endDate ? parseDateFromLocal(endDate) : new Date()
+      const range = { startDate: start, endDate: end, key: 'selection' }
+
+      setDateRange(range)
+      setTempDateRange(range)
+      updateDisplayValue(start, end)
+    } else {
+      setDisplayValue('')
+      const today = new Date()
+      const defaultRange = { startDate: today, endDate: today, key: 'selection' }
+      setDateRange(defaultRange)
+      setTempDateRange(defaultRange)
+    }
+  }, [startDate, endDate])
+
+  // Event handlers
+  const handleRangeChange = (item) => setTempDateRange(item.selection)
+
+  const applyDateFilter = () => {
+    setDateRange(tempDateRange)
+    updateDisplayValue(tempDateRange.startDate, tempDateRange.endDate)
+    onDateChange(
+      formatDateToLocal(tempDateRange.startDate),
+      formatDateToLocal(tempDateRange.endDate)
+    )
+    setIsOpen(false)
+  }
+
+  const handleQuickSelect = (option) => {
+    const { startDate, endDate } = option.getValue()
+    setTempDateRange({ startDate, endDate, key: 'selection' })
+  }
+
+  const clearDateRangeFilter = () => {
+    const today = new Date()
+    const defaultRange = { startDate: today, endDate: today, key: 'selection' }
+    setDateRange(defaultRange)
+    setTempDateRange(defaultRange)
+    setDisplayValue('')
+    setIsOpen(false)
+    onDateChange('', '')
+  }
+
+  const handleInputClick = () => {
+    setIsOpen(!isOpen)
+    if (!isOpen) setTempDateRange(dateRange)
+  }
+
+  const handleClickAway = () => {
+    setIsOpen(false)
+    setTempDateRange(dateRange)
+  }
+
+  // Manejar click fuera del componente
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isOpen && !event.target.closest('.date-range-filter')) {
+        handleClickAway()
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen])
+
+  const hasActiveFilter = () => {
+    return startDate || endDate
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="relative date-range-filter">
+        <div
+          onClick={handleInputClick}
+          className={`w-[320px] h-10 rounded-lg px-3 py-2 cursor-pointer bg-white relative flex items-center text-sm outline-none transition-all ${isOpen
+            ? 'border-2 border-blue-600'
+            : 'border border-gray-300 hover:border-gray-400'
+            }`}
+        >
+          <span className={`absolute left-3 transition-all pointer-events-none ${displayValue
+            ? 'top-[-8px] text-xs text-gray-600 bg-white px-1'
+            : 'top-1/2 transform -translate-y-1/2 text-gray-400'
+            }`}>
+            Rango de Fechas
+          </span>
+          <span className={`w-full overflow-hidden text-ellipsis whitespace-nowrap ${displayValue ? 'text-gray-700' : 'text-gray-400'
+            }`}>
+            {displayValue}
+          </span>
+        </div>
+
+        {isOpen && (
+          <div className="absolute top-full left-0 z-50 bg-white border border-gray-300 rounded-lg mt-1 overflow-hidden shadow-lg">
+            <div className="p-4 border-b border-gray-200">
+              <p className="text-xs text-gray-600 mb-2">Selección rápida:</p>
+              <div className="flex flex-wrap gap-1">
+                {quickSelectOptions.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleQuickSelect(option)}
+                    className="text-xs py-1 px-2 border border-gray-300 rounded text-gray-700 hover:border-blue-600 hover:bg-blue-50 transition-colors"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Aquí iría el DateRange component, pero como no tenemos react-date-range instalado, 
+                vamos a usar inputs de fecha simples por ahora */}
+            <div className="p-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Fecha inicio</label>
+                  <input
+                    type="date"
+                    value={formatDateToLocal(tempDateRange.startDate)}
+                    onChange={(e) => setTempDateRange({
+                      ...tempDateRange,
+                      startDate: parseDateFromLocal(e.target.value)
+                    })}
+                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Fecha fin</label>
+                  <input
+                    type="date"
+                    value={formatDateToLocal(tempDateRange.endDate)}
+                    onChange={(e) => setTempDateRange({
+                      ...tempDateRange,
+                      endDate: parseDateFromLocal(e.target.value)
+                    })}
+                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-gray-200 flex justify-between gap-2">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="px-3 py-1 text-sm border border-gray-300 rounded text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={applyDateFilter}
+                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                Aplicar Filtro
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {hasActiveFilter() && (
+        <button
+          onClick={clearDateRangeFilter}
+          className="text-gray-500 hover:text-gray-700 text-sm px-2 py-1 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
+          title="Limpiar filtro de rango"
+        >
+          ✕
+        </button>
+      )}
+    </div>
+  )
+}
+
 export default function Component() {
   const [timeFilter, setTimeFilter] = useState("monthly")
-  const [userType, setUserType] = useState("all")
+  const [userType, setUserType] = useState("cazador")
 
   // Estados para la tabla de rendimiento individual
   const [searchTerm, setSearchTerm] = useState("")
@@ -62,17 +318,54 @@ export default function Component() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [startDate, setStartDate] = useState("")
-  const [summaryData, setSummaryData] = useState(null)
-  const [loadingSummary, setLoadingSummary] = useState(false)
+  const [limit, setLimit] = useState(10) // Nuevo estado para el límite de elementos por página
+
+  // Estados para los datos generales
+  const [generalData, setGeneralData] = useState({
+    totalIncidencias: 0,
+    incidenciasEnProceso: 0,
+    incidenciasFinalizadas: 0,
+    totalOperadores: 0,
+    totalCazadores: 0
+  })
+  const [loadingGeneral, setLoadingGeneral] = useState(false)
+  const [generalStartDate, setGeneralStartDate] = useState("")
+  const [generalEndDate, setGeneralEndDate] = useState("")
 
   const currentData = timeFilter === "weekly" ? weeklyData : monthlyData
+
+  // Función para cargar datos generales de la API
+  const loadGeneralData = async () => {
+    setLoadingGeneral(true)
+    try {
+      const params = {}
+
+      if (generalStartDate) {
+        params.start = generalStartDate
+      }
+
+      if (generalEndDate) {
+        params.end = generalEndDate
+      }
+
+      const response = await incidenceGeneral(params)
+
+      if (response.data.status) {
+        setGeneralData(response.data.data)
+      }
+    } catch (error) {
+      console.error('Error loading general data:', error)
+    } finally {
+      setLoadingGeneral(false)
+    }
+  }
 
   // Función para cargar datos de la API
   const loadPersonalData = async () => {
     setLoading(true)
     try {
       const params = {
-        limit: 10,
+        limit: limit,
         page: currentPage,
         userType: userType === "all" ? undefined : userType === "cazador" ? "hunter" : "operator"
       }
@@ -112,10 +405,20 @@ export default function Component() {
     }
   }
 
+  // useEffect para cargar datos generales cuando cambien las fechas
+  useEffect(() => {
+    loadGeneralData()
+  }, [generalStartDate, generalEndDate])
+
+  // useEffect para cargar datos generales al inicializar
+  useEffect(() => {
+    loadGeneralData()
+  }, [])
+
   // useEffect para cargar datos cuando cambien los filtros
   useEffect(() => {
     loadPersonalData()
-  }, [currentPage, searchTerm, userType, startDate])
+  }, [currentPage, searchTerm, userType, startDate, limit])
 
   // Calcular métricas totales
   const totalAsignadas = currentData.reduce((acc, item) => acc + item.cazadorAsignadas + item.operadorAsignadas, 0)
@@ -162,6 +465,37 @@ export default function Component() {
     }
   }
 
+  // Funciones para manejar la paginación
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setCurrentPage(newPage)
+    }
+  }
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit)
+    setCurrentPage(0) // Reset to first page when changing limit
+  }
+
+  // Generar array de páginas para mostrar
+  const getPageNumbers = () => {
+    const pages = []
+    const maxPagesToShow = 5
+    let startPage = Math.max(0, currentPage - Math.floor(maxPagesToShow / 2))
+    let endPage = Math.min(totalPages - 1, startPage + maxPagesToShow - 1)
+
+    // Ajustar startPage si estamos cerca del final
+    if (endPage - startPage < maxPagesToShow - 1) {
+      startPage = Math.max(0, endPage - maxPagesToShow + 1)
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i)
+    }
+
+    return pages
+  }
+
   // Debounce para la búsqueda
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -180,16 +514,15 @@ export default function Component() {
         </div>
 
         <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
-          <select
-            className="w-[180px] p-2 border rounded-md"
-            value={timeFilter}
-            onChange={(e) => setTimeFilter(e.target.value)}
-          >
-            <option value="weekly">Por Semana</option>
-            <option value="monthly">Por Mes</option>
-          </select>
-
-          <select
+          <DashboardDateRangeFilter
+            startDate={generalStartDate}
+            endDate={generalEndDate}
+            onDateChange={(start, end) => {
+              setGeneralStartDate(start)
+              setGeneralEndDate(end)
+            }}
+          />
+          {/* <select
             className="w-[180px] p-2 border rounded-md"
             value={userType}
             onChange={(e) => {
@@ -197,70 +530,122 @@ export default function Component() {
               setCurrentPage(0) // Reset page when changing filter
             }}
           >
-            <option value="all">Todos</option>
             <option value="cazador">Cazadores</option>
             <option value="operador">Operadores</option>
-          </select>
+          </select> */}
         </div>
       </div>
 
-      {/* Métricas principales */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Métricas principales - Datos del endpoint incidence/general */}
+      <div className="grid gap-4 md:grid-cols-5 lg:grid-cols-5">
+        {/* Total Incidencias */}
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600">Total Asignadas</h3>
+            <h3 className="text-sm font-medium text-gray-600">Total Incidencias</h3>
+            <AlertTriangle className="h-4 w-4 text-blue-600" />
+          </div>
+          <div>
+            {loadingGeneral ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <span className="text-sm text-gray-500">Cargando...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{generalData.totalIncidencias.toLocaleString()}</div>
+                <p className="text-xs text-gray-500">Incidencias registradas</p>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Incidencias En Proceso */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-gray-600">En Proceso</h3>
             <AlertTriangle className="h-4 w-4 text-orange-600" />
           </div>
           <div>
-            <div className="text-2xl font-bold">{totalAsignadas.toLocaleString()}</div>
-            <p className="text-xs text-gray-500">
-              {timeFilter === "weekly" ? "Últimas 4 semanas" : "Últimos 6 meses"}
-            </p>
+            {loadingGeneral ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                <span className="text-sm text-gray-500">Cargando...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{generalData.incidenciasEnProceso.toLocaleString()}</div>
+                <p className="text-xs text-gray-500">Incidencias pendientes</p>
+              </>
+            )}
           </div>
         </div>
 
+        {/* Incidencias Finalizadas */}
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600">Total Atendidas</h3>
+            <h3 className="text-sm font-medium text-gray-600">Finalizadas</h3>
             <CheckCircle className="h-4 w-4 text-green-600" />
           </div>
           <div>
-            <div className="text-2xl font-bold">{totalAtendidas.toLocaleString()}</div>
-            <p className="text-xs text-gray-500">Incidencias resueltas</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600">Tasa de Conversión</h3>
-            <TrendingUp className="h-4 w-4 text-blue-600" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{tasaConversionGeneral}%</div>
-            <p className="text-xs text-gray-500">Eficiencia general</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600">Tendencia</h3>
-            {Number(tendencia) >= 0 ? (
-              <TrendingUp className="h-4 w-4 text-green-600" />
+            {loadingGeneral ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                <span className="text-sm text-gray-500">Cargando...</span>
+              </div>
             ) : (
-              <TrendingDown className="h-4 w-4 text-red-600" />
+              <>
+                <div className="text-2xl font-bold">{generalData.incidenciasFinalizadas.toLocaleString()}</div>
+                <p className="text-xs text-gray-500">Incidencias completadas</p>
+              </>
             )}
           </div>
+        </div>
+
+        {/* Total Operadores */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-gray-600">Operadores</h3>
+            <Users className="h-4 w-4 text-purple-600" />
+          </div>
           <div>
-            <div className="text-2xl font-bold">
-              {Number(tendencia) >= 0 ? "+" : ""}
-              {tendencia}%
-            </div>
-            <p className="text-xs text-gray-500">vs período anterior</p>
+            {loadingGeneral ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                <span className="text-sm text-gray-500">Cargando...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{generalData.totalOperadores.toLocaleString()}</div>
+                <p className="text-xs text-gray-500">Personal operativo</p>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Total Cazadores */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-gray-600">Cazadores</h3>
+            <Users className="h-4 w-4 text-indigo-600" />
+          </div>
+          <div>
+            {loadingGeneral ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+                <span className="text-sm text-gray-500">Cargando...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{generalData.totalCazadores.toLocaleString()}</div>
+                <p className="text-xs text-gray-500">Personal especializado</p>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Gráficos principales */}
+      {/*
+       {/* Gráficos principales 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="mb-4">
@@ -329,7 +714,7 @@ export default function Component() {
         </div>
       </div>
 
-      {/* Análisis detallado */}
+      {/* Análisis detallado 
       <div className="grid gap-6 md:grid-cols-3">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="mb-4">
@@ -441,7 +826,7 @@ export default function Component() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Tabla detallada por persona */}
       <div className="bg-white p-6 rounded-lg shadow">
@@ -463,6 +848,17 @@ export default function Component() {
                 className="w-[150px] p-2 border rounded-md"
                 title="Fecha de inicio"
               />
+              <select
+                className="w-[180px] p-2 border rounded-md"
+                value={userType}
+                onChange={(e) => {
+                  setUserType(e.target.value)
+                  setCurrentPage(0) // Reset page when changing filter
+                }}
+              >
+                <option value="cazador">Cazadores</option>
+                <option value="operador">Operadores</option>
+              </select>
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
                 <input
@@ -476,7 +872,7 @@ export default function Component() {
           </div>
         </div>
         <div>
-          <div className="rounded-md border">
+          <div className="rounded-md ">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -561,9 +957,8 @@ export default function Component() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          person.tipo === "Cazador" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"
-                        }`}
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${person.tipo === "Cazador" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"
+                          }`}
                       >
                         {person.tipo}
                       </span>
