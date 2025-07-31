@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";import Dashboard
 import LoginPage from "../pages/Login";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import PrivateRoute from "./routes/PrivateRoute";
-import DashboardAdmin from "../pages/Admin/Dashboard";
+import DashboardAdmin from "../pages/Admin/Dashboard_admin";
 
 export default function Router() {
   return (

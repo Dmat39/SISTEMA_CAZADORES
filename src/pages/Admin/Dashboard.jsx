@@ -1,19 +1,19 @@
 /**
- * Dashboard Administrativo - Métricas de Incidencias
+ * ARCHIVO DEPRECADO - NO UTILIZAR
+ * 
+ * Este archivo contiene datos mock/falsos y ya no se utiliza.
+ * Usar en su lugar: Dashboard_admin.jsx que conecta con la API real.
+ * 
+ * Dashboard Administrativo - Métricas de Incidencias (VERSIÓN ANTIGUA CON DATOS MOCK)
  * 
  * Este componente proporciona una vista completa del rendimiento de Cazadores y Operadores
  * en el manejo de incidencias, incluyendo métricas, gráficos y análisis detallado.
  * 
- * Características principales:
- * - Visualización de métricas por semana/mes
- * - Comparación entre Cazadores y Operadores
- * - Análisis de tasas de conversión
- * - Tabla detallada de rendimiento individual
- * - Filtros por tipo de usuario y búsqueda
- * - Ordenamiento dinámico de datos
+ * ⚠️ IMPORTANTE: Este archivo usa datos simulados/mock.
+ * Para datos reales de la API, usar Dashboard_admin.jsx
  * 
  * @author Sistema de Gestión Municipal
- * @version 1.0.0
+ * @version 1.0.0 (DEPRECADO)
  */
 
 "use client"

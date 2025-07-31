@@ -12,7 +12,7 @@ import LoginPage from "../pages/Login";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import NotFoundPage from "../pages/NotFoundPage";
 // PAGES ADMIN
-import DashboardAdmin from "../pages/Admin/Dashboard";
+import DashboardAdmin from "../pages/Admin/Dashboard_admin";
 import SupervisorsAdmin from "../pages/Admin/Supervisors";
 import OperatorsAdmin from "../pages/Supervisors/Operators";
 import CazadoresAdmin from "../pages/Admin/Cazadores";

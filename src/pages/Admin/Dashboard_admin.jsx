@@ -1,10 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { TrendingUp, TrendingDown, Users, AlertTriangle, CheckCircle } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+// Componentes UI reemplazados por elementos HTML estándar
 import {
   LineChart,
   Line,
@@ -20,10 +18,9 @@ import {
   Cell,
 } from "recharts"
 
-// Agregar estos imports adicionales al inicio del archivo
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Input } from "@/components/ui/input"
+// Imports adicionales
 import { ArrowUpIcon, ArrowDownIcon, Search } from "lucide-react"
+import { incidenceStatistics } from "../../api/dashboard/DashboardApi"
 
 // Datos simulados para las métricas
 const weeklyData = [
@@ -47,89 +44,7 @@ const conversionData = [
   { name: "Operadores", value: 92.1, color: "#10b981" },
 ]
 
-// Agregar estos datos simulados después de los datos existentes (después de conversionData)
-const personalData = [
-  {
-    id: 1,
-    nombre: "Ana García",
-    tipo: "Cazador",
-    asignadas: 45,
-    resueltas: 42,
-    conversion: 93.3,
-    tendencia: 8.5,
-    avatar: "AG",
-  },
-  {
-    id: 2,
-    nombre: "Carlos Mendoza",
-    tipo: "Cazador",
-    asignadas: 38,
-    resueltas: 35,
-    conversion: 92.1,
-    tendencia: -2.1,
-    avatar: "CM",
-  },
-  {
-    id: 3,
-    nombre: "María López",
-    tipo: "Operador",
-    asignadas: 52,
-    resueltas: 48,
-    conversion: 92.3,
-    tendencia: 12.3,
-    avatar: "ML",
-  },
-  {
-    id: 4,
-    nombre: "Diego Ruiz",
-    tipo: "Cazador",
-    asignadas: 41,
-    resueltas: 36,
-    conversion: 87.8,
-    tendencia: -5.2,
-    avatar: "DR",
-  },
-  {
-    id: 5,
-    nombre: "Laura Fernández",
-    tipo: "Operador",
-    asignadas: 47,
-    resueltas: 44,
-    conversion: 93.6,
-    tendencia: 6.8,
-    avatar: "LF",
-  },
-  {
-    id: 6,
-    nombre: "Roberto Silva",
-    tipo: "Cazador",
-    asignadas: 39,
-    resueltas: 34,
-    conversion: 87.2,
-    tendencia: -1.5,
-    avatar: "RS",
-  },
-  {
-    id: 7,
-    nombre: "Patricia Morales",
-    tipo: "Operador",
-    asignadas: 44,
-    resueltas: 41,
-    conversion: 93.2,
-    tendencia: 4.7,
-    avatar: "PM",
-  },
-  {
-    id: 8,
-    nombre: "Andrés Castro",
-    tipo: "Cazador",
-    asignadas: 36,
-    resueltas: 32,
-    conversion: 88.9,
-    tendencia: 3.2,
-    avatar: "AC",
-  },
-]
+// Los datos de personalData ahora se cargan desde la API
 
 const COLORS = ["#3b82f6", "#10b981"]
 
@@ -137,12 +52,70 @@ export default function Component() {
   const [timeFilter, setTimeFilter] = useState("monthly")
   const [userType, setUserType] = useState("all")
 
-  // Agregar este estado después de los estados existentes
+  // Estados para la tabla de rendimiento individual
   const [searchTerm, setSearchTerm] = useState("")
-  const [sortField, setSortField] = useState("conversion")
+  const [sortField, setSortField] = useState("finished")
   const [sortDirection, setSortDirection] = useState("desc")
+  const [personalData, setPersonalData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const [startDate, setStartDate] = useState("")
+  const [summaryData, setSummaryData] = useState(null)
+  const [loadingSummary, setLoadingSummary] = useState(false)
 
   const currentData = timeFilter === "weekly" ? weeklyData : monthlyData
+
+  // Función para cargar datos de la API
+  const loadPersonalData = async () => {
+    setLoading(true)
+    try {
+      const params = {
+        limit: 10,
+        page: currentPage,
+        userType: userType === "all" ? undefined : userType === "cazador" ? "hunter" : "operator"
+      }
+
+      if (searchTerm.trim()) {
+        params.search = searchTerm.trim()
+      }
+
+      if (startDate) {
+        params.start = startDate
+      }
+
+      const response = await incidenceStatistics(params)
+
+      if (response.data.status) {
+        const apiData = response.data.data.data.map(user => ({
+          id: user.id,
+          nombre: `${user.name} ${user.lastname}`,
+          tipo: user.rol === "Cazador" ? "Cazador" : "Operador",
+          asignadas: user.asigned,
+          resueltas: user.finished,
+          conversion: user.asigned > 0 ? ((user.finished / user.asigned) * 100).toFixed(1) : 0,
+          // tendencia: 0, // Comentado - se implementará más adelante
+          avatar: `${user.name.charAt(0)}${user.lastname.charAt(0)}`,
+          dni: user.dni,
+          phone: user.phone
+        }))
+
+        setPersonalData(apiData)
+        setTotalPages(response.data.data.totalPages)
+        setTotalCount(response.data.data.totalCount)
+      }
+    } catch (error) {
+      console.error('Error loading personal data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // useEffect para cargar datos cuando cambien los filtros
+  useEffect(() => {
+    loadPersonalData()
+  }, [currentPage, searchTerm, userType, startDate])
 
   // Calcular métricas totales
   const totalAsignadas = currentData.reduce((acc, item) => acc + item.cazadorAsignadas + item.operadorAsignadas, 0)
@@ -158,24 +131,18 @@ export default function Component() {
   const tendencia =
     lastPeriod && previousPeriod
       ? (
-          ((lastPeriod.cazadorAtendidas +
-            lastPeriod.operadorAtendidas -
-            (previousPeriod.cazadorAtendidas + previousPeriod.operadorAtendidas)) /
-            (previousPeriod.cazadorAtendidas + previousPeriod.operadorAtendidas)) *
-          100
-        ).toFixed(1)
+        ((lastPeriod.cazadorAtendidas +
+          lastPeriod.operadorAtendidas -
+          (previousPeriod.cazadorAtendidas + previousPeriod.operadorAtendidas)) /
+          (previousPeriod.cazadorAtendidas + previousPeriod.operadorAtendidas)) *
+        100
+      ).toFixed(1)
       : 0
 
-  // Agregar estas funciones antes del return
-  const filteredPersonalData = personalData.filter(
-    (person) =>
-      person.nombre.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (userType === "all" || person.tipo.toLowerCase() === userType),
-  )
-
-  const sortedPersonalData = [...filteredPersonalData].sort((a, b) => {
-    const aValue = a[sortField as keyof typeof a]
-    const bValue = b[sortField as keyof typeof b]
+  // Función para ordenar los datos localmente
+  const sortedPersonalData = [...personalData].sort((a, b) => {
+    const aValue = a[sortField]
+    const bValue = b[sortField]
 
     if (typeof aValue === "string" && typeof bValue === "string") {
       return sortDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
@@ -186,7 +153,7 @@ export default function Component() {
     return sortDirection === "asc" ? numA - numB : numB - numA
   })
 
-  const handleSort = (field: string) => {
+  const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
     } else {
@@ -195,102 +162,112 @@ export default function Component() {
     }
   }
 
+  // Debounce para la búsqueda
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setCurrentPage(0) // Reset page when searching
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchTerm])
+
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Métricas de Incidencias</h1>
-          <p className="text-muted-foreground">Análisis de rendimiento de Cazadores y Operadores</p>
+          <p className="text-gray-500">Análisis de rendimiento de Cazadores y Operadores</p>
         </div>
 
         <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
-          <Select value={timeFilter} onValueChange={setTimeFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="weekly">Por Semana</SelectItem>
-              <SelectItem value="monthly">Por Mes</SelectItem>
-            </SelectContent>
-          </Select>
+          <select
+            className="w-[180px] p-2 border rounded-md"
+            value={timeFilter}
+            onChange={(e) => setTimeFilter(e.target.value)}
+          >
+            <option value="weekly">Por Semana</option>
+            <option value="monthly">Por Mes</option>
+          </select>
 
-          <Select value={userType} onValueChange={setUserType}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Tipo de Usuario" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="cazador">Cazadores</SelectItem>
-              <SelectItem value="operador">Operadores</SelectItem>
-            </SelectContent>
-          </Select>
+          <select
+            className="w-[180px] p-2 border rounded-md"
+            value={userType}
+            onChange={(e) => {
+              setUserType(e.target.value)
+              setCurrentPage(0) // Reset page when changing filter
+            }}
+          >
+            <option value="all">Todos</option>
+            <option value="cazador">Cazadores</option>
+            <option value="operador">Operadores</option>
+          </select>
         </div>
       </div>
 
       {/* Métricas principales */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Asignadas</CardTitle>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-gray-600">Total Asignadas</h3>
             <AlertTriangle className="h-4 w-4 text-orange-600" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className="text-2xl font-bold">{totalAsignadas.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-500">
               {timeFilter === "weekly" ? "Últimas 4 semanas" : "Últimos 6 meses"}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Atendidas</CardTitle>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-gray-600">Total Atendidas</h3>
             <CheckCircle className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className="text-2xl font-bold">{totalAtendidas.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Incidencias resueltas</p>
-          </CardContent>
-        </Card>
+            <p className="text-xs text-gray-500">Incidencias resueltas</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tasa de Conversión</CardTitle>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-gray-600">Tasa de Conversión</h3>
             <TrendingUp className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className="text-2xl font-bold">{tasaConversionGeneral}%</div>
-            <p className="text-xs text-muted-foreground">Eficiencia general</p>
-          </CardContent>
-        </Card>
+            <p className="text-xs text-gray-500">Eficiencia general</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tendencia</CardTitle>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-gray-600">Tendencia</h3>
             {Number(tendencia) >= 0 ? (
               <TrendingUp className="h-4 w-4 text-green-600" />
             ) : (
               <TrendingDown className="h-4 w-4 text-red-600" />
             )}
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className="text-2xl font-bold">
               {Number(tendencia) >= 0 ? "+" : ""}
               {tendencia}%
             </div>
-            <p className="text-xs text-muted-foreground">vs período anterior</p>
-          </CardContent>
-        </Card>
+            <p className="text-xs text-gray-500">vs período anterior</p>
+          </div>
+        </div>
       </div>
 
       {/* Gráficos principales */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Tendencia de Incidencias</CardTitle>
-            <CardDescription>Comparación entre incidencias asignadas y atendidas</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Tendencia de Incidencias</h3>
+            <p className="text-sm text-gray-500">Comparación entre incidencias asignadas y atendidas</p>
+          </div>
+          <div>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={currentData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -329,15 +306,15 @@ export default function Component() {
                 />
               </LineChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Comparación por Período</CardTitle>
-            <CardDescription>Incidencias atendidas por tipo de usuario</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Comparación por Período</h3>
+            <p className="text-sm text-gray-500">Incidencias atendidas por tipo de usuario</p>
+          </div>
+          <div>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={currentData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -348,18 +325,18 @@ export default function Component() {
                 <Bar dataKey="operadorAtendidas" fill="#10b981" name="Operadores" />
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Análisis detallado */}
       <div className="grid gap-6 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Tasa de Conversión por Tipo</CardTitle>
-            <CardDescription>Eficiencia de resolución</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Tasa de Conversión por Tipo</h3>
+            <p className="text-sm text-gray-500">Eficiencia de resolución</p>
+          </div>
+          <div>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
@@ -388,26 +365,26 @@ export default function Component() {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Resumen por Usuario</CardTitle>
-            <CardDescription>Total de incidencias atendidas</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Resumen por Usuario</h3>
+            <p className="text-sm text-gray-500">Total de incidencias atendidas</p>
+          </div>
+          <div className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Users className="h-5 w-5 text-blue-600" />
                 <div>
                   <p className="font-medium">Cazadores</p>
-                  <p className="text-sm text-muted-foreground">Especialistas</p>
+                  <p className="text-sm text-gray-500">Especialistas</p>
                 </div>
               </div>
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
                 {cazadorTotal.toLocaleString()}
-              </Badge>
+              </span>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
@@ -415,22 +392,22 @@ export default function Component() {
                 <Users className="h-5 w-5 text-green-600" />
                 <div>
                   <p className="font-medium">Operadores</p>
-                  <p className="text-sm text-muted-foreground">Soporte general</p>
+                  <p className="text-sm text-gray-500">Soporte general</p>
                 </div>
               </div>
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
                 {operadorTotal.toLocaleString()}
-              </Badge>
+              </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Indicadores Clave</CardTitle>
-            <CardDescription>KPIs principales del período</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Indicadores Clave</h3>
+            <p className="text-sm text-gray-500">KPIs principales del período</p>
+          </div>
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Promedio diario</span>
               <span className="text-sm">{Math.round(totalAtendidas / (timeFilter === "weekly" ? 28 : 180))}</span>
@@ -451,50 +428,60 @@ export default function Component() {
 
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Pendientes</span>
-              <Badge variant="outline" className="text-orange-600">
+              <span className="border border-orange-600 text-orange-600 px-2 py-1 rounded text-sm">
                 {totalAsignadas - totalAtendidas}
-              </Badge>
+              </span>
             </div>
 
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Estado</span>
-              <Badge variant={Number(tendencia) >= 0 ? "default" : "destructive"}>
+              <span className={`px-2 py-1 rounded text-sm ${Number(tendencia) >= 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
                 {Number(tendencia) >= 0 ? "Mejorando" : "Declinando"}
-              </Badge>
+              </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Tabla detallada por persona */}
-      <Card>
-        <CardHeader>
+      <div className="bg-white p-6 rounded-lg shadow">
+        <div className="mb-6">
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
             <div>
-              <CardTitle>Rendimiento Individual</CardTitle>
-              <CardDescription>Métricas detalladas por Cazador y Operador</CardDescription>
+              <h3 className="text-lg font-semibold">Rendimiento Individual</h3>
+              <p className="text-sm text-gray-500">Métricas detalladas por Cazador y Operador</p>
             </div>
 
             <div className="flex items-center space-x-2">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value)
+                  setCurrentPage(0)
+                }}
+                className="w-[150px] p-2 border rounded-md"
+                title="Fecha de inicio"
+              />
               <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                <input
                   placeholder="Buscar persona..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 w-[200px]"
+                  className="pl-8 w-[200px] p-2 border rounded-md"
                 />
               </div>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div>
           <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Persona</TableHead>
-                  <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort("tipo")}>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Persona</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => handleSort("tipo")}>
                     <div className="flex items-center space-x-1">
                       <span>Tipo</span>
                       {sortField === "tipo" &&
@@ -504,9 +491,9 @@ export default function Component() {
                           <ArrowDownIcon className="h-4 w-4" />
                         ))}
                     </div>
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/50 text-right"
+                  </th>
+                  <th
+                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort("asignadas")}
                   >
                     <div className="flex items-center justify-end space-x-1">
@@ -518,9 +505,9 @@ export default function Component() {
                           <ArrowDownIcon className="h-4 w-4" />
                         ))}
                     </div>
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/50 text-right"
+                  </th>
+                  <th
+                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort("resueltas")}
                   >
                     <div className="flex items-center justify-end space-x-1">
@@ -532,9 +519,9 @@ export default function Component() {
                           <ArrowDownIcon className="h-4 w-4" />
                         ))}
                     </div>
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/50 text-right"
+                  </th>
+                  <th
+                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort("conversion")}
                   >
                     <div className="flex items-center justify-end space-x-1">
@@ -546,95 +533,76 @@ export default function Component() {
                           <ArrowDownIcon className="h-4 w-4" />
                         ))}
                     </div>
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/50 text-right"
-                    onClick={() => handleSort("tendencia")}
-                  >
-                    <div className="flex items-center justify-end space-x-1">
-                      <span>Tendencia</span>
-                      {sortField === "tendencia" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowUpIcon className="h-4 w-4" />
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4" />
-                        ))}
-                    </div>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedPersonalData.map((person) => (
-                  <TableRow key={person.id}>
-                    <TableCell>
+                  </th>
+                  {/* Columna de Tendencia comentada - el endpoint no provee esta data */}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-4 whitespace-nowrap text-center py-8">
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span>Cargando datos...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : sortedPersonalData.map((person) => (
+                  <tr key={person.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-medium">
                           {person.avatar}
                         </div>
                         <div>
                           <div className="font-medium">{person.nombre}</div>
                         </div>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={person.tipo === "Cazador" ? "default" : "secondary"}
-                        className={
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           person.tipo === "Cazador" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"
-                        }
+                        }`}
                       >
                         {person.tipo}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-medium">{person.asignadas}</TableCell>
-                    <TableCell className="text-right font-medium">{person.resueltas}</TableCell>
-                    <TableCell className="text-right">
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-medium">{person.asignadas}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-medium">{person.resueltas}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <div className={`h-2 w-16 rounded-full bg-gray-200`}>
                           <div
-                            className={`h-2 rounded-full ${
-                              person.conversion >= 90
-                                ? "bg-green-500"
-                                : person.conversion >= 85
-                                  ? "bg-yellow-500"
-                                  : "bg-red-500"
-                            }`}
+                            className={`h-2 rounded-full ${person.conversion >= 90
+                              ? "bg-green-500"
+                              : person.conversion >= 85
+                                ? "bg-yellow-500"
+                                : "bg-red-500"
+                              }`}
                             style={{ width: `${person.conversion}%` }}
                           />
                         </div>
                         <span className="font-medium text-sm w-12">{person.conversion}%</span>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end space-x-1">
-                        {person.tendencia >= 0 ? (
-                          <TrendingUp className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <TrendingDown className="h-4 w-4 text-red-600" />
-                        )}
-                        <span
-                          className={`font-medium text-sm ${person.tendencia >= 0 ? "text-green-600" : "text-red-600"}`}
-                        >
-                          {person.tendencia >= 0 ? "+" : ""}
-                          {person.tendencia}%
-                        </span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                    {/* Celda de Tendencia comentada - el endpoint no provee esta data */}
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
+              </tbody>
+            </table>
           </div>
 
-          {sortedPersonalData.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              No se encontraron resultados para "{searchTerm}"
+          {!loading && sortedPersonalData.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              {searchTerm ? `No se encontraron resultados para "${searchTerm}"` : "No hay datos disponibles"}
             </div>
           )}
 
-          <div className="flex items-center justify-between mt-4 text-sm text-muted-foreground">
+          <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
             <div>
-              Mostrando {sortedPersonalData.length} de {personalData.length} personas
+              Mostrando {sortedPersonalData.length} de {totalCount} personas
+              {totalPages > 1 && ` (Página ${currentPage + 1} de ${totalPages})`}
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
@@ -651,8 +619,33 @@ export default function Component() {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Controles de paginación */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center space-x-2 mt-4">
+              <button
+                onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+                disabled={currentPage === 0 || loading}
+                className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Anterior
+              </button>
+
+              <span className="text-sm text-gray-500">
+                Página {currentPage + 1} de {totalPages}
+              </span>
+
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+                disabled={currentPage >= totalPages - 1 || loading}
+                className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
