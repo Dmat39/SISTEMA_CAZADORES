@@ -22,6 +22,9 @@ import {
 import { ArrowUpIcon, ArrowDownIcon, Search } from "lucide-react"
 import { incidenceStatistics, incidenceGeneral } from "../../api/dashboard/DashboardApi"
 import { useNavigate, useLocation } from 'react-router-dom'
+import DateRangeFilter from "../../components/Supervisors/DateRangeFilter"
+import CustomTablePagination from "../../components/Pagination/TablePagination"
+import UserTypeSelector from "../../components/UI/UserTypeSelector"
 
 // Datos simulados para las métricas
 const weeklyData = [
@@ -49,261 +52,7 @@ const conversionData = [
 
 const COLORS = ["#3b82f6", "#10b981"]
 
-// Componente DateRangeFilter adaptado para el Dashboard
-const DashboardDateRangeFilter = ({ startDate, endDate, onDateChange }) => {
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
-    key: 'selection'
-  })
-  const [tempDateRange, setTempDateRange] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
-    key: 'selection'
-  })
-  const [isOpen, setIsOpen] = useState(false)
-  const [displayValue, setDisplayValue] = useState('')
 
-  // Helpers para fechas
-  const formatDateToLocal = (date) => {
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-
-  const parseDateFromLocal = (dateString) => {
-    if (!dateString) return new Date()
-    const [year, month, day] = dateString.split('-').map(Number)
-    return new Date(year, month - 1, day)
-  }
-
-  const formatDisplayDate = (date) => {
-    const day = date.getDate().toString().padStart(2, '0')
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const year = date.getFullYear()
-    return `${day}/${month}/${year}`
-  }
-
-  // Opciones de selección rápida
-  const quickSelectOptions = [
-    { label: 'Hoy', getValue: () => ({ startDate: new Date(), endDate: new Date() }) },
-    {
-      label: 'Ayer', getValue: () => {
-        const yesterday = new Date()
-        yesterday.setDate(yesterday.getDate() - 1)
-        return { startDate: yesterday, endDate: yesterday }
-      }
-    },
-    {
-      label: 'Últimos 7 días', getValue: () => {
-        const today = new Date()
-        const weekAgo = new Date()
-        weekAgo.setDate(weekAgo.getDate() - 6)
-        return { startDate: weekAgo, endDate: today }
-      }
-    },
-    {
-      label: 'Últimos 30 días', getValue: () => {
-        const today = new Date()
-        const monthAgo = new Date()
-        monthAgo.setDate(monthAgo.getDate() - 29)
-        return { startDate: monthAgo, endDate: today }
-      }
-    },
-    {
-      label: 'Este mes', getValue: () => {
-        const today = new Date()
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
-        return { startDate: firstDay, endDate: today }
-      }
-    }
-  ]
-
-  // Actualizar display value
-  const updateDisplayValue = (startDate, endDate) => {
-    if (!startDate || !endDate) {
-      setDisplayValue('')
-      return
-    }
-    const startStr = formatDisplayDate(startDate)
-    const endStr = formatDisplayDate(endDate)
-    setDisplayValue(startStr === endStr ? startStr : `${startStr} - ${endStr}`)
-  }
-
-  // Sincronizar con props
-  useEffect(() => {
-    if (startDate || endDate) {
-      const start = startDate ? parseDateFromLocal(startDate) : new Date()
-      const end = endDate ? parseDateFromLocal(endDate) : new Date()
-      const range = { startDate: start, endDate: end, key: 'selection' }
-
-      setDateRange(range)
-      setTempDateRange(range)
-      updateDisplayValue(start, end)
-    } else {
-      setDisplayValue('')
-      const today = new Date()
-      const defaultRange = { startDate: today, endDate: today, key: 'selection' }
-      setDateRange(defaultRange)
-      setTempDateRange(defaultRange)
-    }
-  }, [startDate, endDate])
-
-  // Event handlers
-  const handleRangeChange = (item) => setTempDateRange(item.selection)
-
-  const applyDateFilter = () => {
-    setDateRange(tempDateRange)
-    updateDisplayValue(tempDateRange.startDate, tempDateRange.endDate)
-    onDateChange(
-      formatDateToLocal(tempDateRange.startDate),
-      formatDateToLocal(tempDateRange.endDate)
-    )
-    setIsOpen(false)
-  }
-
-  const handleQuickSelect = (option) => {
-    const { startDate, endDate } = option.getValue()
-    setTempDateRange({ startDate, endDate, key: 'selection' })
-  }
-
-  const clearDateRangeFilter = () => {
-    const today = new Date()
-    const defaultRange = { startDate: today, endDate: today, key: 'selection' }
-    setDateRange(defaultRange)
-    setTempDateRange(defaultRange)
-    setDisplayValue('')
-    setIsOpen(false)
-    onDateChange('', '')
-  }
-
-  const handleInputClick = () => {
-    setIsOpen(!isOpen)
-    if (!isOpen) setTempDateRange(dateRange)
-  }
-
-  const handleClickAway = () => {
-    setIsOpen(false)
-    setTempDateRange(dateRange)
-  }
-
-  // Manejar click fuera del componente
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isOpen && !event.target.closest('.date-range-filter')) {
-        handleClickAway()
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isOpen])
-
-  const hasActiveFilter = () => {
-    return startDate || endDate
-  }
-
-  return (
-    <div className="flex items-center gap-2">
-      <div className="relative date-range-filter">
-        <div
-          onClick={handleInputClick}
-          className={`w-[320px] h-10 rounded-lg px-3 py-2 cursor-pointer bg-white relative flex items-center text-sm outline-none transition-all ${isOpen
-            ? 'border-2 border-blue-600'
-            : 'border border-gray-300 hover:border-gray-400'
-            }`}
-        >
-          <span className={`absolute left-3 transition-all pointer-events-none ${displayValue
-            ? 'top-[-8px] text-xs text-gray-600 bg-white px-1'
-            : 'top-1/2 transform -translate-y-1/2 text-gray-400'
-            }`}>
-            Rango de Fechas
-          </span>
-          <span className={`w-full overflow-hidden text-ellipsis whitespace-nowrap ${displayValue ? 'text-gray-700' : 'text-gray-400'
-            }`}>
-            {displayValue}
-          </span>
-        </div>
-
-        {isOpen && (
-          <div className="absolute top-full left-0 z-50 bg-white border border-gray-300 rounded-lg mt-1 overflow-hidden shadow-lg">
-            <div className="p-4 border-b border-gray-200">
-              <p className="text-xs text-gray-600 mb-2">Selección rápida:</p>
-              <div className="flex flex-wrap gap-1">
-                {quickSelectOptions.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleQuickSelect(option)}
-                    className="text-xs py-1 px-2 border border-gray-300 rounded text-gray-700 hover:border-blue-600 hover:bg-blue-50 transition-colors"
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Aquí iría el DateRange component, pero como no tenemos react-date-range instalado, 
-                vamos a usar inputs de fecha simples por ahora */}
-            <div className="p-4">
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-xs text-gray-600 mb-1">Fecha inicio</label>
-                  <input
-                    type="date"
-                    value={formatDateToLocal(tempDateRange.startDate)}
-                    onChange={(e) => setTempDateRange({
-                      ...tempDateRange,
-                      startDate: parseDateFromLocal(e.target.value)
-                    })}
-                    className="w-full p-2 border border-gray-300 rounded text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-600 mb-1">Fecha fin</label>
-                  <input
-                    type="date"
-                    value={formatDateToLocal(tempDateRange.endDate)}
-                    onChange={(e) => setTempDateRange({
-                      ...tempDateRange,
-                      endDate: parseDateFromLocal(e.target.value)
-                    })}
-                    className="w-full p-2 border border-gray-300 rounded text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 border-t border-gray-200 flex justify-between gap-2">
-              <button
-                onClick={() => setIsOpen(false)}
-                className="px-3 py-1 text-sm border border-gray-300 rounded text-gray-600 hover:bg-gray-50 transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={applyDateFilter}
-                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                Aplicar Filtro
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {hasActiveFilter() && (
-        <button
-          onClick={clearDateRangeFilter}
-          className="text-gray-500 hover:text-gray-700 text-sm px-2 py-1 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
-          title="Limpiar filtro de rango"
-        >
-          ✕
-        </button>
-      )}
-    </div>
-  )
-}
 
 export default function Component() {
   const navigate = useNavigate()
@@ -322,10 +71,12 @@ export default function Component() {
   const [totalCount, setTotalCount] = useState(0)
   const [startDate, setStartDate] = useState("")
 
-  // Obtener parámetros de URL para paginación
+  // Obtener parámetros de URL para paginación y filtros
   const searchParams = new URLSearchParams(location.search)
   const currentPage = parseInt(searchParams.get('page')) || 1
   const limit = parseInt(searchParams.get('limit')) || 10
+  const generalStartDate = searchParams.get('start') || ''
+  const generalEndDate = searchParams.get('end') || ''
 
   // Estados para los datos generales
   const [generalData, setGeneralData] = useState({
@@ -336,8 +87,6 @@ export default function Component() {
     totalCazadores: 0
   })
   const [loadingGeneral, setLoadingGeneral] = useState(false)
-  const [generalStartDate, setGeneralStartDate] = useState("")
-  const [generalEndDate, setGeneralEndDate] = useState("")
 
   const currentData = timeFilter === "weekly" ? weeklyData : monthlyData
 
@@ -412,15 +161,10 @@ export default function Component() {
     }
   }
 
-  // useEffect para cargar datos generales cuando cambien las fechas
+  // useEffect para cargar datos generales cuando cambien las fechas desde URL
   useEffect(() => {
     loadGeneralData()
   }, [generalStartDate, generalEndDate])
-
-  // useEffect para cargar datos generales al inicializar
-  useEffect(() => {
-    loadGeneralData()
-  }, [])
 
   // useEffect para cargar datos cuando cambien los filtros
   useEffect(() => {
@@ -490,24 +234,7 @@ export default function Component() {
     navigate({ search: searchParams.toString() })
   }
 
-  // Generar array de páginas para mostrar
-  const getPageNumbers = () => {
-    const pages = []
-    const maxPagesToShow = 5
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2))
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1)
 
-    // Ajustar startPage si estamos cerca del final
-    if (endPage - startPage < maxPagesToShow - 1) {
-      startPage = Math.max(1, endPage - maxPagesToShow + 1)
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i - 1) // Restamos 1 para mantener compatibilidad con el array de 0-indexed
-    }
-
-    return pages
-  }
 
   // Debounce para la búsqueda
   useEffect(() => {
@@ -530,25 +257,19 @@ export default function Component() {
         </div>
 
         <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
-          <DashboardDateRangeFilter
-            startDate={generalStartDate}
-            endDate={generalEndDate}
-            onDateChange={(start, end) => {
-              setGeneralStartDate(start)
-              setGeneralEndDate(end)
+          <DateRangeFilter
+            containerStyle={{
+              position: "relative",
+              left: "0",
+              top: "0",
+              zIndex: "1500",
+              width: "100%",
+              height: "100%",
+            }}
+            sx={{
+
             }}
           />
-          {/* <select
-            className="w-[180px] p-2 border rounded-md"
-            value={userType}
-            onChange={(e) => {
-              setUserType(e.target.value)
-              setCurrentPage(0) // Reset page when changing filter
-            }}
-          >
-            <option value="cazador">Cazadores</option>
-            <option value="operador">Operadores</option>
-          </select> */}
         </div>
       </div>
 
@@ -853,271 +574,221 @@ export default function Component() {
               <p className="text-sm text-gray-500">Métricas detalladas por Cazador y Operador</p>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <select
-                value={limit}
-                onChange={(e) => handlePageLimitChange(1, parseInt(e.target.value))}
-                className="w-[100px] p-2 border rounded-md"
-                title="Elementos por página"
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => {
-                  setStartDate(e.target.value)
-                  // Reset a página 1 cuando cambia el filtro
-                  const searchParams = new URLSearchParams(location.search)
-                  searchParams.set('page', '1')
-                  navigate({ search: searchParams.toString() })
-                }}
-                className="w-[150px] p-2 border rounded-md"
-                title="Fecha de inicio"
-              />
-              <select
-                className="w-[180px] p-2 border rounded-md"
-                value={userType}
-                onChange={(e) => {
-                  setUserType(e.target.value)
-                  // Reset a página 1 cuando cambia el filtro
-                  const searchParams = new URLSearchParams(location.search)
-                  searchParams.set('page', '1')
-                  navigate({ search: searchParams.toString() })
-                }}
-              >
-                <option value="cazador">Cazadores</option>
-                <option value="operador">Operadores</option>
-              </select>
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              {/* Selector de fecha moderno */}
+              <div className="relative group">
                 <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value)
+                    // Reset a página 1 cuando cambia el filtro
+                    const searchParams = new URLSearchParams(location.search)
+                    searchParams.set('page', '1')
+                    navigate({ search: searchParams.toString() })
+                  }}
+                  className="w-full sm:w-[160px] h-11 px-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 placeholder-gray-400 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-300 hover:shadow-sm group-hover:shadow-sm"
+                  title="Fecha de inicio"
+                />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+              </div>
+
+              {/* Selector de tipo moderno con Headless UI */}
+              <UserTypeSelector
+                value={userType}
+                onChange={(newValue) => {
+                  setUserType(newValue)
+                  // Reset a página 1 cuando cambia el filtro
+                  const searchParams = new URLSearchParams(location.search)
+                  searchParams.set('page', '1')
+                  navigate({ search: searchParams.toString() })
+                }}
+                className="w-[190px]"
+              />
+
+              {/* Campo de búsqueda moderno */}
+              <div className="relative group flex-1 sm:flex-initial">
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <Search className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+                </div>
+                <input
+                  type="text"
                   placeholder="Buscar persona..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 w-[300px] p-2 border rounded-md"
+                  className="w-[320px] sm:w-[320px] h-11 pl-11 pr-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 placeholder-gray-400 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-300 hover:shadow-sm group-hover:shadow-sm"
                 />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div className="rounded-md ">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Persona</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => handleSort("tipo")}>
-                    <div className="flex items-center space-x-1">
-                      <span>Tipo</span>
-                      {sortField === "tipo" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowUpIcon className="h-4 w-4" />
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4" />
-                        ))}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort("asignadas")}
-                  >
-                    <div className="flex items-center justify-end space-x-1">
-                      <span>Asignadas</span>
-                      {sortField === "asignadas" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowUpIcon className="h-4 w-4" />
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4" />
-                        ))}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort("resueltas")}
-                  >
-                    <div className="flex items-center justify-end space-x-1">
-                      <span>Resueltas</span>
-                      {sortField === "resueltas" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowUpIcon className="h-4 w-4" />
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4" />
-                        ))}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort("conversion")}
-                  >
-                    <div className="flex items-center justify-end space-x-1">
-                      <span>Conversión</span>
-                      {sortField === "conversion" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowUpIcon className="h-4 w-4" />
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4" />
-                        ))}
-                    </div>
-                  </th>
-                  {/* Columna de Tendencia comentada - el endpoint no provee esta data */}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {loading ? (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-4 whitespace-nowrap text-center py-8">
-                      <div className="flex items-center justify-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                        <span>Cargando datos...</span>
-                      </div>
-                    </td>
-                  </tr>
-                ) : sortedPersonalData.map((person) => (
-                  <tr key={person.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-medium">
-                          {person.avatar}
-                        </div>
-                        <div>
-                          <div className="font-medium">{person.nombre}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${person.tipo === "Cazador" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"
-                          }`}
-                      >
-                        {person.tipo}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-medium">{person.asignadas}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-medium">{person.resueltas}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <div className={`h-2 w-16 rounded-full bg-gray-200`}>
-                          <div
-                            className={`h-2 rounded-full ${person.conversion >= 90
-                              ? "bg-green-500"
-                              : person.conversion >= 85
-                                ? "bg-yellow-500"
-                                : "bg-red-500"
-                              }`}
-                            style={{ width: `${person.conversion}%` }}
-                          />
-                        </div>
-                        <span className="font-medium text-sm w-12">{person.conversion}%</span>
-                      </div>
-                    </td>
-                    {/* Celda de Tendencia comentada - el endpoint no provee esta data */}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {!loading && sortedPersonalData.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              {searchTerm ? `No se encontraron resultados para "${searchTerm}"` : "No hay datos disponibles"}
-            </div>
-          )}
-
-          <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
-            <div>
-              {totalCount > 0 ? (
-                <>Elementos por página: {limit}</>
-              ) : (
-                "No hay datos para mostrar"
-              )}
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="h-2 w-4 rounded-full bg-green-500" />
-                <span>≥90% Excelente</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="h-2 w-4 rounded-full bg-yellow-500" />
-                <span>85-89% Bueno</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="h-2 w-4 rounded-full bg-red-500" />
-                <span>{"<85% Necesita mejora"}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Controles de paginación mejorados */}
-          {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 mt-4">
-              {/* Información de paginación */}
-              <div className="text-sm text-gray-500">
-                Mostrando {(currentPage - 1) * limit + 1} - {Math.min(currentPage * limit, totalCount)} de {totalCount} resultados
-              </div>
-
-              {/* Controles de navegación */}
-              <div className="flex items-center space-x-1">
-                {/* Botón Primera página */}
-                <button
-                  onClick={() => handlePageLimitChange(1, limit)}
-                  disabled={currentPage === 1 || loading}
-                  className="px-2 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Primera página"
-                >
-                  ««
-                </button>
-
-                {/* Botón Anterior */}
-                <button
-                  onClick={() => handlePageLimitChange(Math.max(1, currentPage - 1), limit)}
-                  disabled={currentPage === 1 || loading}
-                  className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Anterior
-                </button>
-
-                {/* Números de página */}
-                {getPageNumbers().map((pageNum) => (
+                {/* Efecto de búsqueda activa */}
+                {searchTerm && (
                   <button
-                    key={pageNum}
-                    onClick={() => handlePageLimitChange(pageNum + 1, limit)}
-                    disabled={loading}
-                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:cursor-not-allowed ${currentPage === pageNum + 1
-                        ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
-                        : 'bg-white text-gray-700'
-                      }`}
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                    title="Limpiar búsqueda"
                   >
-                    {pageNum + 1}
+                    <svg className="w-3 h-3 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                   </button>
-                ))}
+                )}
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+              </div>
 
-                {/* Botón Siguiente */}
-                <button
-                  onClick={() => handlePageLimitChange(Math.min(totalPages, currentPage + 1), limit)}
-                  disabled={currentPage >= totalPages || loading}
-                  className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Siguiente
-                </button>
+            </div>
+          </div>
+          <div>
+            <div className="rounded-md overflow-x-auto mt-5">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Persona</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => handleSort("tipo")}>
+                      <div className="flex items-center space-x-1">
+                        <span>Tipo</span>
+                        {sortField === "tipo" &&
+                          (sortDirection === "asc" ? (
+                            <ArrowUpIcon className="h-4 w-4" />
+                          ) : (
+                            <ArrowDownIcon className="h-4 w-4" />
+                          ))}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort("asignadas")}
+                    >
+                      <div className="flex items-center justify-end space-x-1">
+                        <span>Asignadas</span>
+                        {sortField === "asignadas" &&
+                          (sortDirection === "asc" ? (
+                            <ArrowUpIcon className="h-4 w-4" />
+                          ) : (
+                            <ArrowDownIcon className="h-4 w-4" />
+                          ))}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort("resueltas")}
+                    >
+                      <div className="flex items-center justify-end space-x-1">
+                        <span>Resueltas</span>
+                        {sortField === "resueltas" &&
+                          (sortDirection === "asc" ? (
+                            <ArrowUpIcon className="h-4 w-4" />
+                          ) : (
+                            <ArrowDownIcon className="h-4 w-4" />
+                          ))}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleSort("conversion")}
+                    >
+                      <div className="flex items-center justify-end space-x-1">
+                        <span>Conversión</span>
+                        {sortField === "conversion" &&
+                          (sortDirection === "asc" ? (
+                            <ArrowUpIcon className="h-4 w-4" />
+                          ) : (
+                            <ArrowDownIcon className="h-4 w-4" />
+                          ))}
+                      </div>
+                    </th>
+                    {/* Columna de Tendencia comentada - el endpoint no provee esta data */}
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-4 whitespace-nowrap text-center py-8">
+                        <div className="flex items-center justify-center space-x-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          <span>Cargando datos...</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : sortedPersonalData.map((person) => (
+                    <tr key={person.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-medium">
+                            {person.avatar}
+                          </div>
+                          <div>
+                            <div className="font-medium">{person.nombre}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${person.tipo === "Cazador" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"
+                            }`}
+                        >
+                          {person.tipo}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-medium">{person.asignadas}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-medium">{person.resueltas}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          <div className={`h-2 w-16 rounded-full bg-gray-200`}>
+                            <div
+                              className={`h-2 rounded-full ${person.conversion >= 80
+                                ? "bg-green-500"
+                                : person.conversion >= 40
+                                  ? "bg-yellow-500"
+                                  : "bg-red-500"
+                                }`}
+                              style={{ width: `${person.conversion}%` }}
+                            />
+                          </div>
+                          <span className="font-medium text-sm w-12">{person.conversion}%</span>
+                        </div>
+                      </td>
+                      {/* Celda de Tendencia comentada - el endpoint no provee esta data */}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-                {/* Botón Última página */}
-                <button
-                  onClick={() => handlePageLimitChange(totalPages, limit)}
-                  disabled={currentPage >= totalPages || loading}
-                  className="px-2 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Última página"
-                >
-                  »»
-                </button>
+            {!loading && sortedPersonalData.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                {searchTerm ? `No se encontraron resultados para "${searchTerm}"` : "No hay datos disponibles"}
+              </div>
+            )}
+
+            {/* Leyenda de colores para las barras de conversión */}
+            <div className="flex items-center justify-end mt-4 text-sm text-gray-500">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <div className="h-2 w-4 rounded-full bg-green-500" />
+                  <span>≥90% Excelente</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="h-2 w-4 rounded-full bg-yellow-500" />
+                  <span>85-89% Bueno</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="h-2 w-4 rounded-full bg-red-500" />
+                  <span>{"<85% Necesita mejora"}</span>
+                </div>
               </div>
             </div>
-          )}
+
+            {/* Paginación con componente reutilizable */}
+            {totalCount > 0 && (
+              <CustomTablePagination
+                count={totalCount}
+                page={currentPage}
+                limit={limit}
+                handlePageLimitChange={handlePageLimitChange}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
   )
 }
+

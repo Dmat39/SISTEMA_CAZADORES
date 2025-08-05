@@ -215,7 +215,7 @@ const Incidence = () => {
                                     placeholder="Buscar incidencia..."
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
-                                    className="w-full h-10 pl-10 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    className="w-full h-10 pl-3 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                 />
                             </div>
                         </div>

@@ -14,9 +14,9 @@ const CustomTablePagination = ({ count, page, limit, handlePageLimitChange }) =>
     };
 
     return (
-        <Box 
-            sx={{ 
-                display: 'flex', 
+        <Box
+            sx={{
+                display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
                 justifyContent: { md: 'space-between' },
                 alignItems: { xs: 'stretch', md: 'center' },
@@ -26,17 +26,17 @@ const CustomTablePagination = ({ count, page, limit, handlePageLimitChange }) =>
             }}
         >
             {/* Lado izquierdo: Información de resultados + selector de filas */}
-            <Box 
-                display="flex" 
+            <Box
+                display="flex"
                 flexDirection={{ xs: 'column', sm: 'row' }}
                 alignItems={{ xs: 'stretch', sm: 'center' }}
                 gap={{ xs: 1, sm: 2 }}
                 sx={{ flex: { md: 1 } }}
             >
-                <Typography 
-                    variant="body2" 
+                <Typography
+                    variant="body2"
                     color="text.secondary"
-                    sx={{ 
+                    sx={{
                         fontSize: { xs: '0.75rem', sm: '0.875rem' },
                         textAlign: { xs: 'center', sm: 'left' },
                         whiteSpace: { xs: 'normal', sm: 'nowrap' }
@@ -49,7 +49,7 @@ const CustomTablePagination = ({ count, page, limit, handlePageLimitChange }) =>
                         {' '}de {count} resultados
                     </Box>
                 </Typography>
-                
+
                 <FormControl size="small" variant="outlined" sx={{ minWidth: { xs: '100%', sm: 80 } }}>
                     <InputLabel>Filas</InputLabel>
                     <Select
@@ -67,8 +67,8 @@ const CustomTablePagination = ({ count, page, limit, handlePageLimitChange }) =>
             </Box>
 
             {/* Lado derecho: Paginación */}
-            <Box 
-                sx={{ 
+            <Box
+                sx={{
                     display: 'flex',
                     justifyContent: { xs: 'center', md: 'flex-end' },
                     mt: { xs: 1, md: 0 }

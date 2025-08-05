@@ -5,12 +5,12 @@ import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 
-const DateRangeFilter = () => {
+const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
     const [dateRange, setDateRange] = useState({ startDate: new Date(), endDate: new Date(), key: 'selection' });
     const [tempDateRange, setTempDateRange] = useState({ startDate: new Date(), endDate: new Date(), key: 'selection' });
     const [isOpen, setIsOpen] = useState(false);
     const [displayValue, setDisplayValue] = useState('');
-    
+
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -37,28 +37,36 @@ const DateRangeFilter = () => {
     // Opciones de selección rápida
     const quickSelectOptions = [
         { label: 'Hoy', getValue: () => ({ startDate: new Date(), endDate: new Date() }) },
-        { label: 'Ayer', getValue: () => {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            return { startDate: yesterday, endDate: yesterday };
-        }},
-        { label: 'Últimos 7 días', getValue: () => {
-            const today = new Date();
-            const weekAgo = new Date();
-            weekAgo.setDate(weekAgo.getDate() - 6);
-            return { startDate: weekAgo, endDate: today };
-        }},
-        { label: 'Últimos 30 días', getValue: () => {
-            const today = new Date();
-            const monthAgo = new Date();
-            monthAgo.setDate(monthAgo.getDate() - 29);
-            return { startDate: monthAgo, endDate: today };
-        }},
-        { label: 'Este mes', getValue: () => {
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            return { startDate: firstDay, endDate: today };
-        }}
+        {
+            label: 'Ayer', getValue: () => {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                return { startDate: yesterday, endDate: yesterday };
+            }
+        },
+        {
+            label: 'Últimos 7 días', getValue: () => {
+                const today = new Date();
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 6);
+                return { startDate: weekAgo, endDate: today };
+            }
+        },
+        {
+            label: 'Últimos 30 días', getValue: () => {
+                const today = new Date();
+                const monthAgo = new Date();
+                monthAgo.setDate(monthAgo.getDate() - 29);
+                return { startDate: monthAgo, endDate: today };
+            }
+        },
+        {
+            label: 'Este mes', getValue: () => {
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                return { startDate: firstDay, endDate: today };
+            }
+        }
     ];
 
     // Actualizar display value
@@ -74,12 +82,12 @@ const DateRangeFilter = () => {
         const searchParams = new URLSearchParams(location.search);
         const start = searchParams.get('start');
         const end = searchParams.get('end');
-        
+
         if (start || end) {
             const startDate = start ? parseDateFromLocal(start) : new Date();
             const endDate = end ? parseDateFromLocal(end) : new Date();
             const range = { startDate, endDate, key: 'selection' };
-            
+
             setDateRange(range);
             setTempDateRange(range);
             updateDisplayValue(startDate, endDate);
@@ -97,19 +105,19 @@ const DateRangeFilter = () => {
         const searchParams = new URLSearchParams(location.search);
         searchParams.delete('start');
         searchParams.delete('end');
-        
+
         if (startDate) searchParams.set('start', formatDateToLocal(startDate));
         if (endDate && formatDateToLocal(endDate) !== formatDateToLocal(startDate)) {
             searchParams.set('end', formatDateToLocal(endDate));
         }
-        
+
         searchParams.set('page', '1');
         navigate({ search: searchParams.toString() });
     };
 
     // Event handlers
     const handleRangeChange = (item) => setTempDateRange(item.selection);
-    
+
     const applyDateFilter = () => {
         setDateRange(tempDateRange);
         updateDisplayValue(tempDateRange.startDate, tempDateRange.endDate);
@@ -127,7 +135,7 @@ const DateRangeFilter = () => {
         searchParams.delete('start');
         searchParams.delete('end');
         searchParams.set('page', '1');
-        
+
         const today = new Date();
         const defaultRange = { startDate: today, endDate: today, key: 'selection' };
         setDateRange(defaultRange);
@@ -163,23 +171,23 @@ const DateRangeFilter = () => {
     };
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" style={containerStyle}>
             <ClickAwayListener onClickAway={handleClickAway}>
-                <Box sx={{ position: 'relative', minWidth: 220 }}>
-                    <Box 
+                <Box sx={{ position: 'relative', minWidth: 200, ...sx }}>
+                    <Box
                         onClick={handleInputClick}
                         sx={{
-                            width: '100%', 
-                            height: '40px', 
+                            width: '100%',
+                            height: '40px',
                             borderRadius: '10px',
-                            padding: '8px 14px', 
-                            cursor: 'pointer', 
-                            backgroundColor: 'white', 
+                            padding: '8px 14px',
+                            cursor: 'pointer',
+                            backgroundColor: 'white',
                             position: 'relative',
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            fontSize: '14px', 
-                            outline: 'none', 
+                            display: 'flex',
+                            alignItems: 'center',
+                            fontSize: '14px',
+                            outline: 'none',
                             boxShadow: 'none',
                             color: displayValue ? '#374151' : '#9ca3af',
                             border: isOpen ? '3px solid #1976d2' : '1px solid #d1d5db',
@@ -195,10 +203,10 @@ const DateRangeFilter = () => {
                             {displayValue}
                         </span>
                     </Box>
-                    
+
                     {isOpen && (
                         <Box sx={{
-                            position: 'absolute', top: '100%', left: 0, zIndex: 1300, backgroundColor: 'white',
+                            position: 'absolute', top: '100%', right: 0, zIndex: 1300, backgroundColor: 'white',
                             border: '1px solid #d1d5db', borderRadius: '8px', marginTop: 1, overflow: 'hidden',
                             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                             '& .rdrCalendarWrapper': { fontSize: '0.75rem' },
@@ -242,7 +250,7 @@ const DateRangeFilter = () => {
                     )}
                 </Box>
             </ClickAwayListener>
-            
+
             {hasActiveFilter() && (
                 <button onClick={clearDateRangeFilter}
                     className="text-gray-500 hover:text-gray-700 text-sm px-2 py-1 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
