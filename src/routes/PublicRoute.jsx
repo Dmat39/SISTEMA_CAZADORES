@@ -11,12 +11,12 @@ const PublicRouter = ({ element }) => {
     const normalizedRole = role?.toLowerCase();
     
     switch (normalizedRole) {
-      case 'admin':
+      case 'administrator':
         return '/dashboard/admin/incidencia';
       case 'supervisor':
         return '/dashboard/supervisors/incidencia';
       case 'operator':
-      case 'cazador':
+      case 'hunter':
         return '/dashboard/operador/incidencia';
       case 'operador':
       default:

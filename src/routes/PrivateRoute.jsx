@@ -16,7 +16,7 @@ const PrivateRoute = ({ children, requiredRole }) => {
     const normalizedRequiredRole = requiredRole?.toLowerCase();
     
     // Permitir que CAZADOR acceda a rutas de OPERATOR
-    if (normalizedRequiredRole === 'operator' && (normalizedRole === 'operator' || normalizedRole === 'cazador')) {
+    if (normalizedRequiredRole === 'operator' && (normalizedRole === 'operator' || normalizedRole === 'hunter')) {
       return true;
     }
     

@@ -30,7 +30,7 @@ const Navbar = () => {
 
   const handleConfiguration = () => {
     const normalizedRole = role?.toLowerCase();
-    if (normalizedRole === 'operator' || normalizedRole === 'cazador') {
+    if (normalizedRole === 'operator' || normalizedRole === 'hunter') {
       navigate("/dashboard/operador/incidencia/configuracion")
     } else {
       navigate("/dashboard/supervisors/incidencia/configuracion")

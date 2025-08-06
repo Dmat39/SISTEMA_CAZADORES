@@ -9,16 +9,16 @@ const NotFoundPage = () => {
   // Lógica de redirección según rol
   const getRedirectPath = () => {
     // Normalizar rol para comparación case-insensitive
-    const normalizedRole = role?.toLowerCase();
+    const normalizedRole = role;
     
     switch (normalizedRole) {
-      case 'admin':
+      case 'administrator':
         return '/dashboard/admin';
       case 'supervisor':
         // return '/dashboard/supervisors';
         return '/dashboard/supervisors/operadores';
       case 'operator':
-      case 'cazador':
+      case 'hunter':
         // return '/dashboard/operador';
         return '/dashboard/operador/incidencia';
       default:

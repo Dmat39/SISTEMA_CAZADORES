@@ -382,7 +382,7 @@ export default function Component() {
       </div>
 
       {/*
-       {/* Gráficos principales 
+        Gráficos principales */ }
       <div className="grid gap-6 md:grid-cols-2">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="mb-4">
@@ -451,7 +451,7 @@ export default function Component() {
         </div>
       </div>
 
-      {/* Análisis detallado 
+      {/* Análisis detallado */}
       <div className="grid gap-6 md:grid-cols-3">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="mb-4">
@@ -563,7 +563,7 @@ export default function Component() {
             </div>
           </div>
         </div>
-      </div> */}
+      </div> 
 
       {/* Tabla detallada por persona */}
       <div className="bg-white p-6 rounded-lg shadow">

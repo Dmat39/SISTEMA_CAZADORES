@@ -116,7 +116,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
             <div className="grid gap-4 mb-4 grid-cols-2">
               {/* Código */}
               <div className="col-span-2">
-                <label className="block mb-2 text-sm font-medium text-gray-900">Código *</label>
+                <label className="block mb-2 text-sm font-medium text-gray-900">Código</label>
                 <Autocomplete
                   freeSolo
                   id="code-autocomplete"
