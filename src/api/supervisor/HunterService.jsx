@@ -1,11 +1,9 @@
 import config from "../config";
 
 // Función para obtener todos los cazadores
-export const getAllHuntersApi = async (page = 0, limit = 50) => {
+export const getAllHuntersApi = async (params = {}) => {
   try {
-    const response = await config.get('/hunter/all', {
-      params: { page, limit }
-    });
+    const response = await config.get('/hunter/all', { params });
     return response.data;
   } catch (error) {
     console.error("Error fetching hunters:", error);

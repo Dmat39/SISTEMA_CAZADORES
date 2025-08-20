@@ -20,11 +20,13 @@ import {
 
 // Imports adicionales
 import { ArrowUpIcon, ArrowDownIcon, Search } from "lucide-react"
-import { incidenceStatistics, incidenceGeneral } from "../../api/dashboard/DashboardApi"
+import { dashboardData, incidenceStatistics, incidenceGeneral } from "../../api/dashboard/DashboardApi"
 import { useNavigate, useLocation } from 'react-router-dom'
 import DateRangeFilter from "../../components/Supervisors/DateRangeFilter"
 import CustomTablePagination from "../../components/Pagination/TablePagination"
 import UserTypeSelector from "../../components/UI/UserTypeSelector"
+import { IncidentBarChart } from "../../components/incident-bar-chart"
+import { IncidentLineChart } from "../../components/incident-line-chart"
 
 // Datos simulados para las métricas
 const weeklyData = [
@@ -69,7 +71,6 @@ export default function Component() {
   const [loading, setLoading] = useState(false)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
-  const [startDate, setStartDate] = useState("")
 
   // Obtener parámetros de URL para paginación y filtros
   const searchParams = new URLSearchParams(location.search)
@@ -83,10 +84,13 @@ export default function Component() {
     totalIncidencias: 0,
     incidenciasEnProceso: 0,
     incidenciasFinalizadas: 0,
+    incidenciasCompletadas: 0, // Nueva métrica
     totalOperadores: 0,
     totalCazadores: 0
   })
   const [loadingGeneral, setLoadingGeneral] = useState(false)
+
+
 
   const currentData = timeFilter === "weekly" ? weeklyData : monthlyData
 
@@ -104,10 +108,21 @@ export default function Component() {
         params.end = generalEndDate
       }
 
-      const response = await incidenceGeneral(params)
+      // Usar la nueva API dashboard
+      const response = await dashboardData(params)
 
       if (response.data.status) {
-        setGeneralData(response.data.data)
+        const dashboardData = response.data.data.general
+        setGeneralData({
+          totalIncidencias: dashboardData.total || 0,
+          incidenciasEnProceso: dashboardData.process || 0,
+          incidenciasFinalizadas: dashboardData.finished || 0,
+          incidenciasCompletadas: dashboardData.completed || 0, // Nueva métrica
+          totalOperadores: dashboardData.operators || 0,
+          totalCazadores: dashboardData.hunters || 0
+        })
+
+
       }
     } catch (error) {
       console.error('Error loading general data:', error)
@@ -130,17 +145,24 @@ export default function Component() {
         params.search = searchTerm.trim()
       }
 
-      if (startDate) {
-        params.start = startDate
+      // Usar las fechas globales del DateRangeFilter
+      if (generalStartDate) {
+        params.start = generalStartDate
       }
 
-      const response = await incidenceStatistics(params)
+      if (generalEndDate) {
+        params.end = generalEndDate
+      }
+
+      // Usar la nueva API dashboard
+      const response = await dashboardData(params)
 
       if (response.data.status) {
-        const apiData = response.data.data.data.map(user => ({
+        const performanceData = response.data.data.performance
+        const apiData = performanceData.data.map(user => ({
           id: user.id,
           nombre: `${user.name} ${user.lastname}`,
-          tipo: user.rol === "Cazador" ? "Cazador" : "Operador",
+          tipo: user.rol === "hunter" ? "Cazador" : "Operador",
           asignadas: user.asigned,
           resueltas: user.finished,
           conversion: user.asigned > 0 ? ((user.finished / user.asigned) * 100).toFixed(1) : 0,
@@ -151,8 +173,8 @@ export default function Component() {
         }))
 
         setPersonalData(apiData)
-        setTotalPages(response.data.data.totalPages)
-        setTotalCount(response.data.data.totalCount)
+        setTotalPages(performanceData.totalPages || 1)
+        setTotalCount(performanceData.totalCount || 0)
       }
     } catch (error) {
       console.error('Error loading personal data:', error)
@@ -173,7 +195,7 @@ export default function Component() {
     }, searchTerm ? 500 : 0) // Debounce solo si hay búsqueda
 
     return () => clearTimeout(timer)
-  }, [currentPage, limit, searchTerm, userType, startDate])
+  }, [currentPage, limit, searchTerm, userType, generalStartDate, generalEndDate])
 
   // Calcular métricas totales
   const totalAsignadas = currentData.reduce((acc, item) => acc + item.cazadorAsignadas + item.operadorAsignadas, 0)
@@ -262,7 +284,10 @@ export default function Component() {
               position: "relative",
               left: "0",
               top: "0",
-              zIndex: "1500",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: "1",
               width: "100%",
               height: "100%",
             }}
@@ -273,8 +298,8 @@ export default function Component() {
         </div>
       </div>
 
-      {/* Métricas principales - Datos del endpoint incidence/general */}
-      <div className="grid gap-4 md:grid-cols-5 lg:grid-cols-5">
+      {/* Métricas principales - Datos del endpoint dashboard */}
+      <div className="grid gap-4 md:grid-cols-6 lg:grid-cols-6">
         {/* Total Incidencias */}
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -321,7 +346,7 @@ export default function Component() {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
             <h3 className="text-sm font-medium text-gray-600">Finalizadas</h3>
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <CheckCircle className="h-4 w-4 text-blue-600" />
           </div>
           <div>
             {loadingGeneral ? (
@@ -332,6 +357,27 @@ export default function Component() {
             ) : (
               <>
                 <div className="text-2xl font-bold">{generalData.incidenciasFinalizadas.toLocaleString()}</div>
+                <p className="text-xs text-gray-500">Incidencias completadas</p>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Incidencias Completadas */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-gray-600">Completado</h3>
+            <CheckCircle className="h-4 w-4 text-emerald-600" />
+          </div>
+          <div>
+            {loadingGeneral ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600"></div>
+                <span className="text-sm text-gray-500">Cargando...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{generalData.incidenciasCompletadas.toLocaleString()}</div>
                 <p className="text-xs text-gray-500">Incidencias completadas</p>
               </>
             )}
@@ -381,78 +427,14 @@ export default function Component() {
         </div>
       </div>
 
-      {/*
-        Gráficos principales */ }
+      {/* Gráficos principales con shadcn/ui */}
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Tendencia de Incidencias</h3>
-            <p className="text-sm text-gray-500">Comparación entre incidencias asignadas y atendidas</p>
-          </div>
-          <div>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={currentData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" />
-                <YAxis />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="cazadorAsignadas"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  name="Cazador - Asignadas"
-                  strokeDasharray="5 5"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="cazadorAtendidas"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  name="Cazador - Atendidas"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="operadorAsignadas"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  name="Operador - Asignadas"
-                  strokeDasharray="5 5"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="operadorAtendidas"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  name="Operador - Atendidas"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Comparación por Período</h3>
-            <p className="text-sm text-gray-500">Incidencias atendidas por tipo de usuario</p>
-          </div>
-          <div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={currentData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="cazadorAtendidas" fill="#3b82f6" name="Cazadores" />
-                <Bar dataKey="operadorAtendidas" fill="#10b981" name="Operadores" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <IncidentLineChart />
+        <IncidentBarChart />
       </div>
 
       {/* Análisis detallado */}
-      <div className="grid gap-6 md:grid-cols-3">
+      {/* <div className="grid gap-6 md:grid-cols-3">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="mb-4">
             <h3 className="text-lg font-semibold">Tasa de Conversión por Tipo</h3>
@@ -563,7 +545,7 @@ export default function Component() {
             </div>
           </div>
         </div>
-      </div> 
+      </div>  */}
 
       {/* Tabla detallada por persona */}
       <div className="bg-white p-6 rounded-lg shadow">
@@ -575,24 +557,6 @@ export default function Component() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              {/* Selector de fecha moderno */}
-              <div className="relative group">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => {
-                    setStartDate(e.target.value)
-                    // Reset a página 1 cuando cambia el filtro
-                    const searchParams = new URLSearchParams(location.search)
-                    searchParams.set('page', '1')
-                    navigate({ search: searchParams.toString() })
-                  }}
-                  className="w-full sm:w-[160px] h-11 px-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 placeholder-gray-400 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-300 hover:shadow-sm group-hover:shadow-sm"
-                  title="Fecha de inicio"
-                />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
-              </div>
-
               {/* Selector de tipo moderno con Headless UI */}
               <UserTypeSelector
                 value={userType}
@@ -763,15 +727,15 @@ export default function Component() {
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <div className="h-2 w-4 rounded-full bg-green-500" />
-                  <span>≥90% Excelente</span>
+                  <span>≥80% Excelente</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="h-2 w-4 rounded-full bg-yellow-500" />
-                  <span>85-89% Bueno</span>
+                  <span>40-80% Bueno</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="h-2 w-4 rounded-full bg-red-500" />
-                  <span>{"<85% Necesita mejora"}</span>
+                  <span>{"<40% Necesita mejora"}</span>
                 </div>
               </div>
             </div>

@@ -2,7 +2,7 @@ import mainApi from "../config";
 
 export const deletePhotoApi = async (id) => {
   try {
-    const response = await mainApi.delete(`/record/delete/image/${id}`);
+    const response = await mainApi.delete(`/record/delete/evidence/${id}`);
     return response.data;
   } catch (error) {
     console.log("Error al eliminar la foto:", error);

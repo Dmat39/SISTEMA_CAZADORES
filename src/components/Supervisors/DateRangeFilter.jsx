@@ -173,7 +173,7 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
     return (
         <div className="flex items-center gap-2" style={containerStyle}>
             <ClickAwayListener onClickAway={handleClickAway}>
-                <Box sx={{ position: 'relative', minWidth: 200, ...sx }}>
+                <Box sx={{ position: 'relative', minWidth: 130, ...sx }}>
                     <Box
                         onClick={handleInputClick}
                         sx={{

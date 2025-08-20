@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Autocomplete, TextField } from '@mui/material';
+import { getAllHuntersApi } from '../../api/supervisor/HunterService';
 
 const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) => {
   const [form, setForm] = useState({ 
@@ -9,6 +10,30 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
   });
   const [selectedCazador, setSelectedCazador] = useState(null);
   const [inputValue, setInputValue] = useState('');
+  const [cazadoresList, setCazadoresList] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Cargar cazadores con parámetros de búsqueda
+  const loadCazadores = async (searchTerm = '') => {
+    setLoading(true);
+    try {
+      const params = {
+        page: 0,
+        ...(searchTerm && { search: searchTerm })
+      };
+      const response = await getAllHuntersApi(params);
+      setCazadoresList(response.data.data || []);
+    } catch (error) {
+      console.error('Error cargando cazadores:', error);
+      toast.error('Error al cargar cazadores');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCazadores();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,7 +47,7 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
         return;
     }
     onSubmit?.({ 
-      userId: selectedCazador.user.id, 
+      userId: selectedCazador.id, // Cambiado de selectedCazador.user.id
       incidenceId,
       userType: form.userType 
     });
@@ -51,13 +76,18 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
         <div className="mb-4">
           <Autocomplete
             freeSolo
-            options={cazadores}
+            options={cazadoresList}
             value={selectedCazador}
             inputValue={inputValue}
+            loading={loading}
             onInputChange={(event, newInputValue) => {
               setInputValue(newInputValue);
               if (newInputValue === '') {
                 setSelectedCazador(null);
+                loadCazadores();
+              } else {
+                // Buscar cazadores cuando el usuario escribe
+                loadCazadores(newInputValue);
               }
             }}
             onChange={(event, newValue) => {
@@ -76,7 +106,7 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
             getOptionLabel={(option) =>
               option?.name ? `${option.name} ${option.lastname}` : ''
             }
-            isOptionEqualToValue={(option, value) => option?.user?.id === value?.user?.id}
+            isOptionEqualToValue={(option, value) => option?.id === value?.id}
             sx={{ width: '100%' }}
             renderInput={(params) => (
               <TextField 

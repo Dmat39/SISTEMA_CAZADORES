@@ -72,7 +72,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
 
     // Agregar archivos al FormData
     form.files.forEach((file, index) => {
-      formData.append(`images`, file);
+      formData.append(`files`, file);
     });
 
     onSubmit?.(formData);

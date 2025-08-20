@@ -47,7 +47,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
       return;
     }
 
-    updateFormField('imagesToDelete', [...form.imagesToDelete, img.imagePath]);
+    updateFormField('imagesToDelete', [...form.imagesToDelete, img.path]);
     setImages(prev => prev.filter(i => i.id !== img.id));
   };
 
@@ -187,7 +187,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
   const handleEmit = async () => {
     try {
       for (const path of form.imagesToDelete) {
-        const image = data.images.find(img => img.imagePath === path);
+        const image = data.images.find(img => img.path === path);
         if (image) await deletePhotoApi(image.id);
       }
     } catch (error) {
@@ -207,7 +207,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
       formData.append('cameraId', form.cameraId);
       formData.append('description', form.description);
       formData.append('date', combinedDateTime);
-      form.files.forEach(file => formData.append('images', file));
+      form.files.forEach(file => formData.append('files', file));
 
       await onSubmit(formData);
       onClose();
@@ -293,7 +293,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                           className="relative w-32 h-32 border border-gray-300 rounded-md p-2 flex flex-col items-center justify-center bg-gray-50"
                         >
                           <ImageViewer
-                            Path={img.imagePath}
+                            Path={img.path}
                             originalName={img.originalName}
                             onDelete={() => confirmDelete(img, () => img.originalName, () => handleDeleteImage(img))}
                           />
