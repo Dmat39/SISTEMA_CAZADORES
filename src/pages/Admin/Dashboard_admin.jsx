@@ -24,9 +24,9 @@ import { dashboardData, incidenceStatistics, incidenceGeneral } from "../../api/
 import { useNavigate, useLocation } from 'react-router-dom'
 import DateRangeFilter from "../../components/Supervisors/DateRangeFilter"
 import CustomTablePagination from "../../components/Pagination/TablePagination"
-import UserTypeSelector from "../../components/UI/UserTypeSelector"
-import { IncidentBarChart } from "../../components/incident-bar-chart"
-import { IncidentLineChart } from "../../components/incident-line-chart"
+import UserTypeSelector from "../../components/Dashboard/UserTypeSelector"
+import { IncidentBarChart } from "../../components/Dashboard/incident-bar-chart"
+import { IncidentLineChart } from "../../components/Dashboard/incident-line-chart"
 
 // Datos simulados para las métricas
 const weeklyData = [
@@ -76,8 +76,25 @@ export default function Component() {
   const searchParams = new URLSearchParams(location.search)
   const currentPage = parseInt(searchParams.get('page')) || 1
   const limit = parseInt(searchParams.get('limit')) || 10
-  const generalStartDate = searchParams.get('start') || ''
-  const generalEndDate = searchParams.get('end') || ''
+  
+  // Calcular fechas del último mes (30 días desde ayer) por defecto
+  const getDefaultDateRange = () => {
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+    
+    const startDate = new Date(yesterday)
+    startDate.setDate(yesterday.getDate() - 29) // 30 días incluyendo ayer
+    
+    return {
+      start: startDate.toISOString().split('T')[0],
+      end: yesterday.toISOString().split('T')[0]
+    }
+  }
+  
+  const defaultDates = getDefaultDateRange()
+  const generalStartDate = searchParams.get('start') || defaultDates.start
+  const generalEndDate = searchParams.get('end') || defaultDates.end
 
   // Estados para los datos generales
   const [generalData, setGeneralData] = useState({
@@ -553,12 +570,12 @@ export default function Component() {
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Rendimiento Individual</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Métricas detalladas por Cazador y Operador</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Métricas detalladas de Cazadores</p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              {/* Selector de tipo moderno con Headless UI */}
-              <UserTypeSelector
+              {/* Selector de tipo comentado - Solo se evalúa rendimiento de cazadores por defecto */}
+              {/* <UserTypeSelector
                 value={userType}
                 onChange={(newValue) => {
                   setUserType(newValue)
@@ -568,7 +585,7 @@ export default function Component() {
                   navigate({ search: searchParams.toString() })
                 }}
                 className="w-[190px]"
-              />
+              /> */}
 
               {/* Campo de búsqueda moderno */}
               <div className="relative group flex-1 sm:flex-initial">

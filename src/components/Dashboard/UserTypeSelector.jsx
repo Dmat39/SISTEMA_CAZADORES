@@ -9,12 +9,12 @@ const userTypeOptions = [
     icon: '👮‍♂️',
     description: 'Personal especializado'
   },
-  {
+  /* {
     value: 'operador',
     label: 'Operadores', 
     icon: '🎧',
     description: 'Personal de soporte'
-  }
+  } */
 ]
 
 const UserTypeSelector = ({ value, onChange, className = '' }) => {

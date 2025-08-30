@@ -1,19 +1,29 @@
 import { useState, useEffect, useMemo } from "react"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { CalendarPicker } from "@/components/UI/calendar-picker"
-import { TrendingUp } from "lucide-react"
-import { dashboardData } from "../api/dashboard/DashboardApi"
+import { CalendarPicker } from "@/components/Dashboard/calendar-picker"
+import { BarChart3 } from "lucide-react"
+import { dashboardData } from "../../api/dashboard/DashboardApi"
 
-export function IncidentLineChart() {
-  const [selectedPeriod, setSelectedPeriod] = useState("24H")
+export function IncidentBarChart() {
+  const [selectedPeriod, setSelectedPeriod] = useState("30D")
+  // Configurar fechas por defecto: último mes (30 días desde ayer)
   const [startDate, setStartDate] = useState(() => {
-    const date = new Date()
-    date.setDate(date.getDate() - 20)
-    return date
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+    
+    const startDate = new Date(yesterday)
+    startDate.setDate(yesterday.getDate() - 29) // 30 días incluyendo ayer
+    return startDate
   })
-  const [endDate, setEndDate] = useState(new Date())
+  const [endDate, setEndDate] = useState(() => {
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+    return yesterday
+  })
   const [chartData, setChartData] = useState({
     data: {
       trends: {
@@ -60,19 +70,19 @@ export function IncidentLineChart() {
     }
 
     const trends = chartData.data.trends
-    
+
     // Filtrar datos según el período seleccionado
     if (selectedPeriod === "24H") {
       // Para 24H, usar datos por horas del día más reciente con datos
       const latestDayWithData = trends.days.find(day => day.assigned > 0 || day.finished > 0)
-      
+
       if (latestDayWithData && latestDayWithData.hours) {
         return latestDayWithData.hours.map(hour => ({
           time: `${hour.hour.toString().padStart(2, '0')}:00`,
           incidencias: hour.assigned + hour.finished
         }))
       }
-      
+
       // Si no hay datos por horas, crear datos vacíos para 24 horas
       return Array.from({ length: 24 }, (_, i) => ({
         time: `${i.toString().padStart(2, '0')}:00`,
@@ -82,18 +92,18 @@ export function IncidentLineChart() {
       // Para 7D, usar los últimos 7 días
       const last7Days = trends.days.slice(-7)
       return last7Days.map(day => ({
-        time: new Date(day.date).toLocaleDateString('es-ES', { 
-          month: 'short', 
-          day: 'numeric' 
+        time: new Date(day.date).toLocaleDateString('es-ES', {
+          month: 'short',
+          day: 'numeric'
         }),
         incidencias: day.assigned + day.finished
       }))
     } else if (selectedPeriod === "30D") {
       // Para 30D, usar todos los días disponibles
       return trends.days.map(day => ({
-        time: new Date(day.date).toLocaleDateString('es-ES', { 
-          month: 'short', 
-          day: 'numeric' 
+        time: new Date(day.date).toLocaleDateString('es-ES', {
+          month: 'short',
+          day: 'numeric'
         }),
         incidencias: day.assigned + day.finished
       }))
@@ -132,29 +142,13 @@ export function IncidentLineChart() {
     <Card>
       <CardHeader className="pb-4">
         <div className="flex items-center space-x-2 mb-2">
-          <TrendingUp className="h-5 w-5 text-teal-600" />
-          <CardTitle className="text-lg">Tendencia de Incidencias</CardTitle>
+          <BarChart3 className="h-5 w-5 text-orange-600" />
+          <CardTitle className="text-lg">Reportes de Incidencias</CardTitle>
         </div>
         <CardDescription className="text-sm text-gray-600">
-          Patrón de tendencias mostrando picos y variaciones de incidencias.
+          Total de incidencias reportadas en el período seleccionado.
         </CardDescription>
-        
-        {/* Métricas */}
-        <div className="flex space-x-6 mt-4">
-          <div>
-            <div className="text-2xl font-bold text-orange-600">{pico}</div>
-            <div className="text-xs text-gray-500">Pico</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-orange-600">{promedio}</div>
-            <div className="text-xs text-gray-500">Promedio</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-green-600">{minimo}</div>
-            <div className="text-xs text-gray-500">Mínimo</div>
-          </div>
-        </div>
-        
+
         {/* Filtros de período */}
         <div className="flex items-center justify-between mt-4">
           <CalendarPicker
@@ -170,46 +164,61 @@ export function IncidentLineChart() {
                 variant={selectedPeriod === period ? "default" : "outline"}
                 size="sm"
                 onClick={() => handlePeriodChange(period)}
-                className={`text-xs px-3 py-1 ${
-                  selectedPeriod === period 
-                    ? "bg-teal-600 hover:bg-teal-700 text-white" 
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
+                className={`text-xs px-3 py-1 ${selectedPeriod === period
+                  ? "bg-orange-600 hover:bg-orange-700 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+                  }`}
               >
                 {period}
               </Button>
             ))}
           </div>
         </div>
+
+        {/* Métricas */}
+        {/* <div className="flex space-x-6 mt-4">
+          <div>
+            <div className="text-2xl font-bold text-orange-600">{pico}</div>
+            <div className="text-xs text-gray-500">Pico</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-orange-600">{promedio}</div>
+            <div className="text-xs text-gray-500">Promedio</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-green-600">{minimo}</div>
+            <div className="text-xs text-gray-500">Mínimo</div>
+          </div>
+        </div> */}
       </CardHeader>
-      
+
       <CardContent>
         {loading ? (
           <div className="flex items-center justify-center h-[300px] text-gray-500">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-2"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-2"></div>
               <p>Cargando datos...</p>
             </div>
           </div>
         ) : processedData.length > 0 ? (
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={processedData}>
+            <BarChart data={processedData}>
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis 
-                dataKey="time" 
+              <XAxis
+                dataKey="time"
                 fontSize={10}
                 tickLine={false}
                 axisLine={false}
                 className="text-gray-600"
               />
-              <YAxis 
+              <YAxis
                 fontSize={10}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value) => `${value}`}
                 className="text-gray-600"
               />
-              <Tooltip 
+              <Tooltip
                 formatter={(value) => [value, 'Incidencias']}
                 labelStyle={{ color: '#374151' }}
                 contentStyle={{
@@ -219,21 +228,18 @@ export function IncidentLineChart() {
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
               />
-              <Line
-                type="monotone"
+              <Bar
                 dataKey="incidencias"
-                stroke="#0d9488"
-                strokeWidth={3}
+                fill="#ea580c"
                 name="Incidencias"
-                dot={{ fill: '#0d9488', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: '#0d9488', strokeWidth: 2 }}
+                radius={[2, 2, 0, 0]}
               />
-            </LineChart>
+            </BarChart>
           </ResponsiveContainer>
         ) : (
           <div className="flex items-center justify-center h-[300px] text-gray-500">
             <div className="text-center">
-              <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <BarChart3 className="h-12 w-12 mx-auto mb-2 opacity-50" />
               <p>No hay datos disponibles</p>
               <p className="text-sm">para el período seleccionado</p>
             </div>
