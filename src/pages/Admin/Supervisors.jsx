@@ -157,11 +157,11 @@ const SupervisorsAdmin = () => {
 
     return (
         <div className="m-2 sm:m-4 h-[calc(100vh-1rem)] sm:h-auto flex flex-col">
-            <div className="bg-white rounded-xl shadow-md p-3 sm:p-6 flex-1 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-3 sm:p-6 flex-1 flex flex-col transition-colors duration-200">
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 sm:mb-6">
                     <div className="block mb-4 lg:mb-0">
-                        <h2 className="text-xl sm:text-2xl font-bold">Mantenimiento de Supervisores</h2>
-                        <p className="text-sm sm:text-base text-gray-600">Gestiona y organiza todos los supervisores</p>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-200">Mantenimiento de Supervisores</h2>
+                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 transition-colors duration-200">Gestiona y organiza todos los supervisores</p>
                     </div>
                     <div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-end w-full lg:max-w-[60rem] xl:max-w-[70rem] gap-2 mt-2 sm:mt-0'>
                         {/* Campo de búsqueda */}
@@ -177,7 +177,7 @@ const SupervisorsAdmin = () => {
                                     placeholder="Buscar supervisor..."
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
-                                    className="w-full h-10 pl-3 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    className="w-full h-10 pl-3 pr-3 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -218,40 +218,40 @@ const SupervisorsAdmin = () => {
 
                                 {/* Tabla */}
                                 <div className="overflow-x-auto shadow rounded-lg max-h-[67vh] h-full">
-                                    <table className="min-w-full divide-y divide-gray-200 bg-white">
-                                        <thead className="sticky top-0 bg-gray-100 z-10">
+                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-colors duration-200">
+                                        <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700 z-10 transition-colors duration-200">
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nombre</th>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Apellido</th>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">DNI</th>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Teléfono</th>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Usuario</th>
+                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Nombre</th>
+                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Apellido</th>
+                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">DNI</th>
+                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Teléfono</th>
+                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Usuario</th>
                                                 {/* <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Rol</th> */}
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" style={{ textAlign: 'center' }}>Acciones</th>
+                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200" style={{ textAlign: 'center' }}>Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-200">
+                                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-200">
                                             {supervisors.map((item, idx) => (
-                                                <tr key={item.id || idx} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                <tr key={item.id || idx} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                                    <td className="px-6 py-4 text-sm text-gray-800 dark:text-gray-200 transition-colors duration-200">
                                                         {item.name || '—'}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                    <td className="px-6 py-4 text-sm text-gray-800 dark:text-gray-200 transition-colors duration-200">
                                                         {item.lastname || '—'}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                    <td className="px-6 py-4 text-sm text-gray-800 dark:text-gray-200 transition-colors duration-200">
                                                         {item.dni || '—'}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                    <td className="px-6 py-4 text-sm text-gray-800 dark:text-gray-200 transition-colors duration-200">
                                                         {item.phone || '—'}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                    <td className="px-6 py-4 text-sm text-gray-800 dark:text-gray-200 transition-colors duration-200">
                                                         {item.username || '—'}
                                                     </td>
                                                     {/* <td className="px-6 py-4 text-sm text-gray-800">
                                                         {item.user?.role || '—'}
                                                     </td> */}
-                                                    <td className="px-6 py-4 text-sm text-gray-800 space-x-2">
+                                                    <td className="px-6 py-4 text-sm text-gray-800 dark:text-gray-200 space-x-2 transition-colors duration-200">
                                                         <div className="flex justify-center">
                                                             <button
                                                                 onClick={() => openModalEdit(item)}

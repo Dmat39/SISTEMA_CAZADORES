@@ -64,7 +64,7 @@ export function IncidentBarChart() {
     // Filtrar datos según el período seleccionado
     if (selectedPeriod === "24H") {
       // Para 24H, usar datos por horas del día más reciente con datos
-      const latestDayWithData = trends.days.find(day => day.totalAssigned > 0 || day.totalFinished > 0)
+      const latestDayWithData = trends.days.find(day => day.assigned > 0 || day.finished > 0)
 
       if (latestDayWithData && latestDayWithData.hours) {
         return latestDayWithData.hours.map(hour => ({
@@ -86,7 +86,7 @@ export function IncidentBarChart() {
           month: 'short',
           day: 'numeric'
         }),
-        incidencias: day.totalAssigned + day.totalFinished
+        incidencias: day.assigned + day.finished
       }))
     } else if (selectedPeriod === "30D") {
       // Para 30D, usar todos los días disponibles
@@ -95,7 +95,7 @@ export function IncidentBarChart() {
           month: 'short',
           day: 'numeric'
         }),
-        incidencias: day.totalAssigned + day.totalFinished
+        incidencias: day.assigned + day.finished
       }))
     }
 

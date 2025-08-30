@@ -4,6 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
 import { useNavigate } from "react-router-dom";
+import ThemeToggle from './UI/ThemeToggle';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -39,7 +40,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200">
+    <nav className="fixed top-0 z-50 w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
       <div className="px-3 py-3 lg:px-5 lg:pl-3">
         <div className="flex flex-row items-center justify-between">
           <div className="flex items-center justify-start rtl:justify-end">
@@ -48,7 +49,7 @@ const Navbar = () => {
               data-drawer-toggle="logo-sidebar"
               aria-controls="logo-sidebar"
               type="button"
-              className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              className="inline-flex items-center p-2 text-sm text-gray-500 dark:text-gray-400 rounded-lg sm:hidden hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600 transition-colors duration-200"
             >
               <span className="sr-only">Open sidebar</span>
               <svg
@@ -73,16 +74,21 @@ const Navbar = () => {
               />
             </a>
           </div>
-          <div className="flex flex-row items-center justify-center mr-3">
-            <div className='flex flex-row items-center'>
-              <div className='flex flex-col me-3 items-center'>
-                <span className='text-[18px] text-gray-900 font-medium'>{username || "Usuario"}</span>
-                <span className='text-[13px] text-gray-500 font-medium'>{
+          <div className="flex flex-row items-center justify-center mr-3 space-x-4">
+            <div className='flex flex-row items-center space-x-4'>
+
+               {/* Theme Toggle */}
+               <ThemeToggle />
+               
+              <div className='flex flex-col items-center'>
+                <span className='text-[18px] text-gray-900 dark:text-white font-medium transition-colors duration-200'>{username || "Usuario"}</span>
+                <span className='text-[13px] text-gray-500 dark:text-gray-400 font-medium transition-colors duration-200'>{
                   role?.toLowerCase() === 'operator' || role?.toLowerCase() === 'cazador' 
                     ? 'operador' 
                     : role || 'Desconocido'
                 }</span>
               </div>
+              
               <button
                 type='button'
                 id="basic-button"
@@ -90,7 +96,7 @@ const Navbar = () => {
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
-                className='cursor-pointer'
+                className='cursor-pointer hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 rounded-full transition-all duration-200'
               >
                 <img
                   className="w-10 h-10 rounded-full"
@@ -108,11 +114,24 @@ const Navbar = () => {
                     'aria-labelledby': 'basic-button',
                   },
                 }}
+                PaperProps={{
+                  className: 'dark:bg-gray-800 dark:text-white'
+                }}
               >
                 {(
-                  <MenuItem onClick={handleConfiguration}>Configuración</MenuItem>
+                  <MenuItem 
+                    onClick={handleConfiguration}
+                    className="dark:hover:bg-gray-700 dark:text-white"
+                  >
+                    Configuración
+                  </MenuItem>
                 )}
-                <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
+                <MenuItem 
+                  onClick={handleLogout}
+                  className="dark:hover:bg-gray-700 dark:text-white"
+                >
+                  Cerrar Sesión
+                </MenuItem>
               </Menu>
             </div>
           </div>

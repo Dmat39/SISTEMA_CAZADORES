@@ -189,11 +189,11 @@ const Incidence = () => {
 
     return (
         <div className="m-2 sm:m-4 h-[calc(90vh-1rem)] sm:h-auto flex flex-col">
-            <div className="bg-white rounded-xl shadow-md p-3 sm:p-6 flex-1 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-3 sm:p-6 flex-1 flex flex-col transition-colors duration-200">
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 sm:mb-6">
                     <div className="block mb-4 lg:mb-0">
-                        <h2 className="text-xl sm:text-2xl font-bold">Incidencias</h2>
-                        <p className="text-sm sm:text-base text-gray-600">Gestiona y organiza todas tus incidencias</p>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-200">Incidencias</h2>
+                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 transition-colors duration-200">Gestiona y organiza todas tus incidencias</p>
                     </div>
                     <div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-end w-full lg:max-w-[60rem] xl:max-w-[70rem] gap-2 mt-2 sm:mt-0'>
                         
@@ -219,7 +219,7 @@ const Incidence = () => {
                                     placeholder="Buscar incidencia..."
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
-                                    className="w-full h-10 pl-3 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    className="w-full h-10 pl-3 pr-3 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -254,31 +254,31 @@ const Incidence = () => {
 
                                 {/* Tabla */}
                                 <div className="overflow-x-auto shadow rounded-lg max-h-[67vh] h-auto">
-                                    <table className="min-w-full divide-y divide-gray-200 bg-white">
-                                        <thead className="sticky top-0 bg-gray-100 z-10">
+                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-colors duration-200">
+                                        <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700 z-10 transition-colors duration-200">
                                             <tr>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cod.</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nombre</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Crimen</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Descripción</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Zona</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Medio</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Fecha incidente</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Hora incidente</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Estado</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Observación</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Creado por</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Creado en</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actualizado por</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actualizado en</th>
-                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" style={{ textAlign: 'center' }}>Acciones</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Cod.</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Nombre</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Crimen</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Descripción</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Zona</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Medio</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Fecha incidente</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Hora incidente</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Estado</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Observación</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Creado por</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Creado en</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Actualizado por</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Actualizado en</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200" style={{ textAlign: 'center' }}>Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-200">
+                                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-200">
                                             {incidents.map((item, idx) => (
                                                 <tr
                                                     key={item.id || idx}
-                                                    className="hover:bg-gray-200 cursor-pointer"
+                                                    className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
                                                     onClick={() => {
                                                         localStorage.setItem("last_created_incidence_id", item.id);
                                                         const normalizedRole = role?.toLowerCase();
@@ -289,34 +289,34 @@ const Incidence = () => {
                                                         }
                                                     }}
                                                 >
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {item.code || '—'}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {(() => {
                                                             const value = item.name || '—';
                                                             return typeof value === 'string' && value.length > 50 ? value.slice(0, 50) + ' . . .' : value;
                                                         })()}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {item.crime?.name ?? '—'}
                                                     </td>
-                                                    <td className="px-3 py-1  text-xs text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-xs text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {(() => {
                                                             const value = item.description || '—';
                                                             return typeof value === 'string' && value.length > 50 ? value.slice(0, 50) + ' . . .' : value;
                                                         })()}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {item.zone?.name ?? '—'}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {item.comunication?.name ?? '—'}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {new Date(item.date).toISOString().split('T')[0]}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {(() => {
                                                             const date = new Date(item.date);
                                                             const hours = date.getHours();
@@ -324,7 +324,7 @@ const Incidence = () => {
                                                             return `${hours}:${minutes}`;
                                                         })()}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {(() => {
                                                             let text = '';
                                                             let colorClass = '';
@@ -332,19 +332,19 @@ const Incidence = () => {
                                                             switch (item.status) {
                                                                 case 'process':
                                                                     text = 'En Proceso';
-                                                                    colorClass = 'bg-blue-100 text-blue-800';
+                                                                    colorClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200';
                                                                     break;
                                                                 case 'completed':
                                                                     text = 'Completado';
-                                                                    colorClass = 'bg-green-100 text-green-800';
+                                                                    colorClass = 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
                                                                     break;
                                                                 case 'finished':
                                                                     text = 'Finalizado';
-                                                                    colorClass = 'bg-red-100 text-red-800';
+                                                                    colorClass = 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200';
                                                                     break;
                                                                 default:
                                                                     text = item.status;
-                                                                    colorClass = 'bg-gray-100 text-gray-800';
+                                                                    colorClass = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
                                                                     break;
                                                             }
 
@@ -357,33 +357,33 @@ const Incidence = () => {
                                                             );
                                                         })()}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {(() => {
                                                             const value = item.observation || '—';
                                                             return typeof value === 'string' && value.length > 50 ? value.slice(0, 50) + ' . . .' : value;
                                                         })()}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {(() => {
                                                             const username = item.user?.username || '—';
                                                             const isDeleted = !!item.user?.deletedAt;
                                                             return isDeleted ? <del className='text-gray-400'>{username}</del> : username;
                                                         })()}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {new Date(item.createdAt).toISOString().split('T')[0]}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {(() => {
                                                             const username = item.userWhoUpdated?.username || '—';
                                                             const isDeleted = !!item.userWhoUpdated?.deletedAt;
                                                             return item.userWhoUpdated ? (isDeleted ? <del className='text-gray-400'>{username}</del> : username) : '—';
                                                         })()}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 cursor-pointer">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {new Date(item.updatedAt).toISOString().split('T')[0]}
                                                     </td>
-                                                    <td className="px-3 py-1  text-sm text-gray-800 space-x-2">
+                                                    <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 space-x-2 transition-colors duration-200">
                                                         <div className="flex justify-center">
                                                             <button
                                                                 onClick={(e) => {
@@ -398,7 +398,7 @@ const Incidence = () => {
                                                                 <Icon
                                                                     path={icons.mdiAccountGroup}
                                                                     size={1}
-                                                                    className="text-black-600 hover:text-black-800"
+                                                                    className="text-black-600 dark:text-gray-300 hover:text-black-800 dark:hover:text-white"
                                                                 />
                                                             </button>
                                                             <button

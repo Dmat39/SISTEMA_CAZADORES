@@ -106,7 +106,7 @@ const CustomTable = ({
 
     return (
         <div className='w-full relative flex-1 flex flex-col min-h-0'>
-            <div className={`flex justify-center items-center bg-white/80 z-20 h-full w-full py-3 absolute
+            <div className={`flex justify-center items-center bg-white/80 dark:bg-gray-800/80 z-20 h-full w-full py-3 absolute transition-colors duration-200
                 transition-opacity duration-300 ease-in-out ${loading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <CircularProgress size={30} thickness={5} className='!text-[#4052af]' />
             </div>
