@@ -117,6 +117,32 @@ export function IncidentChartToggle() {
 
   const handlePeriodChange = (period) => {
     setSelectedPeriod(period)
+    
+    // Actualizar automáticamente las fechas del CalendarPicker según el período seleccionado
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+    
+    let newStartDate, newEndDate
+    
+    if (period === "24H") {
+      // Para 24H: desde ayer hasta ayer (un solo día)
+      newStartDate = new Date(yesterday)
+      newEndDate = new Date(yesterday)
+    } else if (period === "7D") {
+      // Para 7D: últimos 7 días desde ayer
+      newStartDate = new Date(yesterday)
+      newStartDate.setDate(yesterday.getDate() - 6) // 7 días incluyendo ayer
+      newEndDate = new Date(yesterday)
+    } else if (period === "30D") {
+      // Para 30D: últimos 30 días desde ayer
+      newStartDate = new Date(yesterday)
+      newStartDate.setDate(yesterday.getDate() - 29) // 30 días incluyendo ayer
+      newEndDate = new Date(yesterday)
+    }
+    
+    setStartDate(newStartDate)
+    setEndDate(newEndDate)
   }
 
   const handleDateRangeChange = (newStartDate, newEndDate) => {

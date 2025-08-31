@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,62 +12,9 @@ import {
 } from "recharts"
 import { Shield, TrendingUp } from "lucide-react"
 import { CalendarPicker } from "@/components/Dashboard/calendar-picker"
+import { dashboardData } from "../../api/dashboard/DashboardApi"
 
-// Mock data basado en la estructura JSON proporcionada
-const mockData = {
-    trends: {
-        days: [
-            {
-                date: "2025-01-28",
-                crimen: {
-                    homicidio: 2,
-                    sicariato: 1,
-                    secuestro: 5,
-                    lesiones: 5,
-                    roboPersona: 8,
-                    roboVehiculo: 3,
-                    roboAccesorios: 4,
-                    extorsion: 2,
-                    drogas: 3,
-                    accidente: 6,
-                    incendio: 1,
-                },
-            },
-            {
-                date: "2025-01-27",
-                crimen: {
-                    homicidio: 10,
-                    sicariato: 5,
-                    secuestro: 1,
-                    lesiones: 7,
-                    roboPersona: 12,
-                    roboVehiculo: 5,
-                    roboAccesorios: 6,
-                    extorsion: 3,
-                    drogas: 4,
-                    accidente: 8,
-                    incendio: 2,
-                },
-            },
-            {
-                date: "2025-01-26",
-                crimen: {
-                    homicidio: 2,
-                    sicariato: 2,
-                    secuestro: 4,
-                    lesiones: 4,
-                    roboPersona: 9,
-                    roboVehiculo: 2,
-                    roboAccesorios: 3,
-                    extorsion: 1,
-                    drogas: 2,
-                    accidente: 5,
-                    incendio: 4,
-                },
-            },
-        ],
-    },
-}
+// Datos de crímenes obtenidos desde la API del dashboard
 
 const crimeLabels = {
     homicidio: "Homicidio",
@@ -84,8 +31,14 @@ const crimeLabels = {
 }
 
 export function CrimeRadarDashboard() {
-    const [selectedPeriod, setSelectedPeriod] = useState("24H")
+    const [selectedPeriod, setSelectedPeriod] = useState("30D")
     const [hoveredCrime, setHoveredCrime] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [apiData, setApiData] = useState({
+        trends: {
+            days: []
+        }
+    })
 
     // Configurar fechas por defecto: último mes (30 días desde ayer)
     const [startDate, setStartDate] = useState(() => {
@@ -104,33 +57,115 @@ export function CrimeRadarDashboard() {
         return yesterday
     })
 
-    const radarData = useMemo(() => {
-        // Filtrar datos basado en el período seleccionado
-        let filteredDays = mockData.trends.days
+    // Función para cargar datos de la API
+    const loadCrimeData = async () => {
+        setLoading(true)
+        try {
+            const params = {
+                start: startDate.toISOString().split('T')[0],
+                end: endDate.toISOString().split('T')[0]
+            }
 
-        if (selectedPeriod === "24H") {
-            filteredDays = mockData.trends.days.slice(0, 1)
-        } else if (selectedPeriod === "7D") {
-            filteredDays = mockData.trends.days.slice(0, 3) // Mock: mostrando 3 días como muestra
+            const response = await dashboardData(params)
+
+            if (response.data.status && response.data.data.trends) {
+                setApiData({
+                    trends: response.data.data.trends
+                })
+            }
+        } catch (error) {
+            console.error('Error loading crime data:', error)
+        } finally {
+            setLoading(false)
         }
-        // Para 30D, usar todos los datos disponibles
+    }
 
-        // Agregar datos de crímenes
-        const aggregatedCrimes = Object.keys(crimeLabels).reduce(
-            (acc, crimeType) => {
-                acc[crimeType] = filteredDays.reduce((sum, day) => sum + day.crimen[crimeType], 0)
-                return acc
-            },
-            {}
-        )
+    // Cargar datos cuando cambien las fechas
+    useEffect(() => {
+        loadCrimeData()
+    }, [startDate, endDate])
 
-        // Transformar al formato del gráfico radar
-        return Object.entries(crimeLabels).map(([key, label]) => ({
-            crime: label,
-            value: aggregatedCrimes[key],
-            fullMark: Math.max(...Object.values(aggregatedCrimes)) || 10,
-        }))
-    }, [selectedPeriod, startDate, endDate])
+    const radarData = useMemo(() => {
+        if (!apiData?.trends?.days || apiData.trends.days.length === 0) {
+            return []
+        }
+
+        const trends = apiData.trends
+
+        // Filtrar datos según el período seleccionado
+        if (selectedPeriod === "24H") {
+            // Para 24H, usar datos por horas del día más reciente con datos
+            const latestDayWithData = trends.days.find(day =>
+                day.crimen && Object.values(day.crimen).some(value => value > 0)
+            )
+
+            if (latestDayWithData && latestDayWithData.hours) {
+                // Agregar datos de crímenes por horas
+                const aggregatedCrimes = Object.keys(crimeLabels).reduce(
+                    (acc, crimeType) => {
+                        acc[crimeType] = latestDayWithData.hours.reduce((sum, hour) =>
+                            sum + (hour.crimen[crimeType] || 0), 0
+                        )
+                        return acc
+                    },
+                    {}
+                )
+
+                // Transformar al formato del gráfico radar
+                return Object.entries(crimeLabels).map(([key, label]) => ({
+                    crime: label,
+                    value: aggregatedCrimes[key],
+                    fullMark: Math.max(...Object.values(aggregatedCrimes)) || 10,
+                }))
+            }
+
+            // Si no hay datos por horas, usar datos del día
+            if (latestDayWithData && latestDayWithData.crimen) {
+                return Object.entries(crimeLabels).map(([key, label]) => ({
+                    crime: label,
+                    value: latestDayWithData.crimen[key] || 0,
+                    fullMark: Math.max(...Object.values(latestDayWithData.crimen)) || 10,
+                }))
+            }
+        } else if (selectedPeriod === "7D") {
+            // Para 7D, usar los últimos 7 días
+            const last7Days = trends.days.slice(-7)
+            const aggregatedCrimes = Object.keys(crimeLabels).reduce(
+                (acc, crimeType) => {
+                    acc[crimeType] = last7Days.reduce((sum, day) =>
+                        sum + (day.crimen[crimeType] || 0), 0
+                    )
+                    return acc
+                },
+                {}
+            )
+
+            return Object.entries(crimeLabels).map(([key, label]) => ({
+                crime: label,
+                value: aggregatedCrimes[key],
+                fullMark: Math.max(...Object.values(aggregatedCrimes)) || 10,
+            }))
+        } else if (selectedPeriod === "30D") {
+            // Para 30D, usar todos los días disponibles
+            const aggregatedCrimes = Object.keys(crimeLabels).reduce(
+                (acc, crimeType) => {
+                    acc[crimeType] = trends.days.reduce((sum, day) =>
+                        sum + (day.crimen[crimeType] || 0), 0
+                    )
+                    return acc
+                },
+                {}
+            )
+
+            return Object.entries(crimeLabels).map(([key, label]) => ({
+                crime: label,
+                value: aggregatedCrimes[key],
+                fullMark: Math.max(...Object.values(aggregatedCrimes)) || 10,
+            }))
+        }
+
+        return []
+    }, [selectedPeriod, startDate, endDate, apiData])
 
     const totalCrimes = useMemo(() => {
         return radarData.reduce((sum, item) => sum + item.value, 0)
@@ -165,6 +200,36 @@ export function CrimeRadarDashboard() {
     }
 
     const handleDateRangeChange = (newStartDate, newEndDate) => {
+        setStartDate(newStartDate)
+        setEndDate(newEndDate)
+    }
+
+    const handlePeriodChange = (period) => {
+        setSelectedPeriod(period)
+
+        // Actualizar automáticamente las fechas del CalendarPicker según el período seleccionado
+        const today = new Date()
+        const yesterday = new Date(today)
+        yesterday.setDate(today.getDate() - 1)
+
+        let newStartDate, newEndDate
+
+        if (period === "24H") {
+            // Para 24H: desde ayer hasta ayer (un solo día)
+            newStartDate = new Date(yesterday)
+            newEndDate = new Date(yesterday)
+        } else if (period === "7D") {
+            // Para 7D: últimos 7 días desde ayer
+            newStartDate = new Date(yesterday)
+            newStartDate.setDate(yesterday.getDate() - 6) // 7 días incluyendo ayer
+            newEndDate = new Date(yesterday)
+        } else if (period === "30D") {
+            // Para 30D: últimos 30 días desde ayer
+            newStartDate = new Date(yesterday)
+            newStartDate.setDate(yesterday.getDate() - 29) // 30 días incluyendo ayer
+            newEndDate = new Date(yesterday)
+        }
+
         setStartDate(newStartDate)
         setEndDate(newEndDate)
     }
@@ -233,7 +298,7 @@ export function CrimeRadarDashboard() {
                             key={period}
                             variant={selectedPeriod === period ? "default" : "outline"}
                             size="sm"
-                            onClick={() => setSelectedPeriod(period)}
+                            onClick={() => handlePeriodChange(period)}
                             className={`text-xs px-3 py-1 ${selectedPeriod === period
                                 ? "bg-red-600 hover:bg-red-700 text-white"
                                 : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -246,74 +311,87 @@ export function CrimeRadarDashboard() {
             </div>
 
             <CardContent>
-                <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart
-                            data={radarData}
-                            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                            onMouseEnter={handleRadarMouseEnter}
-                            onMouseLeave={handleRadarMouseLeave}
-                        >
-                            <PolarGrid stroke="#374151" className="opacity-30" />
-                            <PolarAngleAxis
-                                dataKey="crime"
-                                tick={{ fontSize: 10, fill: "#6b7280" }}
-                                className="text-xs"
-                            />
-                            <PolarRadiusAxis
-                                angle={90}
-                                domain={[0, "dataMax"]}
-                                tick={{ fontSize: 8, fill: "#9ca3af" }}
-                                tickCount={4}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Radar
-                                name="Incidentes"
-                                dataKey="value"
-                                stroke="#dc2626"
-                                fill="#dc2626"
-                                fillOpacity={hoveredCrime ? 0.4 : 0.2}
-                                strokeWidth={hoveredCrime ? 3 : 2}
-                                dot={{ fill: "#dc2626", strokeWidth: 2, r: 3 }}
-                            />
-                        </RadarChart>
-                    </ResponsiveContainer>
-                </div>
+                {loading ? (
+                    <div className="flex items-center justify-center h-[300px] text-gray-500">
+                        <div className="text-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-2"></div>
+                            <p>Cargando datos de crímenes...</p>
+                        </div>
+                    </div>
+                ) : radarData.length > 0 ? (
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart
+                                data={radarData}
+                                margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                                onMouseEnter={handleRadarMouseEnter}
+                                onMouseLeave={handleRadarMouseLeave}
+                            >
+                                <PolarGrid stroke="#374151" className="opacity-30" />
+                                <PolarAngleAxis
+                                    dataKey="crime"
+                                    tick={{ fontSize: 10, fill: "#6b7280" }}
+                                    className="text-xs"
+                                />
+                                <PolarRadiusAxis
+                                    angle={90}
+                                    domain={[0, "dataMax"]}
+                                    tick={{ fontSize: 8, fill: "#9ca3af" }}
+                                    tickCount={4}
+                                />
+                                <Tooltip content={<CustomTooltip />} />
+                                <Radar
+                                    name="Incidentes"
+                                    dataKey="value"
+                                    stroke="#dc2626"
+                                    fill="#dc2626"
+                                    fillOpacity={hoveredCrime ? 0.4 : 0.2}
+                                    strokeWidth={hoveredCrime ? 3 : 2}
+                                    dot={{ fill: "#dc2626", strokeWidth: 2, r: 3 }}
+                                />
+                            </RadarChart>
+                        </ResponsiveContainer>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center h-[300px] text-gray-500">
+                        <div className="text-center">
+                            <Shield className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                            <p>No hay datos de crímenes disponibles</p>
+                            <p className="text-sm">para el período seleccionado</p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Lista compacta de crímenes */}
-                <div className="mt-4 max-h-32 overflow-y-auto">
-                    <div className="grid grid-cols-2 gap-2">
-                        {radarData.slice(0, 6).map((item) => (
-                            <div
-                                key={item.crime}
-                                className={`flex items-center justify-between p-2 rounded text-xs transition-all duration-200 ${hoveredCrime === item.crime
-                                    ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
-                                    : "bg-gray-50 dark:bg-gray-700"
-                                    }`}
-                            >
-                                <span className={`font-medium ${hoveredCrime === item.crime
-                                    ? "text-red-700 dark:text-red-300"
-                                    : "text-gray-700 dark:text-gray-300"
-                                    }`}>
-                                    {item.crime}
-                                </span>
-                                <span className={`font-bold ${hoveredCrime === item.crime
-                                    ? "text-red-600 dark:text-red-400"
-                                    : "text-red-500"
-                                    }`}>
-                                    {item.value}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                    {radarData.length > 6 && (
-                        <div className="text-center mt-2">
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                                +{radarData.length - 6} categorías más
-                            </span>
+                {!loading && radarData.length > 0 && (
+                    <div className="mt-4 max-h-28 overflow-y-auto">
+                        <div className="grid grid-cols-2 gap-2">
+                            {radarData.map((item) => (
+                                <div
+                                    key={item.crime}
+                                    className={`flex items-center justify-between p-2 rounded text-xs transition-all duration-200 ${hoveredCrime === item.crime
+                                        ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+                                        : "bg-gray-50 dark:bg-gray-700"
+                                        }`}
+                                >
+                                    <span className={`font-medium ${hoveredCrime === item.crime
+                                        ? "text-red-700 dark:text-red-300"
+                                        : "text-gray-700 dark:text-gray-300"
+                                        }`}>
+                                        {item.crime}
+                                    </span>
+                                    <span className={`font-bold ${hoveredCrime === item.crime
+                                        ? "text-red-600 dark:text-red-400"
+                                        : "text-red-500"
+                                        }`}>
+                                        {item.value}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
-                    )}
-                </div>
+
+                    </div>
+                )}
             </CardContent>
         </Card>
     )
