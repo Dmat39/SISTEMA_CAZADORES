@@ -25,8 +25,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import DateRangeFilter from "../../components/Supervisors/DateRangeFilter"
 import CustomTablePagination from "../../components/Pagination/TablePagination"
 import UserTypeSelector from "../../components/Dashboard/UserTypeSelector"
-import { IncidentBarChart } from "../../components/Dashboard/incident-bar-chart"
-import { IncidentLineChart } from "../../components/Dashboard/incident-line-chart"
+import { IncidentChartToggle } from "../../components/Dashboard/incident-chart-toggle"
+import { CrimeRadarDashboard } from "../../components/Dashboard/crime-radar-dashboard"
 
 // Datos simulados para las métricas
 const weeklyData = [
@@ -444,10 +444,10 @@ export default function Component() {
         </div>
       </div>
 
-      {/* Gráficos principales con shadcn/ui */}
+      {/* Gráficos principales */}
       <div className="grid gap-6 md:grid-cols-2">
-        <IncidentLineChart />
-        <IncidentBarChart />
+        <IncidentChartToggle />
+        <CrimeRadarDashboard />
       </div>
 
       {/* Análisis detallado */}

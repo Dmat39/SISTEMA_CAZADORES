@@ -13,7 +13,7 @@ export function IncidentBarChart() {
     const today = new Date()
     const yesterday = new Date(today)
     yesterday.setDate(today.getDate() - 1)
-    
+
     const startDate = new Date(yesterday)
     startDate.setDate(yesterday.getDate() - 29) // 30 días incluyendo ayer
     return startDate
@@ -176,7 +176,7 @@ export function IncidentBarChart() {
         </div>
 
         {/* Métricas */}
-        {/* <div className="flex space-x-6 mt-4">
+        <div className="flex space-x-6 mt-4">
           <div>
             <div className="text-2xl font-bold text-orange-600">{pico}</div>
             <div className="text-xs text-gray-500">Pico</div>
@@ -189,7 +189,7 @@ export function IncidentBarChart() {
             <div className="text-2xl font-bold text-green-600">{minimo}</div>
             <div className="text-xs text-gray-500">Mínimo</div>
           </div>
-        </div> */}
+        </div>
       </CardHeader>
 
       <CardContent>
