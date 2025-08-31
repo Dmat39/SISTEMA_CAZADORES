@@ -35,8 +35,8 @@ const CustomTablePagination = ({ count, page, limit, handlePageLimitChange }) =>
             >
                 <Typography
                     variant="body2"
-                    color="text.secondary"
                     sx={{
+                        color: 'text.secondary',
                         fontSize: { xs: '0.75rem', sm: '0.875rem' },
                         textAlign: { xs: 'center', sm: 'left' },
                         whiteSpace: { xs: 'normal', sm: 'nowrap' }
@@ -88,6 +88,10 @@ const CustomTablePagination = ({ count, page, limit, handlePageLimitChange }) =>
                     sx={{
                         '& .MuiPagination-ul': {
                             flexWrap: 'nowrap'
+                        },
+                        '& .MuiPaginationItem-root': {
+                            border: '1px solid',
+                            borderColor: 'divider'
                         }
                     }}
                 />

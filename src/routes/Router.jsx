@@ -49,7 +49,7 @@ export default function Router() {
         <Route
           path="/dashboard/admin"
           element={
-            <PrivateRoute requiredRole="admin">
+            <PrivateRoute requiredRole="administrator">
               <DashboardLayoutAdmin />
             </PrivateRoute>
           }

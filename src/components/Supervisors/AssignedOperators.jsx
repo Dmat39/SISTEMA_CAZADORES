@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 import TableForm from '../TableForm';
 import Loading from '../Loading';
 import { assignOperatorApi, deleteAssignApi, getAllAssignedOperatorsApi } from '../../api/supervisor/SupervidorService';
-import { getAllHuntersApi } from '../../api/supervisor/HunterService.jsx'; // Import hunter API
 import { icons } from '../../plugins/IconLibrary';
 import Icon from '@mdi/react';
 import OperatorAssignmentForm from './OperatorAssignmentForm';
@@ -15,7 +14,6 @@ const AssignedOperators = ({
     isOpen, 
     onClose, 
     onSubmit, 
-    operators, 
     incidenceId, 
     incidenceName 
 }) => {
@@ -23,42 +21,29 @@ const AssignedOperators = ({
     const [showOperatorAssignForm, setShowOperatorAssignForm] = useState(false);
     const [showCazadorAssignForm, setShowCazadorAssignForm] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [cazadores, setCazadores] = useState([]); // New state for cazadores
 
     const fetchAssingments = async () => {
         try {
             setIsLoading(true);
             setAssingments([]);
             const data = await getAllAssignedOperatorsApi(incidenceId);
-            setAssingments(data.data.assignments);
+            console.log('Respuesta completa de assignments:', data);
+            const assignments = data.data || [];
+            console.log('Assignments procesados:', assignments);
+            setAssingments(assignments);
         } catch (error) {
+            console.error('Error fetching assignments:', error);
             toast.error(`${error.message}`);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // New function to fetch cazadores
-    const fetchCazadores = async () => {
-        try {
-            const response = await getAllHuntersApi();
-            setCazadores(response.data.data);
-        } catch (error) {
-            toast.error(`Error al cargar cazadores: ${error.message}`);
-        }
-    };
-
     useEffect(() => {
         if (!isOpen || !incidenceId) return;
+        console.log('Abriendo modal de assignments con incidenceId:', incidenceId);
         fetchAssingments();
     }, [isOpen, incidenceId]);
-
-    // Fetch cazadores when the modal is opened
-    useEffect(() => {
-        if (isOpen && showCazadorAssignForm) {
-            fetchCazadores();
-        }
-    }, [isOpen, showCazadorAssignForm]);
 
     const confirmDelete = useDeleteConfirmation({
         fetchData: fetchAssingments,
@@ -119,39 +104,38 @@ const AssignedOperators = ({
                                 columns={[
                                     {
                                         label: 'Nombre',
-                                        key: 'assign',
+                                        key: 'user',
                                         render: (v) => {
-                                            const user = v.assign;
+                                            console.log('Renderizando nombre para:', v);
+                                            const user = v.user;
                                             if (!user) return '—';
                                             return user.name || '—';
                                         },
                                     },
                                     {
                                         label: 'Apellidos',
-                                        key: 'assign',
+                                        key: 'user',
                                         render: (v) => {
-                                            const user = v.assign;
+                                            const user = v.user;
                                             if (!user) return '—';
                                             return user.lastname || '—';
                                         },
                                     },
                                     { 
                                         label: 'Rol', 
-                                        key: 'assign', 
+                                        key: 'user', 
                                         render: (v) => {
-                                            const user = v.assign;
+                                            const user = v.user;
                                             if (!user) return '—';
                                             return user.role || '—';
                                         }
                                     },
                                     {
                                         label: 'Asignado por',
-                                        key: 'asignedByUserId',
+                                        key: 'assignerId',
                                         render: (v) => {
-                                            const user = v.asignedByUserId;
-                                            if (!user) return 'Automático';
-                                            const isDeleted = !!user.deletedAt;
-                                            return isDeleted ? <del className='text-gray-400'>{user.username}</del> : user.username;
+                                            // Por ahora mostramos el ID del asignador, pero podríamos obtener más detalles si es necesario
+                                            return /* v.assignerId ? `ID: ${v.assignerId}` : */ 'Automático';
                                         },
                                     },
                                 ]}
@@ -160,8 +144,8 @@ const AssignedOperators = ({
                                         title: 'Eliminar',
                                         onClick: (assignment) =>
                                             confirmDelete(assignment, (as) => {
-                                                const name = as.assign?.name ?? '';
-                                                const lastname = as.assign?.lastname ?? '';
+                                                const name = as.user?.name ?? '';
+                                                const lastname = as.user?.lastname ?? '';
                                                 const fullName = `${name} ${lastname}`.trim();
 
                                                 return fullName !== '' ? fullName : 'Asignado no existente';
@@ -173,14 +157,12 @@ const AssignedOperators = ({
                             />
                             {showOperatorAssignForm ? (
                                 <OperatorAssignmentForm
-                                    operators={operators}
                                     incidenceId={incidenceId}
                                     onClose={() => setShowOperatorAssignForm(false)}
                                     onSubmit={handleAssignOperator}
                                 />
                             ) : showCazadorAssignForm ? (
                                 <CazadorAssignmentForm
-                                    cazadores={cazadores}
                                     incidenceId={incidenceId}
                                     onClose={() => setShowCazadorAssignForm(false)}
                                     onSubmit={handleAssignCazador}

@@ -143,7 +143,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
     formData.append("description", form.description);
     formData.append("date", combinedDateTime);
     formData.append("incidenceId", incidenceId);
-    form.files.forEach((file) => formData.append("images", file));
+    form.files.forEach((file) => formData.append("files", file));
 
     onSubmit?.(formData);
     handleCloseModal();

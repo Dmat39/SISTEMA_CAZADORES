@@ -13,9 +13,9 @@ export const addsupervidorServiceApi = async (payload ) => {
 }
 
 // Función para obtener todas las supervisors
-export const getAllSupervisorApi = async () => {
+export const getAllSupervisorApi = async (params = {}) => {
   try {
-    const response = await config.get('/supervisor/all');
+    const response = await config.get('/supervisor/all', { params });
     return response.data;
   } catch (error) {
     console.log("Error fetching supervisors:", error);
@@ -46,7 +46,7 @@ export const updateSupervisorApi = async (payload,  id) => {
 
 export const assignOperatorApi = async (payload) => {
   try {
-    const response = await config.post(`/incidence/assign-incidence` , payload);
+    const response = await config.post(`/assignment/add` , payload);
     return response.data;
   } catch (error) {
     console.log("Error assigning operators: ", error);
@@ -56,7 +56,7 @@ export const assignOperatorApi = async (payload) => {
 
 export const getAllAssignedOperatorsApi = async (incidenceId) => {
   try {
-    const response = await config.get(`/incidence/${incidenceId}/assign/all`);
+    const response = await config.get(`/assignment/all/${incidenceId}`);
     return response.data;
   } catch (error) {
     console.log("Error fetching assignments:", error);
@@ -66,7 +66,7 @@ export const getAllAssignedOperatorsApi = async (incidenceId) => {
 
 export const deleteAssignApi = async ( id) => {
   try {
-    const response = await config.delete(`/incidence/assign/delete/${id}`);
+    const response = await config.delete(`/assignment/delete/${id}`);
     return response.data;
   } catch (error) {
     console.log("Error fetching supervisors:", error);

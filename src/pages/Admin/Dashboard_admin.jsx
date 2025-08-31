@@ -20,11 +20,13 @@ import {
 
 // Imports adicionales
 import { ArrowUpIcon, ArrowDownIcon, Search } from "lucide-react"
-import { incidenceStatistics, incidenceGeneral } from "../../api/dashboard/DashboardApi"
+import { dashboardData, incidenceStatistics, incidenceGeneral } from "../../api/dashboard/DashboardApi"
 import { useNavigate, useLocation } from 'react-router-dom'
 import DateRangeFilter from "../../components/Supervisors/DateRangeFilter"
 import CustomTablePagination from "../../components/Pagination/TablePagination"
-import UserTypeSelector from "../../components/UI/UserTypeSelector"
+import UserTypeSelector from "../../components/Dashboard/UserTypeSelector"
+import { IncidentChartToggle } from "../../components/Dashboard/incident-chart-toggle"
+import { CrimeRadarDashboard } from "../../components/Dashboard/crime-radar-dashboard"
 
 // Datos simulados para las métricas
 const weeklyData = [
@@ -69,24 +71,43 @@ export default function Component() {
   const [loading, setLoading] = useState(false)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
-  const [startDate, setStartDate] = useState("")
 
   // Obtener parámetros de URL para paginación y filtros
   const searchParams = new URLSearchParams(location.search)
   const currentPage = parseInt(searchParams.get('page')) || 1
   const limit = parseInt(searchParams.get('limit')) || 10
-  const generalStartDate = searchParams.get('start') || ''
-  const generalEndDate = searchParams.get('end') || ''
+  
+  // Calcular fechas del último mes (30 días desde ayer) por defecto
+  const getDefaultDateRange = () => {
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+    
+    const startDate = new Date(yesterday)
+    startDate.setDate(yesterday.getDate() - 29) // 30 días incluyendo ayer
+    
+    return {
+      start: startDate.toISOString().split('T')[0],
+      end: yesterday.toISOString().split('T')[0]
+    }
+  }
+  
+  const defaultDates = getDefaultDateRange()
+  const generalStartDate = searchParams.get('start') || defaultDates.start
+  const generalEndDate = searchParams.get('end') || defaultDates.end
 
   // Estados para los datos generales
   const [generalData, setGeneralData] = useState({
     totalIncidencias: 0,
     incidenciasEnProceso: 0,
     incidenciasFinalizadas: 0,
+    incidenciasCompletadas: 0, // Nueva métrica
     totalOperadores: 0,
     totalCazadores: 0
   })
   const [loadingGeneral, setLoadingGeneral] = useState(false)
+
+
 
   const currentData = timeFilter === "weekly" ? weeklyData : monthlyData
 
@@ -104,10 +125,21 @@ export default function Component() {
         params.end = generalEndDate
       }
 
-      const response = await incidenceGeneral(params)
+      // Usar la nueva API dashboard
+      const response = await dashboardData(params)
 
       if (response.data.status) {
-        setGeneralData(response.data.data)
+        const dashboardData = response.data.data.general
+        setGeneralData({
+          totalIncidencias: dashboardData.total || 0,
+          incidenciasEnProceso: dashboardData.process || 0,
+          incidenciasFinalizadas: dashboardData.finished || 0,
+          incidenciasCompletadas: dashboardData.completed || 0, // Nueva métrica
+          totalOperadores: dashboardData.operators || 0,
+          totalCazadores: dashboardData.hunters || 0
+        })
+
+
       }
     } catch (error) {
       console.error('Error loading general data:', error)
@@ -130,17 +162,24 @@ export default function Component() {
         params.search = searchTerm.trim()
       }
 
-      if (startDate) {
-        params.start = startDate
+      // Usar las fechas globales del DateRangeFilter
+      if (generalStartDate) {
+        params.start = generalStartDate
       }
 
-      const response = await incidenceStatistics(params)
+      if (generalEndDate) {
+        params.end = generalEndDate
+      }
+
+      // Usar la nueva API dashboard
+      const response = await dashboardData(params)
 
       if (response.data.status) {
-        const apiData = response.data.data.data.map(user => ({
+        const performanceData = response.data.data.performance
+        const apiData = performanceData.data.map(user => ({
           id: user.id,
           nombre: `${user.name} ${user.lastname}`,
-          tipo: user.rol === "Cazador" ? "Cazador" : "Operador",
+          tipo: user.rol === "hunter" ? "Cazador" : "Operador",
           asignadas: user.asigned,
           resueltas: user.finished,
           conversion: user.asigned > 0 ? ((user.finished / user.asigned) * 100).toFixed(1) : 0,
@@ -151,8 +190,8 @@ export default function Component() {
         }))
 
         setPersonalData(apiData)
-        setTotalPages(response.data.data.totalPages)
-        setTotalCount(response.data.data.totalCount)
+        setTotalPages(performanceData.totalPages || 1)
+        setTotalCount(performanceData.totalCount || 0)
       }
     } catch (error) {
       console.error('Error loading personal data:', error)
@@ -173,7 +212,7 @@ export default function Component() {
     }, searchTerm ? 500 : 0) // Debounce solo si hay búsqueda
 
     return () => clearTimeout(timer)
-  }, [currentPage, limit, searchTerm, userType, startDate])
+  }, [currentPage, limit, searchTerm, userType, generalStartDate, generalEndDate])
 
   // Calcular métricas totales
   const totalAsignadas = currentData.reduce((acc, item) => acc + item.cazadorAsignadas + item.operadorAsignadas, 0)
@@ -249,11 +288,11 @@ export default function Component() {
   }, [searchTerm])
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+    <div className="p-6 space-y-6 bg-gray-50 dark:bg-black min-h-screen transition-colors duration-200">
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Métricas de Incidencias</h1>
-          <p className="text-gray-500">Análisis de rendimiento de Cazadores y Operadores</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white transition-colors duration-200">Métricas de Incidencias</h1>
+          <p className="text-gray-500 dark:text-gray-400 transition-colors duration-200">Análisis de rendimiento de Cazadores y Operadores</p>
         </div>
 
         <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
@@ -262,7 +301,10 @@ export default function Component() {
               position: "relative",
               left: "0",
               top: "0",
-              zIndex: "1500",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: "1",
               width: "100%",
               height: "100%",
             }}
@@ -273,186 +315,143 @@ export default function Component() {
         </div>
       </div>
 
-      {/* Métricas principales - Datos del endpoint incidence/general */}
-      <div className="grid gap-4 md:grid-cols-5 lg:grid-cols-5">
+      {/* Métricas principales - Datos del endpoint dashboard */}
+      <div className="grid gap-4 md:grid-cols-6 lg:grid-cols-6">
         {/* Total Incidencias */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600">Total Incidencias</h3>
-            <AlertTriangle className="h-4 w-4 text-blue-600" />
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Incidencias</h3>
+            <AlertTriangle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
             {loadingGeneral ? (
               <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                <span className="text-sm text-gray-500">Cargando...</span>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 dark:border-blue-400"></div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Cargando...</span>
               </div>
             ) : (
               <>
-                <div className="text-2xl font-bold">{generalData.totalIncidencias.toLocaleString()}</div>
-                <p className="text-xs text-gray-500">Incidencias registradas</p>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{generalData.totalIncidencias.toLocaleString()}</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Incidencias registradas</p>
               </>
             )}
           </div>
         </div>
 
         {/* Incidencias En Proceso */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600">En Proceso</h3>
-            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">En Proceso</h3>
+            <AlertTriangle className="h-4 w-4 text-orange-600 dark:text-orange-400" />
           </div>
           <div>
             {loadingGeneral ? (
               <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
-                <span className="text-sm text-gray-500">Cargando...</span>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600 dark:border-orange-400"></div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Cargando...</span>
               </div>
             ) : (
               <>
-                <div className="text-2xl font-bold">{generalData.incidenciasEnProceso.toLocaleString()}</div>
-                <p className="text-xs text-gray-500">Incidencias pendientes</p>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{generalData.incidenciasEnProceso.toLocaleString()}</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Incidencias pendientes</p>
               </>
             )}
           </div>
         </div>
 
         {/* Incidencias Finalizadas */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600">Finalizadas</h3>
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Finalizadas</h3>
+            <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
             {loadingGeneral ? (
               <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
-                <span className="text-sm text-gray-500">Cargando...</span>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 dark:border-green-400"></div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Cargando...</span>
               </div>
             ) : (
               <>
-                <div className="text-2xl font-bold">{generalData.incidenciasFinalizadas.toLocaleString()}</div>
-                <p className="text-xs text-gray-500">Incidencias completadas</p>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{generalData.incidenciasFinalizadas.toLocaleString()}</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Incidencias completadas</p>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Incidencias Completadas */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Completado</h3>
+            <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div>
+            {loadingGeneral ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600 dark:border-emerald-400"></div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Cargando...</span>
+              </div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{generalData.incidenciasCompletadas.toLocaleString()}</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Incidencias completadas</p>
               </>
             )}
           </div>
         </div>
 
         {/* Total Operadores */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600">Operadores</h3>
-            <Users className="h-4 w-4 text-purple-600" />
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Operadores</h3>
+            <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
             {loadingGeneral ? (
               <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
-                <span className="text-sm text-gray-500">Cargando...</span>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 dark:border-purple-400"></div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Cargando...</span>
               </div>
             ) : (
               <>
-                <div className="text-2xl font-bold">{generalData.totalOperadores.toLocaleString()}</div>
-                <p className="text-xs text-gray-500">Personal operativo</p>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{generalData.totalOperadores.toLocaleString()}</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Personal operativo</p>
               </>
             )}
           </div>
         </div>
 
         {/* Total Cazadores */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600">Cazadores</h3>
-            <Users className="h-4 w-4 text-indigo-600" />
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Cazadores</h3>
+            <Users className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
             {loadingGeneral ? (
               <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
-                <span className="text-sm text-gray-500">Cargando...</span>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Cargando...</span>
               </div>
             ) : (
               <>
-                <div className="text-2xl font-bold">{generalData.totalCazadores.toLocaleString()}</div>
-                <p className="text-xs text-gray-500">Personal especializado</p>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{generalData.totalCazadores.toLocaleString()}</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Personal especializado</p>
               </>
             )}
           </div>
         </div>
       </div>
 
-      {/*
-       {/* Gráficos principales 
+      {/* Gráficos principales */}
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Tendencia de Incidencias</h3>
-            <p className="text-sm text-gray-500">Comparación entre incidencias asignadas y atendidas</p>
-          </div>
-          <div>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={currentData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" />
-                <YAxis />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="cazadorAsignadas"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  name="Cazador - Asignadas"
-                  strokeDasharray="5 5"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="cazadorAtendidas"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  name="Cazador - Atendidas"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="operadorAsignadas"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  name="Operador - Asignadas"
-                  strokeDasharray="5 5"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="operadorAtendidas"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  name="Operador - Atendidas"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Comparación por Período</h3>
-            <p className="text-sm text-gray-500">Incidencias atendidas por tipo de usuario</p>
-          </div>
-          <div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={currentData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="cazadorAtendidas" fill="#3b82f6" name="Cazadores" />
-                <Bar dataKey="operadorAtendidas" fill="#10b981" name="Operadores" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <IncidentChartToggle />
+        <CrimeRadarDashboard />
       </div>
 
-      {/* Análisis detallado 
-      <div className="grid gap-6 md:grid-cols-3">
+      {/* Análisis detallado */}
+      {/* <div className="grid gap-6 md:grid-cols-3">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="mb-4">
             <h3 className="text-lg font-semibold">Tasa de Conversión por Tipo</h3>
@@ -563,38 +562,20 @@ export default function Component() {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>  */}
 
       {/* Tabla detallada por persona */}
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
         <div className="mb-6">
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
             <div>
-              <h3 className="text-lg font-semibold">Rendimiento Individual</h3>
-              <p className="text-sm text-gray-500">Métricas detalladas por Cazador y Operador</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Rendimiento Individual</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Métricas detalladas de Cazadores</p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              {/* Selector de fecha moderno */}
-              <div className="relative group">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => {
-                    setStartDate(e.target.value)
-                    // Reset a página 1 cuando cambia el filtro
-                    const searchParams = new URLSearchParams(location.search)
-                    searchParams.set('page', '1')
-                    navigate({ search: searchParams.toString() })
-                  }}
-                  className="w-full sm:w-[160px] h-11 px-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 placeholder-gray-400 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-300 hover:shadow-sm group-hover:shadow-sm"
-                  title="Fecha de inicio"
-                />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
-              </div>
-
-              {/* Selector de tipo moderno con Headless UI */}
-              <UserTypeSelector
+              {/* Selector de tipo comentado - Solo se evalúa rendimiento de cazadores por defecto */}
+              {/* <UserTypeSelector
                 value={userType}
                 onChange={(newValue) => {
                   setUserType(newValue)
@@ -604,7 +585,7 @@ export default function Component() {
                   navigate({ search: searchParams.toString() })
                 }}
                 className="w-[190px]"
-              />
+              /> */}
 
               {/* Campo de búsqueda moderno */}
               <div className="relative group flex-1 sm:flex-initial">
@@ -637,11 +618,11 @@ export default function Component() {
           </div>
           <div>
             <div className="rounded-md overflow-x-auto mt-5">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-colors duration-200">
+                <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Persona</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => handleSort("tipo")}>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Persona</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" onClick={() => handleSort("tipo")}>
                       <div className="flex items-center space-x-1">
                         <span>Tipo</span>
                         {sortField === "tipo" &&
@@ -653,7 +634,7 @@ export default function Component() {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
                       onClick={() => handleSort("asignadas")}
                     >
                       <div className="flex items-center justify-end space-x-1">
@@ -667,7 +648,7 @@ export default function Component() {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
                       onClick={() => handleSort("resueltas")}
                     >
                       <div className="flex items-center justify-end space-x-1">
@@ -681,7 +662,7 @@ export default function Component() {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
                       onClick={() => handleSort("conversion")}
                     >
                       <div className="flex items-center justify-end space-x-1">
@@ -697,41 +678,41 @@ export default function Component() {
                     {/* Columna de Tendencia comentada - el endpoint no provee esta data */}
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-200">
                   {loading ? (
                     <tr>
-                      <td colSpan={5} className="px-6 py-4 whitespace-nowrap text-center py-8">
+                      <td colSpan={5} className="px-6 py-4 whitespace-nowrap text-center py-8 text-gray-700 dark:text-gray-300">
                         <div className="flex items-center justify-center space-x-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 dark:border-blue-400"></div>
                           <span>Cargando datos...</span>
                         </div>
                       </td>
                     </tr>
                   ) : sortedPersonalData.map((person) => (
-                    <tr key={person.id}>
+                    <tr key={person.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-3">
                           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-medium">
                             {person.avatar}
                           </div>
                           <div>
-                            <div className="font-medium">{person.nombre}</div>
+                            <div className="font-medium text-gray-900 dark:text-gray-100">{person.nombre}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${person.tipo === "Cazador" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${person.tipo === "Cazador" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200" : "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200"
                             }`}
                         >
                           {person.tipo}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-medium">{person.asignadas}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-medium">{person.resueltas}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900 dark:text-gray-100">{person.asignadas}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900 dark:text-gray-100">{person.resueltas}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="flex items-center justify-end space-x-2">
-                          <div className={`h-2 w-16 rounded-full bg-gray-200`}>
+                          <div className={`h-2 w-16 rounded-full bg-gray-200 dark:bg-gray-700`}>
                             <div
                               className={`h-2 rounded-full ${person.conversion >= 80
                                 ? "bg-green-500"
@@ -742,7 +723,7 @@ export default function Component() {
                               style={{ width: `${person.conversion}%` }}
                             />
                           </div>
-                          <span className="font-medium text-sm w-12">{person.conversion}%</span>
+                          <span className="font-medium text-sm w-12 text-gray-900 dark:text-gray-100">{person.conversion}%</span>
                         </div>
                       </td>
                       {/* Celda de Tendencia comentada - el endpoint no provee esta data */}
@@ -763,15 +744,15 @@ export default function Component() {
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <div className="h-2 w-4 rounded-full bg-green-500" />
-                  <span>≥90% Excelente</span>
+                  <span>≥80% Excelente</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="h-2 w-4 rounded-full bg-yellow-500" />
-                  <span>85-89% Bueno</span>
+                  <span>40-80% Bueno</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="h-2 w-4 rounded-full bg-red-500" />
-                  <span>{"<85% Necesita mejora"}</span>
+                  <span>{"<40% Necesita mejora"}</span>
                 </div>
               </div>
             </div>

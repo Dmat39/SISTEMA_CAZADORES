@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
+import { getSubRegistroIncidenceImageApi } from "../../api/operador/registroIncidenceApi";
 
 const ImageViewer = ({ Path, originalName, onDelete }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -24,11 +25,7 @@ const ImageViewer = ({ Path, originalName, onDelete }) => {
     const fetchMedia = async () => {
       setLoading(true);
       try {
-        const fullUrl = `${import.meta.env.VITE_API_BASE_URL}/files/${Path}`;
-        const response = await fetch(fullUrl);
-        if (!response.ok) throw new Error("No se pudo obtener el archivo");
-
-        const blob = await response.blob();
+        const blob = await getSubRegistroIncidenceImageApi(Path);
         const url = URL.createObjectURL(blob);
         setMediaUrl(url);
         setMediaType(getFileType(Path));
@@ -39,6 +36,7 @@ const ImageViewer = ({ Path, originalName, onDelete }) => {
         setLoading(false);
       }
     };
+    console.log("Loading media from path:", Path);
 
     if (Path) fetchMedia();
   }, [Path]);

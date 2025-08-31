@@ -1,0 +1,182 @@
+/* Dark theme global styles */
+
+/* Material-UI components dark theme overrides */
+.dark .MuiPaper-root {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+.dark .MuiTableHead-root {
+  background-color: #2a2a2a !important;
+}
+
+.dark .MuiTableCell-root {
+  color: #ffffff !important;
+  border-bottom-color: #404040 !important;
+}
+
+.dark .MuiTableRow-root:hover {
+  background-color: #2a2a2a !important;
+}
+
+.dark .MuiIconButton-root {
+  color: #ffffff !important;
+}
+
+.dark .MuiIconButton-root:hover {
+  background-color: #ea580c !important;
+}
+
+.dark .MuiInputBase-root {
+  color: #ffffff !important;
+  background-color: #2a2a2a !important;
+}
+
+.dark .MuiOutlinedInput-notchedOutline {
+  border-color: #404040 !important;
+}
+
+.dark .MuiInputLabel-root {
+  color: #a3a3a3 !important;
+}
+
+.dark .MuiSelect-select {
+  color: #ffffff !important;
+}
+
+.dark .MuiMenuItem-root {
+  color: #ffffff !important;
+  background-color: #1a1a1a !important;
+}
+
+.dark .MuiMenuItem-root:hover {
+  background-color: #ea580c !important;
+}
+
+.dark .MuiMenu-paper {
+  background-color: #1a1a1a !important;
+}
+
+.dark .MuiCircularProgress-root {
+  color: #ea580c !important;
+}
+
+/* Typography color in dark mode */
+.dark .MuiTypography-root {
+  color: #d1d5db !important; /* text-gray-300 */
+}
+
+/* Form inputs dark theme */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="tel"],
+.dark textarea,
+.dark select {
+  background-color: #2a2a2a !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="password"]:focus,
+.dark input[type="number"]:focus,
+.dark input[type="tel"]:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: #ea580c !important;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.2) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #a3a3a3 !important;
+}
+
+/* Button dark theme */
+.dark button:not(.bg-orange-600):not(.bg-teal-600):not(.hover\\:bg-orange-700):not(.hover\\:bg-teal-700) {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+  border-color: #404040 !important;
+}
+
+.dark button:not(.bg-orange-600):not(.bg-teal-600):hover {
+  background-color: #ea580c !important;
+}
+
+/* Loading spinner dark theme */
+.dark .animate-spin {
+  border-color: #404040 !important;
+  border-top-color: #ea580c !important;
+}
+
+/* Scrollbar dark theme */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #ea580c;
+}
+
+/* Toast notifications dark theme */
+.dark .sonner-toast {
+  background-color: #1a1a1a !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+/* Modal/Dialog dark theme */
+.dark .modal,
+.dark .dialog {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+/* Dropdown/Select dark theme */
+.dark .dropdown-menu,
+.dark .select-menu {
+  background-color: #1a1a1a !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+.dark .dropdown-item:hover,
+.dark .select-item:hover {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
+}
+
+/* Pagination (MUI) dark theme */
+.dark .MuiPaginationItem-root {
+  color: #ffffff !important;
+  border: 1px solid #404040 !important; /* border-gray-700 */
+  background-color: transparent !important;
+}
+
+.dark .MuiPaginationItem-root.Mui-selected {
+  background-color: #ea580c !important; /* primary */
+  color: #ffffff !important;
+  border-color: #ea580c !important;
+}
+
+.dark .MuiPaginationItem-root:hover {
+  background-color: #2a2a2a !important; /* hover row */
+}
+
+/* Select icon color in dark */
+.dark .MuiSelect-icon {
+  color: #a3a3a3 !important;
+}

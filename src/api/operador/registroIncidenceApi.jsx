@@ -14,7 +14,7 @@ export const createSubRegistroIncidenceApi = async (incidenceData) => {
 // Funcion para obtener las imagenes de los subregistros de una incidencia
 export const getSubRegistroIncidenceImageApi = async (Path) => {
   try {
-    const response = await mainApi.get(`/files/records/${Path}`, {
+    const response = await mainApi.get(`/evidence/${Path}`, {
       responseType: 'blob'
     });
     return response.data;

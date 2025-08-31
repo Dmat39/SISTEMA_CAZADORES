@@ -27,26 +27,29 @@ export const getAllIncidencesApi = async (params = {}) => {
   try {
     // Construir query string con los parámetros
     const queryParams = new URLSearchParams();
-    
+
     if (params.page) queryParams.append('page', params.page);
     if (params.limit) queryParams.append('limit', params.limit);
     if (params.date) queryParams.append('date', params.date);
     if (params.search) queryParams.append('search', params.search);
-    
+
     // Manejar parámetros de rango de fechas
     if (params.start) queryParams.append('start', params.start);
     if (params.end) queryParams.append('end', params.end);
-    
+
     // Manejar múltiples crimeIds
     if (params.crimeIds && Array.isArray(params.crimeIds)) {
       params.crimeIds.forEach(crimeId => {
         queryParams.append('crimeIds', crimeId);
       });
     }
-    
+
+    // Manejar filtro de estado
+    if (params.status) queryParams.append('status', params.status);
+
     const queryString = queryParams.toString();
     const url = queryString ? `/incidence/all?${queryString}` : '/incidence/all';
-    
+
     const response = await mainApi.get(url);
     return response.data;
   } catch (error) {
@@ -56,19 +59,19 @@ export const getAllIncidencesApi = async (params = {}) => {
 }
 
 // Función para obtener una incidencia por ID
-export const getIncidenceByIdApi = async(id) => {
+export const getIncidenceByIdApi = async (id) => {
   try {
     const response = await mainApi.get(`/incidence/${id}`);
     return response.data;
   } catch (error) {
-     console.error("Error fetching incidence:", error);
+    console.error("Error fetching incidence:", error);
     throw error.response ? error.response.data : new Error('Failed to fetch incidence');
   }
 }
 
 export const getAllIncidenceComunicationApi = async () => {
   try {
-    const response = await mainApi.get('/comunication/all');
+    const response = await mainApi.get('/communication/all');
     return response.data;
   } catch (error) {
     console.log("Error fetching incidences:", error);
@@ -78,7 +81,7 @@ export const getAllIncidenceComunicationApi = async () => {
 
 export const getAllIncidenceZonesApi = async () => {
   try {
-    const response = await mainApi.get('/zones/all');
+    const response = await mainApi.get('/zone/all');
     return response.data;
   } catch (error) {
     console.log("Error fetching incidences:", error);
@@ -86,9 +89,9 @@ export const getAllIncidenceZonesApi = async () => {
   }
 }
 
-export const updateIncidenceApi = async (payload,  id) => {
+export const updateIncidenceApi = async (payload, id) => {
   try {
-    const response = await config.patch(`/incidence/${id}` , payload);
+    const response = await config.patch(`/incidence/update/${id}`, payload);
     return response.data;
   } catch (error) {
     console.log("Error fetching incidence:", error);
@@ -96,7 +99,7 @@ export const updateIncidenceApi = async (payload,  id) => {
   }
 }
 
-export const deleteIncidenceApi = async ( id) => {
+export const deleteIncidenceApi = async (id) => {
   try {
     const response = await config.delete(`/incidence/delete/${id}`);
     return response.data;

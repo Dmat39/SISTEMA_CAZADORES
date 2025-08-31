@@ -63,7 +63,7 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
         {records.map((rec, idx) => {
           const recordDate = dayjs(rec.date);
           const isPM = recordDate.hour() >= 12;
-          const imagesCount = rec.images?.length || 0;
+          const evidencesCount = rec.evidences?.length || 0;
 
           return (
             <div
@@ -89,7 +89,7 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
                     </span>
                     
                     <span className="flex items-center gap-1">
-                      <Icon path={icons.camera} size={0.7} /> {imagesCount} imagen{imagesCount === 1 ? "" : "es"}
+                      <Icon path={icons.camera} size={0.7} /> {evidencesCount} imagen{evidencesCount === 1 ? "" : "es"}
                     </span>
                   </div>
                 </div>
@@ -115,11 +115,11 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
                 {rec.description || "Sin descripción del registro."}
               </p>
 
-              {rec.images && rec.images.length > 0 && (
+              {rec.evidences && rec.evidences.length > 0 && (
                 <div>
                   <p className="text-sm font-medium text-gray-800 mb-2">Imágenes adjuntas:</p>
                   <div className="flex flex-wrap gap-3">
-                    {rec.images.map((img) => (
+                    {rec.evidences.map((img) => (
                       <div
                         key={img.id}
                         className="bg-gray-100 border border-gray-300 rounded-md p-2 flex flex-col items-center justify-center w-35 h-25 relative"
@@ -128,7 +128,7 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
                         <span className="text-xs text-gray-700 text-center line-clamp-1 w-full">
                           {img.originalName}
                         </span>
-                         <ImageViewer Path={img.imagePath} originalName={img.originalName} />
+                         <ImageViewer Path={img.path} originalName={img.originalName} />
                       </div>
                     ))}
                   </div>

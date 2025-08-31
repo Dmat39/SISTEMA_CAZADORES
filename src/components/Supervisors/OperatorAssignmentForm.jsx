@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Autocomplete, TextField } from '@mui/material';
+import { getAllOperatorApi } from '../../api/supervisor/OperatorService';
 
 const OperatorAssignmentForm = ({ onClose, onSubmit, operators, incidenceId }) => {
   const [form, setForm] = useState({ 
@@ -10,7 +11,30 @@ const OperatorAssignmentForm = ({ onClose, onSubmit, operators, incidenceId }) =
 
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [inputValue, setInputValue] = useState('');
+  const [operatorsList, setOperatorsList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  // Cargar operadores con parámetros de búsqueda
+  const loadOperators = async (searchTerm = '') => {
+    setLoading(true);
+    try {
+      const params = {
+        page: 0,
+        ...(searchTerm && { search: searchTerm })
+      };
+      const response = await getAllOperatorApi(params);
+      setOperatorsList(response.data.data || []);
+    } catch (error) {
+      console.error('Error cargando operadores:', error);
+      toast.error('Error al cargar operadores');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOperators();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,13 +48,13 @@ const OperatorAssignmentForm = ({ onClose, onSubmit, operators, incidenceId }) =
         return;
     }
     onSubmit?.({ 
-      userId: selectedOperator.user.id, 
+      userId: selectedOperator.id, // Cambiado de selectedOperator.user.id
       incidenceId,
       userType: form.userType 
     });
     setForm({ 
       userId: '',
-      userType:'hunter' 
+      userType:'operator' 
     });
     setSelectedOperator(null);
     setInputValue('');
@@ -52,19 +76,24 @@ const OperatorAssignmentForm = ({ onClose, onSubmit, operators, incidenceId }) =
         <div className="mb-4">
         <Autocomplete
             freeSolo
-            options={operators}
+            options={operatorsList}
             value={selectedOperator}
             inputValue={inputValue}
+            loading={loading}
             onInputChange={(event, newInputValue) => {
               setInputValue(newInputValue);
               if (newInputValue === '') {
                 setSelectedOperator(null);
+                loadOperators();
+              } else {
+                // Buscar operadores cuando el usuario escribe
+                loadOperators(newInputValue);
               }
             }}
             onChange={(event, newValue) => {
               if (typeof newValue === 'string') {
                 setInputValue(newValue);
-                setSelectedCazador(null);
+                setSelectedOperator(null);
               } else if (newValue) {
                 const label = `${newValue.name} ${newValue.lastname}`;
                 setInputValue(label);
@@ -77,7 +106,7 @@ const OperatorAssignmentForm = ({ onClose, onSubmit, operators, incidenceId }) =
             getOptionLabel={(option) =>
               option?.name ? `${option.name} ${option.lastname}` : ''
             }
-            isOptionEqualToValue={(option, value) => option?.user?.id === value?.user?.id}
+            isOptionEqualToValue={(option, value) => option?.id === value?.id}
             sx={{ width: '100%' }}
             renderInput={(params) => (
               <TextField 

@@ -13,9 +13,9 @@ export const addOperatorApi = async (payload ) => {
 }
 
 // Función para obtener todas las supervisors
-export const getAllOperatorApi = async () => {
+export const getAllOperatorApi = async (params = {}) => {
   try {
-    const response = await config.get('/operator/all');
+    const response = await config.get('/operator/all', { params });
     return response.data;
   } catch (error) {
     console.log("Error fetching operators:", error);
