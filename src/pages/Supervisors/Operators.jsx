@@ -10,10 +10,12 @@ import CreateFormOperator from '../../components/Supervisors/CreateFormOperator.
 import NewPwdForm from '../../components/NewPwdForm.jsx';
 import CustomTablePagination from '../../components/Pagination/TablePagination.jsx';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const OperatorsAdmin = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { isDark } = useTheme();
 
     const [operators, setOperators] = useState([]);
     const [totalCount, setTotalCount] = useState(0);
@@ -127,8 +129,8 @@ const OperatorsAdmin = () => {
     };
 
     return (
-        <div className="m-2 sm:m-4 h-[calc(100vh-1rem)] sm:h-auto flex flex-col">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-3 sm:p-6 flex-1 flex flex-col transition-colors duration-200">
+        <div className={`m-2 sm:m-4 h-[calc(100vh-1rem)] sm:h-auto flex flex-col ${isDark ? 'bg-black' : ''}`}>
+            <div className={`rounded-xl shadow-md p-3 sm:p-6 flex-1 flex flex-col transition-colors duration-300 ${isDark ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 sm:mb-6">
                     <div className="block mb-4 lg:mb-0">
                         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-200">Mantenimiento de Operadores</h2>
@@ -156,7 +158,7 @@ const OperatorsAdmin = () => {
                         {/* Botón agregar */}
                         <button
                             onClick={() => setShowCreate(true)}
-                            className="w-full sm:w-auto cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out whitespace-nowrap"
+                            className={`w-full sm:w-auto cursor-pointer flex flex-row items-center justify-center gap-1 text-white font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out whitespace-nowrap focus:ring-4 focus:outline-none ${isDark ? 'bg-gray-700 hover:bg-[#32A3B5] focus:ring-gray-600' : 'bg-gray-900 hover:bg-[#32A3B5] focus:ring-blue-500'}`}
                             type="button"
                         >
                             <Icon path={icons.add} size={1} />
@@ -183,7 +185,7 @@ const OperatorsAdmin = () => {
 
                                 {/* Tabla */}
                                 <div className="overflow-x-auto shadow rounded-lg max-h-[67vh] h-full">
-                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-colors duration-200">
+                                    <table className="min-w-full divide-y divide-gray-250 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-colors duration-200">
                                         <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700 z-10 transition-colors duration-200">
                                             <tr>
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Nombre</th>
@@ -194,7 +196,7 @@ const OperatorsAdmin = () => {
                                                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200" style={{ textAlign: 'center' }}>Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-200">
+                                        <tbody className="divide-y divide-gray-250 dark:divide-gray-700 transition-colors duration-200">
                                             {operators.map((item, idx) => (
                                                 <tr key={item.id || idx} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                                     <td className="px-6 py-4 text-sm text-gray-800 dark:text-gray-200 transition-colors duration-200">
@@ -268,16 +270,16 @@ const OperatorsAdmin = () => {
                         ) : (
                             <div className="flex-1 flex items-center justify-center">
                                 <div className="flex flex-col items-center justify-center text-center px-4 py-8">
-                                    <Icon path={icons.mdiAccountMultiple} size={2} className="mb-4 text-gray-400" />
-                                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                                    <Icon path={icons.mdiAccountMultiple} size={2} className={`mb-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+                                    <h3 className={`text-base sm:text-lg font-semibold mb-2 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
                                         No hay operadores registrados
                                     </h3>
-                                    <p className="text-sm sm:text-base text-gray-500 mb-6 max-w-md">
+                                    <p className={`text-sm sm:text-base mb-6 max-w-md ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                                         Aún no se han registrado operadores en el sistema
                                     </p>
                                     <button
                                         onClick={() => setShowCreate(true)}
-                                        className="inline-flex items-center px-4 py-2 bg-gray-900 hover:bg-[#32A3B5] text-white rounded-lg text-sm font-medium transition-colors duration-200"
+                                        className={`inline-flex items-center px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors duration-200 ${isDark ? 'bg-gray-700 hover:bg-[#32A3B5]' : 'bg-gray-900 hover:bg-[#32A3B5]'}`}
                                     >
                                         Crear primer operador
                                     </button>

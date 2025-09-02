@@ -15,10 +15,12 @@ import CreateFormOperator from '../../components/Supervisors/CreateFormOperator.
 import NewPwdForm from '../../components/NewPwdForm.jsx';
 import CustomTablePagination from '../../components/Pagination/TablePagination.jsx';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const CazadoresSupervisor = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { isDark } = useTheme();
     
     const [cazadores, setCazadores] = useState([]);
     const [totalCount, setTotalCount] = useState(0);
@@ -131,12 +133,12 @@ const CazadoresSupervisor = () => {
     };
 
     return (
-        <div className="m-2 sm:m-4 h-[calc(100vh-1rem)] sm:h-auto flex flex-col">
-            <div className="bg-white rounded-xl shadow-md p-3 sm:p-6 flex-1 flex flex-col">
+        <div className={`m-2 sm:m-4 h-[calc(100vh-1rem)] sm:h-auto flex flex-col ${isDark ? 'bg-black' : ''}`}>
+            <div className={`rounded-xl shadow-md p-3 sm:p-6 flex-1 flex flex-col transition-colors duration-300 ${isDark ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 sm:mb-6">
                     <div className="block mb-4 lg:mb-0">
-                        <h2 className="text-xl sm:text-2xl font-bold">Mantenimiento de Cazadores</h2>
-                        <p className="text-sm sm:text-base text-gray-600">Gestiona y organiza todos los cazadores</p>
+                        <h2 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Mantenimiento de Cazadores</h2>
+                        <p className={`text-sm sm:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Gestiona y organiza todos los cazadores</p>
                     </div>
                     <div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-end w-full lg:max-w-[60rem] xl:max-w-[70rem] gap-2 mt-2 sm:mt-0'>
                         {/* Campo de búsqueda */}
@@ -152,7 +154,7 @@ const CazadoresSupervisor = () => {
                                     placeholder="Buscar cazador..."
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
-                                    className="w-full h-10 pl-10 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                    className={`w-full h-10 pl-10 pr-3 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
                                 />
                             </div>
                         </div>
@@ -160,7 +162,7 @@ const CazadoresSupervisor = () => {
                         {/* Botón agregar */}
                         <button
                             onClick={() => setShowCreate(true)}
-                            className="w-full sm:w-auto cursor-pointer flex flex-row items-center justify-center gap-1 text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out whitespace-nowrap"
+                            className={`w-full sm:w-auto cursor-pointer flex flex-row items-center justify-center gap-1 text-white font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out whitespace-nowrap focus:ring-4 focus:outline-none ${isDark ? 'bg-gray-700 hover:bg-[#32A3B5] focus:ring-gray-600' : 'bg-gray-900 hover:bg-[#32A3B5] focus:ring-blue-500'}`}
                             type="button"
                         >
                             <Icon path={icons.add} size={1} />
@@ -169,7 +171,7 @@ const CazadoresSupervisor = () => {
                         </button>
                     </div>
                 </div>
-                <hr className='border-gray-200' />
+                <hr className={`${isDark ? 'border-gray-600' : 'border-gray-200'}`} />
                 <div className="flex-1 flex flex-col min-h-0">
                     {isLoading ? (
                         <Loading message= "Cargando Cazadores"/>
@@ -188,36 +190,36 @@ const CazadoresSupervisor = () => {
                                 
                                 {/* Tabla */}
                                 <div className="overflow-x-auto shadow rounded-lg max-h-[60vh] h-full">
-                                    <table className="min-w-full divide-y divide-gray-200 bg-white">
-                                        <thead className="sticky top-0 bg-gray-100 z-10">
+                                    <table className={`min-w-full divide-y transition-colors duration-300 ${isDark ? 'divide-gray-250 bg-gray-800' : 'divide-gray-250 bg-white'}`}>
+                                        <thead className={`sticky top-0 z-10 transition-colors duration-300 ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nombre</th>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Apellido</th>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">DNI</th>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Teléfono</th>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Usuario</th>
-                                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" style={{ textAlign: 'center' }}>Acciones</th>
+                                                <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Nombre</th>
+                                                <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Apellido</th>
+                                                <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>DNI</th>
+                                                <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Teléfono</th>
+                                                <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Usuario</th>
+                                                <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-700'}`} style={{ textAlign: 'center' }}>Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-200">
+                                        <tbody className={`divide-y transition-colors duration-300 ${isDark ? 'divide-gray-250' : 'divide-gray-250'}`}>
                                             {cazadores.map((item, idx) => (
-                                                <tr key={item.id || idx} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                <tr key={item.id || idx} className={`transition-colors duration-300 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}>
+                                                    <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                                                         {item.name || '—'}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                    <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                                                         {item.lastname || '—'}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                    <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                                                         {item.dni || '—'}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                    <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                                                         {item.phone || '—'}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800">
+                                                    <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                                                         {item.username || '—'}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800 space-x-2">
+                                                    <td className={`px-6 py-4 text-sm space-x-2 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
                                                         <div className="flex justify-center">
                                                             <button
                                                                 onClick={() => openModalEditPwd(item)}
@@ -227,7 +229,7 @@ const CazadoresSupervisor = () => {
                                                                 <Icon
                                                                     path={icons.mdiAccountKey}
                                                                     size={1}
-                                                                    className="text-black-600 hover:text-black-800"
+                                                                    className={`${isDark ? 'text-gray-300 hover:text-gray-100' : 'text-black-600 hover:text-black-800'}`}
                                                                 />
                                                             </button>
                                                             <button
@@ -238,7 +240,7 @@ const CazadoresSupervisor = () => {
                                                                 <Icon
                                                                     path={icons.edit}
                                                                     size={1}
-                                                                    className="text-blue-600 hover:text-blue-800"
+                                                                    className={`${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
                                                                 />
                                                             </button>
                                                             <button
@@ -249,7 +251,7 @@ const CazadoresSupervisor = () => {
                                                                 <Icon
                                                                     path={icons.delete}
                                                                     size={1}
-                                                                    className="text-red-600 hover:text-red-800"
+                                                                    className={`${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-800'}`}
                                                                 />
                                                             </button>
                                                         </div>
@@ -273,16 +275,16 @@ const CazadoresSupervisor = () => {
                         ) : (
                             <div className="flex-1 flex items-center justify-center">
                                 <div className="flex flex-col items-center justify-center text-center px-4 py-8">
-                                    <Icon path={icons.mdiAccountMultiple} size={2} className="mb-4 text-gray-400" />
-                                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                                    <Icon path={icons.mdiAccountMultiple} size={2} className={`mb-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+                                    <h3 className={`text-base sm:text-lg font-semibold mb-2 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
                                         No hay cazadores registrados
                                     </h3>
-                                    <p className="text-sm sm:text-base text-gray-500 mb-6 max-w-md">
+                                    <p className={`text-sm sm:text-base mb-6 max-w-md ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                                         Aún no se han registrado cazadores en el sistema
                                     </p>
                                     <button
                                         onClick={() => setShowCreate(true)}
-                                        className="inline-flex items-center px-4 py-2 bg-gray-900 hover:bg-[#32A3B5] text-white rounded-lg text-sm font-medium transition-colors duration-200"
+                                        className={`inline-flex items-center px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors duration-200 ${isDark ? 'bg-gray-700 hover:bg-[#32A3B5]' : 'bg-gray-900 hover:bg-[#32A3B5]'}`}
                                     >
                                         Crear primer cazador
                                     </button>

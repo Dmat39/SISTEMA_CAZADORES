@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { FaEye, FaEyeSlash, FaRegUser } from "react-icons/fa";
+import { useTheme } from '../../contexts/ThemeContext';
 
 const UpdateFormOperator = ({ isOpen, onClose, data, onSubmit }) => {
     
@@ -10,7 +11,8 @@ const UpdateFormOperator = ({ isOpen, onClose, data, onSubmit }) => {
         lastname: '',
         phone: '',
         dni: ''
-    });    
+    });
+    const { isDark } = useTheme();    
     
     // Precargar datos cuando se abra el modal
     useEffect(() => {
@@ -42,42 +44,42 @@ const UpdateFormOperator = ({ isOpen, onClose, data, onSubmit }) => {
             <div className="fixed inset-0 bg-black/60" aria-hidden="true"></div>
 
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <Dialog.Panel className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
+                <Dialog.Panel className={`rounded-lg shadow-lg max-w-md w-full p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
                     <div className='mb-2 flex'>
-                        <Dialog.Title className="text-lg font-bold">Editar operador</Dialog.Title>
-                        <button type="button" onClick={onClose} class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
-                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        <Dialog.Title className={`text-lg font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Editar operador</Dialog.Title>
+                        <button type="button" onClick={onClose} className={`bg-transparent rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center ${isDark ? 'text-gray-400 hover:bg-gray-700 hover:text-gray-200' : 'text-gray-400 hover:bg-gray-200 hover:text-gray-900'}`}>
+                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                             </svg>
-                            <span class="sr-only">Close modal</span>
+                            <span className="sr-only">Close modal</span>
                         </button>
                     </div>
-                    <hr className='border-gray-200 mb-4'/>
+                    <hr className={`mb-4 ${isDark ? 'border-gray-600' : 'border-gray-200'}`}/>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium">Nombre</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Nombre</label>
                             <input
                                 type="text"
                                 name="name"
                                 value={form.name}
                                 onChange={handleChange}
-                                className="w-full border px-3 py-2 rounded mt-1"
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm font-medium">Apellido</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Apellido</label>
                             <input
                                 type="text"
                                 name="lastname"
                                 value={form.lastname}
                                 onChange={handleChange}
-                                className="w-full border px-3 py-2 rounded mt-1"
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm font-medium">Teléfono</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Teléfono</label>
                             <input
                                 type="text"
                                 name="phone"
@@ -85,12 +87,12 @@ const UpdateFormOperator = ({ isOpen, onClose, data, onSubmit }) => {
                                 onChange={handleChange}
                                 pattern="\d{9}"
                                 title="El número de teléfono debe tener exactamente 9 dígitos."
-                                className="w-full border px-3 py-2 rounded mt-1"
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
                             />
                         </div>
                         
                         <div className="mb-4">
-                            <label className="block text-sm font-medium">Dni</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Dni</label>
                             <input
                                 type="text"
                                 name="dni"
@@ -98,22 +100,22 @@ const UpdateFormOperator = ({ isOpen, onClose, data, onSubmit }) => {
                                 onChange={handleChange}
                                 pattern="\d{8}"
                                 title="El DNI debe tener exactamente 8 dígitos."
-                                className="w-full border px-3 py-2 rounded mt-1"
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm font-medium">Usuario</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Usuario</label>
                             <div className="relative mt-1">
                                 <input
                                     type="text"
                                     name="username"
                                     value={form.username}
                                     onChange={handleChange}
-                                    className="w-full border px-3 py-2 rounded"
+                                    className={`w-full border px-3 py-2 rounded ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
                                 />
                                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-                                    <FaRegUser className="w-5 h-5 text-gray-400" />
+                                    <FaRegUser className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-gray-400'}`} />
                                 </div>
                             </div>
                         </div>
@@ -122,13 +124,13 @@ const UpdateFormOperator = ({ isOpen, onClose, data, onSubmit }) => {
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="mr-2 px-4 py-2 border rounded cursor-pointer"
+                                className={`mr-2 px-4 py-2 border rounded cursor-pointer ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700' : 'border-gray-300 text-gray-900 hover:bg-gray-100'}`}
                             >
                                 Cancelar
                             </button>
                             <button
                                 type="submit"
-                                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 cursor-pointer"
+                                className={`text-white px-4 py-2 rounded cursor-pointer ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-black hover:bg-gray-800'}`}
                             >
                                 Guardar cambios
                             </button>

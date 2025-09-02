@@ -254,7 +254,7 @@ const Incidence = () => {
 
                                 {/* Tabla */}
                                 <div className="overflow-x-auto shadow rounded-lg max-h-[67vh] h-auto">
-                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-colors duration-200">
+                                    <table className="min-w-full divide-y divide-gray-250 dark:divide-gray-500 bg-white dark:bg-gray-800 transition-colors duration-200">
                                         <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700 z-10 transition-colors duration-200">
                                             <tr>
                                                 <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Cod.</th>
@@ -274,7 +274,7 @@ const Incidence = () => {
                                                 <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200" style={{ textAlign: 'center' }}>Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-200">
+                                        <tbody className="divide-y divide-gray-250 dark:divide-gray-500 transition-colors duration-200">
                                             {incidents.map((item, idx) => (
                                                 <tr
                                                     key={item.id || idx}

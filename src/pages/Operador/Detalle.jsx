@@ -11,6 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import UpdateCodeModal from "../../components/Operador/UpdateCodeModal";
 import { toast } from "sonner";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const IncidenciaDetalles = () => {
   const [incidencia, setIncidencia] = useState(null);
@@ -18,6 +19,7 @@ const IncidenciaDetalles = () => {
   const [showCodeModal, setShowCodeModal] = useState(false);
   const navigate = useNavigate();
   const hasFetched = useRef(false);
+  const { isDark } = useTheme();
 
   // Mapeo de estado a estilos y texto
   const formatStatus = (status) => {
@@ -39,7 +41,7 @@ const IncidenciaDetalles = () => {
       setIncidencia(response.data);
     } catch (error) {
       console.error("Error al obtener detalle de incidencia:", error);
-      toast.error("Error al cargar los detalles de la incidencia: "+error.message);
+      toast.error("Error al cargar los detalles de la incidencia: " + error.message);
     }
   }, []);
 
@@ -63,12 +65,12 @@ const IncidenciaDetalles = () => {
       setShowRegistroForm(false);
       await fetchIncidencia();
     } catch (err) {
-      toast.error("Error al guardar el registro: "+ err.message);
+      toast.error("Error al guardar el registro: " + err.message);
     }
   };
 
   if (!incidencia) {
-    return <p className="p-4 text-gray-500">Cargando detalle de incidencia...</p>;
+    return <p className={`p-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Cargando detalle de incidencia...</p>;
   }
 
   // Formateo de datos de la incidencia
@@ -92,24 +94,24 @@ const IncidenciaDetalles = () => {
   const createdDate = dayjs(createdAtString).format("D [de] MMMM [de] YYYY");
 
   return (
-    <div className="px-4 py-6">
-      <div className="bg-white rounded-xl shadow-md p-6">
+    <div className={`px-4 py-6 min-h-screen transition-colors duration-300 ${isDark ? 'dark bg-black' : 'bg-[#E8E8E8]'}`} style={isDark ? { backgroundColor: '#000000' } : {}}>
+      <div className={`rounded-xl shadow-md p-6 transition-colors duration-300 ${isDark ? 'bg-[#1a1a1a] text-white' : 'bg-white text-gray-900'}`} style={isDark ? { backgroundColor: '#1a1a1a', color: '#ffffff' } : {}}>
         {/* Header */}
-        <div className="flex flex-col border-b border-gray-200 pb-4 mb-6">
+        <div className={`flex flex-col border-b pb-4 mb-6 ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
           <div className="mt-2 mb-3">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center text-sm text-gray-600 cursor-pointer"
+              className={`flex items-center text-sm cursor-pointer ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
             >
-              <Icon className="text-gray-800" path={icons.arrowLeft} size={0.8} />
-              <span className="ml-1 text-black font-medium">Volver</span>
+              <Icon className={isDark ? 'text-gray-300' : 'text-gray-800'} path={icons.arrowLeft} size={0.8} />
+              <span className={`ml-1 font-medium ${isDark ? 'text-gray-200' : 'text-black'}`}>Volver</span>
             </button>
           </div>
 
           <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
             <div className="flex flex-col">
               <div className="flex flex-col sm:flex-row sm:items-center mb-4 gap-2">
-                <h1 className="text-2xl font-bold text-gray-900 leading-tight">
+                <h1 className={`text-2xl font-bold leading-tight ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
                   {name}
                 </h1>
 
@@ -117,9 +119,9 @@ const IncidenciaDetalles = () => {
                   <span className={`text-sm px-3 py-1 rounded-full font-medium whitespace-nowrap w-auto ${statusInfo.color}`}>
                     {statusInfo.text}
                   </span>
-                  <span 
+                  <span
                     onClick={() => setShowCodeModal(true)}
-                    className="text-sm px-4 py-1 rounded-full bg-gray-100 text-gray-900 font-medium cursor-pointer whitespace-nowrap w-auto"
+                    className={`text-sm px-4 py-1 rounded-full font-medium cursor-pointer whitespace-nowrap w-auto ${isDark ? 'bg-gray-600 text-gray-200' : 'bg-gray-100 text-gray-900'}`}
                   >
                     {code || "Sin Código"}
                   </span>
@@ -137,8 +139,8 @@ const IncidenciaDetalles = () => {
               </div>
 
 
-              
-              <div className="flex flex-wrap items-center text-gray-600 gap-6 text-sm">
+
+              <div className={`flex flex-wrap items-center gap-6 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                 <span className="flex items-center gap-1">
                   <Icon path={icons.attach} size={0.75} /> Medio: {comunication?.name || "Sin medio"}
                 </span>
@@ -157,7 +159,7 @@ const IncidenciaDetalles = () => {
               </div>
 
 
-              <div className="flex flex-wrap items-center text-gray-600 gap-6 text-sm mt-3">
+              <div className={`flex flex-wrap items-center gap-6 text-sm mt-3 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                 <span className="flex items-center gap-1">
                   <Icon path={icons.information} size={0.75} /> Creado el {createdDate}
                 </span>
@@ -166,7 +168,7 @@ const IncidenciaDetalles = () => {
 
             <div className="flex gap-3 mt- md:mt-0">
               <button
-                className="flex items-center gap-2 text-white bg-gray-900 hover:bg-[#32A3B5] transition px-4.5 py-2.5 rounded-lg text-sm cursor-pointer"
+                className={`flex items-center gap-2 text-white hover:bg-[#32A3B5] transition px-4.5 py-2.5 rounded-lg text-sm cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-gray-900'}`}
                 onClick={() => setShowRegistroForm(true)}
               >
                 <Icon path={icons.plus} size={0.8} /> Agregar Registro
@@ -177,10 +179,10 @@ const IncidenciaDetalles = () => {
 
         <div >
           {/* Descripción */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
-            <h3 className="text-base font-normal text-gray-900 mb-2">Descripción</h3>
+          <div className={`border rounded-lg p-5 mb-6 transition-colors duration-300 ${isDark ? 'bg-[#2a2a2a] border-[#404040]' : 'bg-gray-50 border-gray-200'}`} style={isDark ? { backgroundColor: '#2a2a2a', borderColor: '#404040' } : {}}>
+            <h3 className={`text-base font-normal mb-2 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Descripción</h3>
             <div className="max-h-40 overflow-y-auto">
-              <p className="text-sm text-gray-700 leading-relaxed">
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 {description || "Sin descripción disponible."}
               </p>
             </div>

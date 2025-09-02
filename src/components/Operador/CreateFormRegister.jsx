@@ -7,10 +7,12 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
 import dayjs from "dayjs";
 import { allCameraApi } from "../../api/operador/CameraApi";
 import { toast } from "sonner";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const MAX_IMAGES = 5;
 
@@ -25,6 +27,27 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
     date: dayjs(),
     time: dayjs(),
     files: [],
+  });
+  const { isDark } = useTheme();
+
+  // Tema personalizado para Material-UI
+  const muiTheme = createTheme({
+    palette: {
+      mode: isDark ? 'dark' : 'light',
+      ...(isDark && {
+        background: {
+          paper: '#1f2937',
+          default: '#111827',
+        },
+        text: {
+          primary: '#f9fafb',
+          secondary: '#d1d5db',
+        },
+        primary: {
+          main: '#3b82f6',
+        },
+      }),
+    },
   });
 
   const updateFormField = useCallback((field, value) => {
@@ -150,15 +173,16 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
   };
 
   return (
-    <Modal
-      open={openModal}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-    >
+    <ThemeProvider theme={muiTheme}>
+      <Modal
+        open={openModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
       <Box
         sx={{
-          bgcolor: "background.paper",
+          bgcolor: isDark ? "#1a1a1a" : "background.paper",
           borderRadius: 2,
           boxShadow: 24,
           p: 4,
@@ -168,18 +192,18 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
           overflowY: "auto",
         }}
       >
-        <div className="flex items-center justify-between p-4 border-b rounded-t border-gray-300">
+        <div className={`flex items-center justify-between p-4 border-b rounded-t ${isDark ? 'border-gray-600' : 'border-gray-300'}`}>
           <div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-1">
+            <h3 className={`text-2xl font-semibold mb-1 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
               Nuevo Registro
             </h3>
-            <span className="text-gray-600 font-normal text-sm">
+            <span className={`font-normal text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Agrega un nuevo registro a esta incidencia
             </span>
           </div>
           <button
             onClick={handleCloseModal}
-            className="text-white bg-gray-500 flex flex-row items-center justify-center hover:bg-gray-700 rounded-lg w-8 h-8 cursor-pointer"
+            className={`text-white flex flex-row items-center justify-center rounded-lg w-8 h-8 cursor-pointer ${isDark ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-500 hover:bg-gray-700'}`}
           >
             ✕
           </button>
@@ -187,7 +211,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
 
         <form className="p-4 space-y-5">
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900">
+            <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
               Seleccionar Cámara *
             </label>
             <Autocomplete
@@ -203,13 +227,33 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
                   variant="outlined"
                   placeholder="Buscar cámara por nombre..."
                   required
+                  sx={isDark ? {
+                    '& .MuiInputBase-input': {
+                      color: '#ffffff',
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: '#525252',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#6b7280',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#3b82f6',
+                      },
+                      backgroundColor: '#374151',
+                    },
+                    '& .MuiSvgIcon-root': {
+                      color: '#d1d5db',
+                    }
+                  } : {}}
                 />
               )}
               renderOption={(props, option) => (
                 <Box component="li" {...props} key={option.id}>
                   <div>
-                    <div className="font-medium">{option.name}</div>
-                    <div className="text-sm text-gray-600">
+                    <div className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>{option.name}</div>
+                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                       {option.address} - {option.cameraType}
                     </div>
                   </div>
@@ -226,36 +270,78 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
 
           <div className="flex gap-4">
             <div className="w-full">
-              <label className="block mb-2 text-sm font-medium text-gray-900">
+              <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
                 Fecha del Incidente *
               </label>
               <DatePicker
                 value={form.date}
                 onChange={(value) => updateFormField("date", value)}
                 format="DD/MM/YYYY"
-                slotProps={{ textField: { fullWidth: true } }}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    sx: isDark ? {
+                      '& .MuiInputBase-input': {
+                        color: '#f9fafb',
+                      },
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: '#374151',
+                        '& fieldset': {
+                          borderColor: '#6b7280',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#9ca3af',
+                        },
+                      },
+                      '& .MuiSvgIcon-root': {
+                        color: '#d1d5db',
+                      }
+                    } : {}
+                  }
+                }}
               />
             </div>
             <div className="w-full">
-              <label className="block mb-2 text-sm font-medium text-gray-900">
+              <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
                 Hora del Incidente *
               </label>
               <TimePicker
                 value={form.time}
                 onChange={(value) => updateFormField("time", value)}
                 format="HH:mm"
-                slotProps={{ textField: { fullWidth: true } }}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    sx: isDark ? {
+                      '& .MuiInputBase-input': {
+                        color: '#f9fafb',
+                      },
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: '#374151',
+                        '& fieldset': {
+                          borderColor: '#6b7280',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#9ca3af',
+                        },
+                      },
+                      '& .MuiSvgIcon-root': {
+                        color: '#d1d5db',
+                      }
+                    } : {}
+                  }
+                }}
               />
             </div>
           </div>
 
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900">
+            <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
               Descripción del Incidente
             </label>
             <TextareaAutosize
               minRows={4}
-              className="w-full p-2 border border-gray-300 rounded-md text-md hover:border-gray-800"
+              className={`w-full p-2 border rounded-md text-md ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400 hover:border-gray-500' : 'bg-white border-gray-300 text-gray-900 hover:border-gray-800'}`}
               placeholder="Describe los detalles del incidente, lo que observaste, acciones tomadas..."
               value={form.description}
               onChange={(e) => updateFormField("description", e.target.value)}
@@ -265,7 +351,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
           <div
             ref={pasteZoneRef}
             tabIndex={0}
-            className="border-2 border-dashed p-6 rounded-lg border-gray-400 hover:border-gray-800 relative"
+            className={`border-2 border-dashed p-6 rounded-lg relative ${isDark ? 'border-gray-600 hover:border-gray-400' : 'border-gray-400 hover:border-gray-800'}`}
           >
             <input
               type="file"
@@ -277,14 +363,14 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
 
 
             <div className="flex flex-col items-center space-y-2">
-              <div className="bg-gray-200 rounded-full p-2">
-                <CloudArrowUpIcon className="w-10 h-10 text-gray-600" />
+              <div className={`rounded-full p-2 ${isDark ? 'bg-gray-600' : 'bg-gray-200'}`}>
+                <CloudArrowUpIcon className={`w-10 h-10 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} />
               </div>
               <div className="text-center">
-                <p className="text-sm font-medium">
+                <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
                   Haz clic para subir imágenes (máx. 5) o un video (máx. 1 min), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
                 </p>
-                <span className="text-xs text-gray-500">
+                <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   Formatos permitidos: PNG, JPG, JPEG y MP4
                 </span>
               </div>
@@ -331,7 +417,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
           <div className="flex justify-end gap-3 mt-6">
             <button
               onClick={handleCloseModal}
-              className="text-gray-900 cursor-pointer border border-gray-800 hover:bg-gray-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              className={`cursor-pointer border font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-4 focus:outline-none ${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700 hover:text-white focus:ring-gray-600' : 'text-gray-900 border-gray-800 hover:bg-gray-700 hover:text-white focus:ring-gray-300'}`}
             >
               Cancelar
             </button>
@@ -339,7 +425,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               onClick={handleEmit}
               type="button"
               disabled={!form.cameraId || !form.date || !form.time}
-              className="text-white cursor-pointer bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              className={`text-white cursor-pointer font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-4 focus:outline-none disabled:opacity-50 ${isDark ? 'bg-gray-600 hover:bg-gray-700 focus:ring-gray-600' : 'bg-gray-500 hover:bg-gray-800 focus:ring-gray-300'}`}
             >
               Crear Registro
             </button>
@@ -347,6 +433,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
         </form>
       </Box>
     </Modal>
+  </ThemeProvider>
   );
 };
 
