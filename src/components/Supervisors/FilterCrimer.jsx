@@ -8,7 +8,7 @@ const FilterCrimer = () => {
     const [crimes, setCrimes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCrimes, setSelectedCrimes] = useState([]); // Cambiar a array
-    
+
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -41,18 +41,18 @@ const FilterCrimer = () => {
     const handleCrimeChange = (event) => {
         const selectedValues = event.target.value;
         const searchParams = new URLSearchParams(location.search);
-        
+
         // Limpiar todos los parámetros de crimen existentes
         searchParams.delete('crimeIds');
-        
+
         // Agregar cada crimen seleccionado como parámetro separado
         selectedValues.forEach(crimeId => {
             searchParams.append('crimeIds', crimeId);
         });
-        
+
         // Reset a página 1 cuando cambia el filtro
         searchParams.set('page', '1');
-        
+
         console.log('Nueva URL de filtro:', searchParams.toString()); // Para debuggear
         navigate({ search: searchParams.toString() });
     };
@@ -63,9 +63,9 @@ const FilterCrimer = () => {
             {selected.map((value) => {
                 const crime = crimes.find(c => c.id === value);
                 return (
-                    <Chip 
-                        key={value} 
-                        label={crime ? crime.name : value} 
+                    <Chip
+                        key={value}
+                        label={crime ? crime.name : value}
                         size="small"
                         sx={{ height: 20, fontSize: '0.75rem' }}
                     />

@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Autocomplete, TextField } from '@mui/material';
 import { getAllHuntersApi } from '../../api/supervisor/HunterService';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) => {
-  const [form, setForm] = useState({ 
+  const [form, setForm] = useState({
     userId: '',
     userType: 'hunter'
   });
@@ -12,6 +13,7 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
   const [inputValue, setInputValue] = useState('');
   const [cazadoresList, setCazadoresList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { isDark } = useTheme();
 
   // Cargar cazadores con parámetros de búsqueda
   const loadCazadores = async (searchTerm = '') => {
@@ -43,15 +45,15 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedCazador || !incidenceId) {
-        toast.error('Debes seleccionar un cazador');
-        return;
+      toast.error('Debes seleccionar un cazador');
+      return;
     }
-    onSubmit?.({ 
+    onSubmit?.({
       userId: selectedCazador.id, // Cambiado de selectedCazador.user.id
       incidenceId,
-      userType: form.userType 
+      userType: form.userType
     });
-    setForm({ 
+    setForm({
       userId: '',
       userType: 'hunter'
     });
@@ -60,7 +62,7 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
   };
 
   const handleCancel = () => {
-    setForm({ 
+    setForm({
       userId: '',
       userType: 'hunter'
     });
@@ -70,8 +72,8 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
   };
 
   return (
-    <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-      <h3 className="text-md font-semibold mb-4">Asignar nuevo cazador</h3>
+    <div className={`mt-6 p-4 border rounded-lg transition-colors duration-300 ${isDark ? 'border-[#404040] bg-[#2a2a2a]' : 'border-gray-200 bg-gray-50'}`} style={isDark ? { backgroundColor: '#2a2a2a', borderColor: '#404040' } : {}}>
+      <h3 className={`text-md font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Asignar nuevo cazador</h3>
       <form onSubmit={handleSubmit} >
         <div className="mb-4">
           <Autocomplete
@@ -109,11 +111,31 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
             isOptionEqualToValue={(option, value) => option?.id === value?.id}
             sx={{ width: '100%' }}
             renderInput={(params) => (
-              <TextField 
-                {...params} 
-                label="" 
+              <TextField
+                {...params}
+                label=""
                 size="small"
                 placeholder="Selecciona un cazador"
+                sx={isDark ? {
+                  '& .MuiInputBase-input': {
+                    color: '#ffffff',
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#525252',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#6b7280',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#3b82f6',
+                    },
+                    backgroundColor: '#374151',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: '#d1d5db',
+                  }
+                } : {}}
               />
             )}
           />
@@ -123,13 +145,13 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
           <button
             type="button"
             onClick={handleCancel}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors"
+            className={`px-4 py-2 border rounded-lg cursor-pointer transition-colors ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-[#32A3B5] cursor-pointer transition-colors"
+            className={`px-4 py-2 text-white rounded-lg hover:bg-[#32A3B5] cursor-pointer transition-colors ${isDark ? 'bg-gray-700' : 'bg-gray-900'}`}
           >
             Asignar
           </button>

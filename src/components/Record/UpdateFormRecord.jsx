@@ -3,6 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Autocomplete, TextField, TextareaAutosize } from '@mui/material';
 import { DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import dayjs from 'dayjs';
@@ -12,6 +13,7 @@ import { deletePhotoApi } from '../../api/photo/photoApi';
 import { useConfirmDiscard } from '../../hooks/commons/useConfirmDiscard';
 import ImageViewer from '../Operador/ImageViewer';
 import { toast } from 'sonner';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const MAX_IMAGES = 5;
 
@@ -30,6 +32,27 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
   });
 
   const originalData = useRef(null);
+  const { isDark } = useTheme();
+
+  // Tema personalizado para Material-UI
+  const muiTheme = createTheme({
+    palette: {
+      mode: isDark ? 'dark' : 'light',
+      ...(isDark && {
+        background: {
+          paper: '#1f2937',
+          default: '#111827',
+        },
+        text: {
+          primary: '#f9fafb',
+          secondary: '#d1d5db',
+        },
+        primary: {
+          main: '#3b82f6',
+        },
+      }),
+    },
+  });
 
   const updateFormField = useCallback((field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -70,7 +93,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
         imagesToDelete: []
       };
       setForm(initialForm);
-      setImages(data.images || []);
+      setImages(data.evidences || []);
       originalData.current = initialForm;
     }
   }, [data]);
@@ -187,7 +210,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
   const handleEmit = async () => {
     try {
       for (const path of form.imagesToDelete) {
-        const image = data.images.find(img => img.path === path);
+        const image = data.evidences.find(img => img.path === path);
         if (image) await deletePhotoApi(image.id);
       }
     } catch (error) {
@@ -221,139 +244,217 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
   const selectedCamera = cameras.find(cam => cam.id === form.cameraId) || null;
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Dialog open={isOpen} onClose={() => { }} className="relative z-50">
-        <div className="fixed inset-0 bg-black/60" aria-hidden="true"></div>
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-lg shadow-lg max-w-xl w-full p-6">
-            <div className="mb-2 flex">
-              <Dialog.Title className="text-lg font-bold">Editar Registro</Dialog.Title>
-              <button
-                onClick={handleClose}
-                className="ml-auto text-gray-400 hover:text-gray-900 hover:bg-gray-200 rounded-lg p-1"
-              >
-                <span className="sr-only">Cerrar modal</span>
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <hr className="border-gray-200 mb-4" />
-            <div className="max-h-[70vh] overflow-y-auto pr-1">
-              <form className="space-y-4">
-                <div>
-                  <label className="block mb-2 text-sm font-medium">Seleccionar Cámara</label>
-                  <Autocomplete
-                    value={selectedCamera}
-                    options={cameras}
-                    getOptionLabel={(opt) => opt.name || ''}
-                    onChange={(_, newVal) => {
-                      updateFormField('cameraId', newVal?.id || '');
-                      updateFormField('cameraName', newVal?.name || '');
-                    }}
-                    isOptionEqualToValue={(opt, val) => opt.id === val.id}
-                    renderInput={(params) => <TextField {...params} placeholder="Buscar cámara..." required fullWidth />}
-                    renderOption={(props, option) => (
-                      <li {...props}>
-                        <div>
-                          <div className="font-medium">{option.name}</div>
-                          <div className="text-sm text-gray-600">{option.address} - {option.cameraType}</div>
-                        </div>
-                      </li>
-                    )}
-                  />
-                </div>
-                <div className="flex gap-4 flex-col sm:flex-row">
-                  <div className="w-full">
-                    <label className="block mb-2 text-sm font-medium">Fecha</label>
-                    <DatePicker value={form.date} onChange={val => updateFormField('date', val)} format="DD/MM/YYYY" slotProps={{ textField: { fullWidth: true } }} />
-                  </div>
-                  <div className="w-full">
-                    <label className="block mb-2 text-sm font-medium">Hora</label>
-                    <TimePicker value={form.time} onChange={val => updateFormField('time', val)} format="HH:mm" slotProps={{ textField: { fullWidth: true } }} />
-                  </div>
-                </div>
-                <div>
-                  <label className="block mb-2 text-sm font-medium">Descripción</label>
-                  <TextareaAutosize
-                    minRows={4}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Describe los detalles..."
-                    value={form.description}
-                    onChange={e => updateFormField('description', e.target.value)}
-                  />
-                </div>
-                {images.length > 0 && (
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Imágenes adjuntas</label>
-                    <div className="flex flex-wrap gap-4 justify-center">
-                      {images.map((img) => (
-                        <div
-                          key={img.id}
-                          className="relative w-32 h-32 border border-gray-300 rounded-md p-2 flex flex-col items-center justify-center bg-gray-50"
-                        >
-                          <ImageViewer
-                            Path={img.path}
-                            originalName={img.originalName}
-                            onDelete={() => confirmDelete(img, () => img.originalName, () => handleDeleteImage(img))}
-                          />
-                          <span className="text-xs text-center mt-1 line-clamp-1 w-full">{img.originalName}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div
-                  ref={pasteZoneRef}
-                  tabIndex={0}
-                  className="border-2 border-dashed p-6 rounded-lg border-gray-400 hover:border-gray-800 relative focus:outline-none focus:ring-2 focus:ring-blue-500 z-10"
+    <ThemeProvider theme={muiTheme}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Dialog open={isOpen} onClose={() => { }} className="relative z-50">
+          <div className="fixed inset-0 bg-black/70" aria-hidden="true"></div>
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <Dialog.Panel className={`${isDark ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg max-w-xl w-full p-6`}>
+              <div className="mb-2 flex">
+                <h3 className={`text-lg font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Editar Registro</h3>
+                <button
+                  onClick={handleClose}
+                  className={`ml-auto ${isDark ? 'text-gray-400 hover:text-gray-100 hover:bg-gray-700' : 'text-gray-400 hover:text-gray-900 hover:bg-gray-200'} rounded-lg p-1`}
                 >
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/png, image/jpg, image/jpeg, video/mp4"
-                    className="absolute w-full h-full opacity-0 cursor-pointer"
-                    onChange={handleFileChange}
-                  />
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="bg-gray-200 rounded-full p-2">
-                      <CloudArrowUpIcon className="w-10 h-10 text-gray-600" />
-                    </div>
-                    <p className="text-sm text-center font-medium">
-                      Haz clic para subir imágenes (máx. 5) o un video (máx. 1 min), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
-                    </p>
-                    <span className="text-xs text-gray-500">
-                      Formatos permitidos: PNG, JPG, JPEG y MP4
-                    </span>
-                    {form.files.length > 0 && (
-                      <div className="mt-2">
-                        <p className="text-sm text-green-600">{form.files.length} archivo(s) seleccionado(s)</p>
-                        <ul className="text-xs text-gray-600 mt-1">
-                          {form.files.map((file, index) => <li key={index}>• {file.name}</li>)}
-                        </ul>
-                      </div>
-                    )}
+                  <span className="sr-only">Cerrar modal</span>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <hr className={`${isDark ? 'border-gray-600' : 'border-gray-200'} mb-4`} />
+              <div className="max-h-[70vh] overflow-y-auto pr-1">
+                <form className="space-y-4">
+                  <div>
+                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Seleccionar Cámara</label>
+                    <Autocomplete
+                      value={selectedCamera}
+                      options={cameras}
+                      getOptionLabel={(opt) => opt.name || ''}
+                      onChange={(_, newVal) => {
+                        updateFormField('cameraId', newVal?.id || '');
+                        updateFormField('cameraName', newVal?.name || '');
+                      }}
+                      isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                      renderInput={(params) =>
+                        <TextField
+                          {...params}
+                          placeholder="Buscar cámara..."
+                          required
+                          fullWidth
+                          sx={isDark ? {
+                            '& .MuiInputBase-input': {
+                              color: '#f9fafb',
+                            },
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#374151',
+                              '& fieldset': {
+                                borderColor: '#6b7280',
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#9ca3af',
+                              },
+                            },
+                            '& .MuiSvgIcon-root': {
+                              color: '#d1d5db',
+                            }
+                          } : {}}
+                        />
+                      }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div>
+                            <div className="font-medium">{option.name}</div>
+                            <div className="text-sm text-gray-600">{option.address} - {option.cameraType}</div>
+                          </div>
+                        </li>
+                      )}
+                    />
                   </div>
-                </div>
-                <div className="flex justify-end gap-3 mt-6">
-                  <button type="button" onClick={handleClose} className="border border-gray-800 text-sm px-5 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white">
-                    Cancelar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleEmit}
-                    disabled={!form.cameraId || !form.date || !form.time}
-                    className="bg-gray-500 text-white text-sm px-5 py-2.5 rounded-lg hover:bg-gray-800"
+                  <div className="flex gap-4 flex-col sm:flex-row">
+                    <div className="w-full">
+                      <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Fecha</label>
+                      <DatePicker
+                        value={form.date}
+                        onChange={val => updateFormField('date', val)}
+                        format="DD/MM/YYYY"
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            sx: isDark ? {
+                              '& .MuiInputBase-input': {
+                                color: '#f9fafb',
+                              },
+                              '& .MuiOutlinedInput-root': {
+                                backgroundColor: '#374151',
+                                '& fieldset': {
+                                  borderColor: '#6b7280',
+                                },
+                                '&:hover fieldset': {
+                                  borderColor: '#9ca3af',
+                                },
+                              },
+                              '& .MuiSvgIcon-root': {
+                                color: '#d1d5db',
+                              }
+                            } : {}
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Hora</label>
+                      <TimePicker
+                        value={form.time}
+                        onChange={val => updateFormField('time', val)}
+                        format="HH:mm"
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            sx: isDark ? {
+                              '& .MuiInputBase-input': {
+                                color: '#f9fafb',
+                              },
+                              '& .MuiOutlinedInput-root': {
+                                backgroundColor: '#374151',
+                                '& fieldset': {
+                                  borderColor: '#6b7280',
+                                },
+                                '&:hover fieldset': {
+                                  borderColor: '#9ca3af',
+                                },
+                              },
+                              '& .MuiSvgIcon-root': {
+                                color: '#d1d5db',
+                              }
+                            } : {}
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Descripción</label>
+                    <TextareaAutosize
+                      minRows={4}
+                      className={`w-full p-2 border rounded-md ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
+                      placeholder="Describe los detalles..."
+                      value={form.description}
+                      onChange={e => updateFormField('description', e.target.value)}
+                    />
+                  </div>
+                  {images.length > 0 && (
+                    <div>
+                      <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Imágenes adjuntas</label>
+                      <div className="flex flex-wrap gap-4 justify-center">
+                        {images.map((img) => (
+                          <div
+                            key={img.id}
+                            className={`relative w-32 h-32 border rounded-md p-2 flex flex-col items-center justify-center ${isDark ? 'border-gray-600 bg-gray-700' : 'border-gray-300 bg-gray-50'}`}
+                          >
+                            <ImageViewer
+                              Path={img.path}
+                              originalName={img.originalName}
+                              onDelete={() => confirmDelete(img, () => img.originalName, () => handleDeleteImage(img))}
+                            />
+                            <span className={`text-xs text-center mt-1 line-clamp-1 w-full ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{img.originalName}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div
+                    ref={pasteZoneRef}
+                    tabIndex={0}
+                    className={`border-2 border-dashed p-6 rounded-lg relative focus:outline-none focus:ring-2 focus:ring-blue-500 z-10 ${isDark ? 'border-gray-600 hover:border-gray-400' : 'border-gray-400 hover:border-gray-800'}`}
                   >
-                    Guardar Cambios
-                  </button>
-                </div>
-              </form>
-            </div>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
-    </LocalizationProvider>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/png, image/jpg, image/jpeg, video/mp4"
+                      className="absolute w-full h-full opacity-0 cursor-pointer"
+                      onChange={handleFileChange}
+                    />
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className={`${isDark ? 'bg-gray-600' : 'bg-gray-200'} rounded-full p-2`}>
+                        <CloudArrowUpIcon className={`w-10 h-10 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} />
+                      </div>
+                      <p className={`text-sm text-center font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                        Haz clic para subir imágenes (máx. 5) o un video (máx. 1 min), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
+                      </p>
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Formatos permitidos: PNG, JPG, JPEG y MP4
+                      </span>
+                      {form.files.length > 0 && (
+                        <div className="mt-2">
+                          <p className={`text-sm ${isDark ? 'text-green-400' : 'text-green-600'}`}>{form.files.length} archivo(s) seleccionado(s)</p>
+                          <ul className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {form.files.map((file, index) => <li key={index}>• {file.name}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3 mt-6 mb-3">
+                    <button type="button" onClick={handleClose} className={`border text-sm px-5 py-2.5 rounded-lg ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:text-white' : 'border-gray-800 text-gray-900 hover:bg-gray-700 hover:text-white'}`}>
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleEmit}
+                      disabled={!form.cameraId || !form.date || !form.time}
+                      className={`text-white text-sm px-5 py-2.5 rounded-lg ${isDark ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-500 hover:bg-gray-800'} disabled:opacity-50`}
+                    >
+                      Guardar Cambios
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </Dialog.Panel>
+          </div>
+        </Dialog>
+      </LocalizationProvider>
+    </ThemeProvider>
   );
 };
 

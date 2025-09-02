@@ -7,11 +7,13 @@ import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation
 import { deleteRecordApi, updateRecordApi } from '../../api/record/recordApi';
 import { useState } from "react";
 import UpdateFormRecord from "../Record/UpdateFormRecord";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [recordToEdit, setRecordToEdit] = useState(null);
+  const { isDark } = useTheme();
 
   const confirmDelete = useDeleteConfirmation({
     fetchData: fetchRecords,
@@ -49,13 +51,13 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
   };
 
   if (!records.length) {
-    return <p className="text-gray-500 text-sm">No hay registros aún.</p>;
+    return <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>No hay registros aún.</p>;
   }
 
 
   return (
     <div className="mt-8">
-      <h3 className="text-lg font-semibold text-gray-900">
+      <h3 className={`text-lg font-semibold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
         Registros ({records.length})
       </h3>
 
@@ -68,19 +70,19 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
           return (
             <div
               key={rec.id}
-              className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm"
+              className={`border rounded-lg p-5 shadow-sm transition-colors duration-300 ${isDark ? 'border-gray-600 bg-gray-800' : 'border-gray-200 bg-white'}`}
             >
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 text-sm text-gray-800 font-medium">
-                    <span className="bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-semibold">
+                  <div className={`flex items-center gap-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                    <span className={`rounded px-2 py-0.5 text-xs font-semibold ${isDark ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-700'}`}>
                       #{idx + 1}
                     </span>
                     {rec.camera?.name || "Sin cámara asociada"}
                   </div>
 
-                  <div className="flex gap-3 text-sm text-gray-500">
+                  <div className={`flex gap-3 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     <span className="flex items-center gap-1">
                       <Icon path={icons.calendar} size={0.7} /> {recordDate.format("YYYY-MM-DD")}
                     </span>
@@ -96,14 +98,14 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
                 <div className="flex gap-3 items-center shrink-0">
                   <button
                     onClick={() => handleEdit(rec)}
-                    className="cursor-pointer text-blue-600 hover:text-blue-800 transition"
+                    className={`cursor-pointer transition ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
                     title="Editar registro"
                   >
                     <Icon path={icons.edit} size={0.8} />
                   </button>
                   <button
                     onClick={() => handleDelete(rec)}
-                    className="cursor-pointer text-red-600 hover:text-red-800 transition"
+                    className={`cursor-pointer transition ${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-800'}`}
                     title="Eliminar registro"
                   >
                     <Icon path={icons.delete} size={0.8} />
@@ -111,21 +113,21 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
                 </div>
               </div>
 
-              <p className="text-sm text-gray-700 leading-relaxed mb-3">
+              <p className={`text-sm leading-relaxed mb-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 {rec.description || "Sin descripción del registro."}
               </p>
 
               {rec.evidences && rec.evidences.length > 0 && (
                 <div>
-                  <p className="text-sm font-medium text-gray-800 mb-2">Imágenes adjuntas:</p>
+                  <p className={`text-sm font-medium mb-2 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Imágenes adjuntas:</p>
                   <div className="flex flex-wrap gap-3">
                     {rec.evidences.map((img) => (
                       <div
                         key={img.id}
-                        className="bg-gray-100 border border-gray-300 rounded-md p-2 flex flex-col items-center justify-center w-35 h-25 relative"
+                        className={`border rounded-md p-2 flex flex-col items-center justify-center w-35 h-25 relative ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300'}`}
                       >
-                        <Icon path={icons.camera} size={1.5} className="text-gray-500" />
-                        <span className="text-xs text-gray-700 text-center line-clamp-1 w-full">
+                        <Icon path={icons.camera} size={1.5} className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                        <span className={`text-xs text-center line-clamp-1 w-full ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                           {img.originalName}
                         </span>
                          <ImageViewer Path={img.path} originalName={img.originalName} />
