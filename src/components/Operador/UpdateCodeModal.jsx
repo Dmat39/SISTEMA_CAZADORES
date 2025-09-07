@@ -1,14 +1,37 @@
 import { useState, useEffect } from "react";
 import { Modal, Box, TextField, CircularProgress, Button, Autocomplete } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { getIncidenceCodesApi } from "../../api/operador/incidenceApi";
 import { toast } from "sonner";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const UpdateCodeModal = ({ isOpen, onClose, data, onSubmit }) => {
+  const { isDark } = useTheme();
   const [inputValue, setInputValue] = useState(data.code || "");
   const [options, setOptions] = useState([]);
   const [loadingOptions, setLoadingOptions] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [openAutocomplete, setOpenAutocomplete] = useState(false);
+
+  // Tema personalizado para Material-UI
+  const muiTheme = createTheme({
+    palette: {
+      mode: isDark ? 'dark' : 'light',
+      ...(isDark && {
+        background: {
+          paper: '#1f2937',
+          default: '#111827',
+        },
+        text: {
+          primary: '#f9fafb',
+          secondary: '#d1d5db',
+        },
+        primary: {
+          main: '#3b82f6',
+        },
+      }),
+    },
+  });
 
   useEffect(() => {
     if (!isOpen) return;
@@ -61,9 +84,10 @@ const UpdateCodeModal = ({ isOpen, onClose, data, onSubmit }) => {
   }, [isOpen, data]);
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
-      <Box sx={{ bgcolor: "background.paper", borderRadius: 2, p: 4, width: 400, mx: "auto", mt: "15vh" }}>
-        <h2 className="text-lg font-semibold mb-4">Actualizar Código de Incidencia</h2>
+    <ThemeProvider theme={muiTheme}>
+      <Modal open={isOpen} onClose={onClose}>
+        <Box sx={{ bgcolor: isDark ? "#1a1a1a" : "background.paper", borderRadius: 2, p: 4, width: 400, mx: "auto", mt: "15vh" }}>
+          <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Actualizar Código de Incidencia</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block mb-2 text-sm font-medium text-gray-900">Código</label>
@@ -133,6 +157,7 @@ const UpdateCodeModal = ({ isOpen, onClose, data, onSubmit }) => {
         </form>
       </Box>
     </Modal>
+    </ThemeProvider>
   );
 };
 
