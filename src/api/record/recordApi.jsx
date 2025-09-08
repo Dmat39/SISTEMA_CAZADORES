@@ -12,7 +12,7 @@ export const updateRecordApi = async (id, updateData) => {
 
 export const deleteRecordApi = async (id) => {
   try {
-    const response = await mainApi.delete(`/record/${id}`);
+    const response = await mainApi.delete(`/record/delete/${id}`);
     return response.data;
   } catch (error) {
     console.log("Error al eliminar el registro:", error);
