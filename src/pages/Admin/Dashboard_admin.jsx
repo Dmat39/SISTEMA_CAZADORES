@@ -76,22 +76,22 @@ export default function Component() {
   const searchParams = new URLSearchParams(location.search)
   const currentPage = parseInt(searchParams.get('page')) || 1
   const limit = parseInt(searchParams.get('limit')) || 10
-  
+
   // Calcular fechas del último mes (30 días desde ayer) por defecto
   const getDefaultDateRange = () => {
     const today = new Date()
     const yesterday = new Date(today)
     yesterday.setDate(today.getDate() - 1)
-    
+
     const startDate = new Date(yesterday)
     startDate.setDate(yesterday.getDate() - 29) // 30 días incluyendo ayer
-    
+
     return {
       start: startDate.toISOString().split('T')[0],
       end: yesterday.toISOString().split('T')[0]
     }
   }
-  
+
   const defaultDates = getDefaultDateRange()
   const generalStartDate = searchParams.get('start') || defaultDates.start
   const generalEndDate = searchParams.get('end') || defaultDates.end
@@ -316,7 +316,7 @@ export default function Component() {
       </div>
 
       {/* Métricas principales - Datos del endpoint dashboard */}
-      <div className="grid gap-4 md:grid-cols-6 lg:grid-cols-6">
+      <div className="grid gap-4 md:grid-cols-5 lg:grid-cols-5">
         {/* Total Incidencias */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -360,7 +360,7 @@ export default function Component() {
         </div>
 
         {/* Incidencias Finalizadas */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
+        {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Finalizadas</h3>
             <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
@@ -378,12 +378,12 @@ export default function Component() {
               </>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* Incidencias Completadas */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Completado</h3>
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Concretadas</h3>
             <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div>
@@ -395,7 +395,7 @@ export default function Component() {
             ) : (
               <>
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">{generalData.incidenciasCompletadas.toLocaleString()}</div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Incidencias completadas</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Incidencias Concretadas</p>
               </>
             )}
           </div>
@@ -445,124 +445,15 @@ export default function Component() {
       </div>
 
       {/* Gráficos principales */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <IncidentChartToggle />
-        <CrimeRadarDashboard />
+      <div className="grid gap-6 md:grid-cols-5">
+        <div className="col-span-5 md:col-span-3">
+          <IncidentChartToggle />
+        </div>
+        <div className="col-span-5 md:col-span-2">
+          <CrimeRadarDashboard />
+        </div>
       </div>
 
-      {/* Análisis detallado */}
-      {/* <div className="grid gap-6 md:grid-cols-3">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Tasa de Conversión por Tipo</h3>
-            <p className="text-sm text-gray-500">Eficiencia de resolución</p>
-          </div>
-          <div>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={conversionData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {conversionData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => `${value}%`} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex justify-center space-x-4 mt-4">
-              {conversionData.map((item, index) => (
-                <div key={item.name} className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="text-sm">
-                    {item.name}: {item.value}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Resumen por Usuario</h3>
-            <p className="text-sm text-gray-500">Total de incidencias atendidas</p>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Users className="h-5 w-5 text-blue-600" />
-                <div>
-                  <p className="font-medium">Cazadores</p>
-                  <p className="text-sm text-gray-500">Especialistas</p>
-                </div>
-              </div>
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
-                {cazadorTotal.toLocaleString()}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Users className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="font-medium">Operadores</p>
-                  <p className="text-sm text-gray-500">Soporte general</p>
-                </div>
-              </div>
-              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
-                {operadorTotal.toLocaleString()}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Indicadores Clave</h3>
-            <p className="text-sm text-gray-500">KPIs principales del período</p>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Promedio diario</span>
-              <span className="text-sm">{Math.round(totalAtendidas / (timeFilter === "weekly" ? 28 : 180))}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Mejor período</span>
-              <span className="text-sm">
-                {
-                  currentData.reduce((max, item) =>
-                    item.cazadorAtendidas + item.operadorAtendidas > max.cazadorAtendidas + max.operadorAtendidas
-                      ? item
-                      : max,
-                  ).period
-                }
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Pendientes</span>
-              <span className="border border-orange-600 text-orange-600 px-2 py-1 rounded text-sm">
-                {totalAsignadas - totalAtendidas}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Estado</span>
-              <span className={`px-2 py-1 rounded text-sm ${Number(tendencia) >= 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                {Number(tendencia) >= 0 ? "Mejorando" : "Declinando"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>  */}
 
       {/* Tabla detallada por persona */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">

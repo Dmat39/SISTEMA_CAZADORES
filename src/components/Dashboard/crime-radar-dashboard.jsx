@@ -10,7 +10,7 @@ import {
     ResponsiveContainer,
     Tooltip,
 } from "recharts"
-import { Shield, TrendingUp } from "lucide-react"
+import { Shield, TrendingUp, UserPlus, CheckCircle } from "lucide-react"
 import { CalendarPicker } from "@/components/Dashboard/calendar-picker"
 import { dashboardData } from "../../api/dashboard/DashboardApi"
 
@@ -34,6 +34,7 @@ export function CrimeRadarDashboard() {
     const [selectedPeriod, setSelectedPeriod] = useState("30D")
     const [hoveredCrime, setHoveredCrime] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [crimeType, setCrimeType] = useState("assigned") // "assigned" o "finished"
     const [apiData, setApiData] = useState({
         trends: {
             days: []
@@ -92,26 +93,53 @@ export function CrimeRadarDashboard() {
 
         const trends = apiData.trends
 
+        // Función para obtener datos de crímenes según el tipo (assigned/finished)
+        const getCrimeData = (hours, crimeTypeFilter) => {
+            return Object.keys(crimeLabels).reduce((acc, crimeKey) => {
+                if (crimeTypeFilter === "assigned") {
+                    // Para asignadas, contar solo las horas donde assigned > 0
+                    acc[crimeKey] = hours.reduce((sum, hour) => {
+                        return sum + (hour.assigned > 0 ? (hour.crimen[crimeKey] || 0) : 0)
+                    }, 0)
+                } else {
+                    // Para finalizadas, contar solo las horas donde finished > 0
+                    acc[crimeKey] = hours.reduce((sum, hour) => {
+                        return sum + (hour.finished > 0 ? (hour.crimen[crimeKey] || 0) : 0)
+                    }, 0)
+                }
+                return acc
+            }, {})
+        }
+
+        // Función para obtener datos de crímenes de días según el tipo
+        const getDayCrimeData = (days, crimeTypeFilter) => {
+            return Object.keys(crimeLabels).reduce((acc, crimeKey) => {
+                if (crimeTypeFilter === "assigned") {
+                    // Para asignadas, contar solo los días donde assigned > 0
+                    acc[crimeKey] = days.reduce((sum, day) => {
+                        return sum + (day.assigned > 0 ? (day.crimen[crimeKey] || 0) : 0)
+                    }, 0)
+                } else {
+                    // Para finalizadas, contar solo los días donde finished > 0
+                    acc[crimeKey] = days.reduce((sum, day) => {
+                        return sum + (day.finished > 0 ? (day.crimen[crimeKey] || 0) : 0)
+                    }, 0)
+                }
+                return acc
+            }, {})
+        }
+
         // Filtrar datos según el período seleccionado
         if (selectedPeriod === "24H") {
             // Para 24H, usar datos por horas del día más reciente con datos
             const latestDayWithData = trends.days.find(day =>
+                (crimeType === "assigned" ? day.assigned > 0 : day.finished > 0) &&
                 day.crimen && Object.values(day.crimen).some(value => value > 0)
             )
 
             if (latestDayWithData && latestDayWithData.hours) {
-                // Agregar datos de crímenes por horas
-                const aggregatedCrimes = Object.keys(crimeLabels).reduce(
-                    (acc, crimeType) => {
-                        acc[crimeType] = latestDayWithData.hours.reduce((sum, hour) =>
-                            sum + (hour.crimen[crimeType] || 0), 0
-                        )
-                        return acc
-                    },
-                    {}
-                )
+                const aggregatedCrimes = getCrimeData(latestDayWithData.hours, crimeType)
 
-                // Transformar al formato del gráfico radar
                 return Object.entries(crimeLabels).map(([key, label]) => ({
                     crime: label,
                     value: aggregatedCrimes[key],
@@ -121,24 +149,21 @@ export function CrimeRadarDashboard() {
 
             // Si no hay datos por horas, usar datos del día
             if (latestDayWithData && latestDayWithData.crimen) {
-                return Object.entries(crimeLabels).map(([key, label]) => ({
-                    crime: label,
-                    value: latestDayWithData.crimen[key] || 0,
-                    fullMark: Math.max(...Object.values(latestDayWithData.crimen)) || 10,
-                }))
+                const dayValue = crimeType === "assigned" && latestDayWithData.assigned > 0 ||
+                    crimeType === "finished" && latestDayWithData.finished > 0
+
+                if (dayValue) {
+                    return Object.entries(crimeLabels).map(([key, label]) => ({
+                        crime: label,
+                        value: latestDayWithData.crimen[key] || 0,
+                        fullMark: Math.max(...Object.values(latestDayWithData.crimen)) || 10,
+                    }))
+                }
             }
         } else if (selectedPeriod === "7D") {
             // Para 7D, usar los últimos 7 días
             const last7Days = trends.days.slice(-7)
-            const aggregatedCrimes = Object.keys(crimeLabels).reduce(
-                (acc, crimeType) => {
-                    acc[crimeType] = last7Days.reduce((sum, day) =>
-                        sum + (day.crimen[crimeType] || 0), 0
-                    )
-                    return acc
-                },
-                {}
-            )
+            const aggregatedCrimes = getDayCrimeData(last7Days, crimeType)
 
             return Object.entries(crimeLabels).map(([key, label]) => ({
                 crime: label,
@@ -147,15 +172,7 @@ export function CrimeRadarDashboard() {
             }))
         } else if (selectedPeriod === "30D") {
             // Para 30D, usar todos los días disponibles
-            const aggregatedCrimes = Object.keys(crimeLabels).reduce(
-                (acc, crimeType) => {
-                    acc[crimeType] = trends.days.reduce((sum, day) =>
-                        sum + (day.crimen[crimeType] || 0), 0
-                    )
-                    return acc
-                },
-                {}
-            )
+            const aggregatedCrimes = getDayCrimeData(trends.days, crimeType)
 
             return Object.entries(crimeLabels).map(([key, label]) => ({
                 crime: label,
@@ -165,7 +182,7 @@ export function CrimeRadarDashboard() {
         }
 
         return []
-    }, [selectedPeriod, startDate, endDate, apiData])
+    }, [selectedPeriod, startDate, endDate, apiData, crimeType])
 
     const totalCrimes = useMemo(() => {
         return radarData.reduce((sum, item) => sum + item.value, 0)
@@ -234,21 +251,71 @@ export function CrimeRadarDashboard() {
         setEndDate(newEndDate)
     }
 
+    const handleCrimeTypeToggle = (type) => {
+        setCrimeType(type)
+    }
+
+    // Configuración dinámica según el tipo de análisis
+    const crimeConfig = {
+        assigned: {
+            title: "Análisis de Crímenes Asignadas",
+            description: "Distribución de crímenes en incidencias asignadas",
+            icon: UserPlus,
+            color: "blue"
+        },
+        finished: {
+            title: "Análisis de Crímenes Finalizadas",
+            description: "Distribución de crímenes en incidencias finalizadas",
+            icon: CheckCircle,
+            color: "green"
+        }
+    }
+
+    const config = crimeConfig[crimeType]
+
     return (
         <Card className="bg-white dark:bg-card transition-colors duration-200">
             <CardHeader >
-                <div className="flex items-center justify-between mb-0">
+                <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
-                        <Shield className="h-5 w-5 text-red-600 dark:text-red-400" />
-                        <CardTitle className="text-lg text-gray-900 dark:text-white">Análisis de Crímenes</CardTitle>
+                        <config.icon className={crimeType === "assigned" ? "h-5 w-5 text-blue-600 dark:text-blue-400" : "h-5 w-5 text-green-600 dark:text-green-400"} />
+                        <CardTitle className="text-lg text-gray-900 dark:text-white">{config.title}</CardTitle>
+                    </div>
+
+                    {/* Toggle Button para alternar entre tipos de análisis */}
+                    <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleCrimeTypeToggle("assigned")}
+                            className={`px-3 py-1 text-xs rounded-md transition-all ${crimeType === "assigned"
+                                ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400 font-medium"
+                                : "text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
+                                }`}
+                        >
+                            <UserPlus className="h-3 w-3 mr-1" />
+                            Asignadas
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleCrimeTypeToggle("finished")}
+                            className={`px-3 py-1 text-xs rounded-md transition-all ${crimeType === "finished"
+                                ? "bg-white dark:bg-gray-700 shadow-sm text-green-600 dark:text-green-400 font-medium"
+                                : "text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
+                                }`}
+                        >
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Finalizadas
+                        </Button>
                     </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <CardDescription className="text-sm text-gray-600 dark:text-gray-400">
-                        Distribución de incidentes criminales por categoría
+                        {config.description}
                         {hoveredCrime && (
-                            <span className="block text-red-400 text-sm mt-1">Detalles: {hoveredCrime}</span>
+                            <span className={`block text-sm mt-1 ${crimeType === "assigned" ? "text-blue-400" : "text-green-400"}`}>Detalles: {hoveredCrime}</span>
                         )}
                     </CardDescription>
                 </div>
@@ -270,7 +337,7 @@ export function CrimeRadarDashboard() {
                     <div className="text-center">
                         <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Período</div>
                         <div className="text-xl font-bold text-gray-900 dark:text-white">{selectedPeriod}</div>
-                        <div className="text-xs text-red-500">
+                        <div className={`text-xs ${crimeType === "assigned" ? "text-blue-500" : "text-green-500"}`}>
                             {selectedPeriod === "24H"
                                 ? "24 horas"
                                 : selectedPeriod === "7D"
@@ -300,7 +367,9 @@ export function CrimeRadarDashboard() {
                             size="sm"
                             onClick={() => handlePeriodChange(period)}
                             className={`text-xs px-3 py-1 ${selectedPeriod === period
-                                ? "bg-red-600 hover:bg-red-700 text-white"
+                                ? crimeType === "assigned"
+                                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                    : "bg-green-600 hover:bg-green-700 text-white"
                                 : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                                 }`}
                         >
@@ -314,7 +383,7 @@ export function CrimeRadarDashboard() {
                 {loading ? (
                     <div className="flex items-center justify-center h-[300px] text-gray-500">
                         <div className="text-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-2"></div>
+                            <div className={`animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-2 ${crimeType === "assigned" ? "border-blue-600" : "border-green-600"}`}></div>
                             <p>Cargando datos de crímenes...</p>
                         </div>
                     </div>
@@ -343,11 +412,15 @@ export function CrimeRadarDashboard() {
                                 <Radar
                                     name="Incidentes"
                                     dataKey="value"
-                                    stroke="#dc2626"
-                                    fill="#dc2626"
+                                    stroke={crimeType === "assigned" ? "#2563eb" : "#16a34a"}
+                                    fill={crimeType === "assigned" ? "#2563eb" : "#16a34a"}
                                     fillOpacity={hoveredCrime ? 0.4 : 0.2}
                                     strokeWidth={hoveredCrime ? 3 : 2}
-                                    dot={{ fill: "#dc2626", strokeWidth: 2, r: 3 }}
+                                    dot={{
+                                        fill: crimeType === "assigned" ? "#2563eb" : "#16a34a",
+                                        strokeWidth: 2,
+                                        r: 3
+                                    }}
                                 />
                             </RadarChart>
                         </ResponsiveContainer>
@@ -370,19 +443,27 @@ export function CrimeRadarDashboard() {
                                 <div
                                     key={item.crime}
                                     className={`flex items-center justify-between p-2 rounded text-xs transition-all duration-200 ${hoveredCrime === item.crime
-                                        ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+                                        ? crimeType === "assigned"
+                                            ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+                                            : "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
                                         : "bg-gray-50 dark:bg-gray-700"
                                         }`}
                                 >
                                     <span className={`font-medium ${hoveredCrime === item.crime
-                                        ? "text-red-700 dark:text-red-300"
+                                        ? crimeType === "assigned"
+                                            ? "text-blue-700 dark:text-blue-300"
+                                            : "text-green-700 dark:text-green-300"
                                         : "text-gray-700 dark:text-gray-300"
                                         }`}>
                                         {item.crime}
                                     </span>
                                     <span className={`font-bold ${hoveredCrime === item.crime
-                                        ? "text-red-600 dark:text-red-400"
-                                        : "text-red-500"
+                                        ? crimeType === "assigned"
+                                            ? "text-blue-600 dark:text-blue-400"
+                                            : "text-green-600 dark:text-green-400"
+                                        : crimeType === "assigned"
+                                            ? "text-blue-500"
+                                            : "text-green-500"
                                         }`}>
                                         {item.value}
                                     </span>
