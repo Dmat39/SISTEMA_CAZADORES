@@ -71,6 +71,8 @@ export default function Component() {
   const [loading, setLoading] = useState(false)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
+  const [showTop3, setShowTop3] = useState(false)
+  const [top3Data, setTop3Data] = useState([])
 
   // Obtener parámetros de URL para paginación y filtros
   const searchParams = new URLSearchParams(location.search)
@@ -200,6 +202,66 @@ export default function Component() {
     }
   }
 
+  // Función para cargar top 3 cazadores
+  const loadTop3Cazadores = async () => {
+    setLoading(true)
+    try {
+      const params = {
+        limit: 0, // Traer todos los datos
+        page: 0,
+        userType: "hunter" // Solo cazadores
+      }
+
+      // Usar las fechas globales del DateRangeFilter
+      if (generalStartDate) {
+        params.start = generalStartDate
+      }
+
+      if (generalEndDate) {
+        params.end = generalEndDate
+      }
+
+      // Usar la nueva API dashboard
+      const response = await dashboardData(params)
+
+      if (response.data.status) {
+        const performanceData = response.data.data.performance
+        const apiData = performanceData.data.map(user => ({
+          id: user.id,
+          nombre: `${user.name} ${user.lastname}`,
+          tipo: "Cazador",
+          asignadas: user.asigned,
+          resueltas: user.finished,
+          conversion: user.asigned > 0 ? ((user.finished / user.asigned) * 100).toFixed(1) : 0,
+          avatar: `${user.name.charAt(0)}${user.lastname.charAt(0)}`,
+          dni: user.dni,
+          phone: user.phone
+        }))
+
+        // Ordenar por resueltas (descendente) y en caso de empate, por asignadas (descendente)
+        const top3 = apiData
+          .sort((a, b) => {
+            // Primero ordenar por resueltas (descendente)
+            if (b.resueltas !== a.resueltas) {
+              return b.resueltas - a.resueltas
+            }
+            // En caso de empate, ordenar por asignadas (descendente)
+            return b.asignadas - a.asignadas
+          })
+          .slice(0, 3)
+
+        setTop3Data(top3)
+        setPersonalData(top3)
+        setTotalPages(1)
+        setTotalCount(3)
+      }
+    } catch (error) {
+      console.error('Error loading top 3 cazadores:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // useEffect para cargar datos generales cuando cambien las fechas desde URL
   useEffect(() => {
     loadGeneralData()
@@ -207,12 +269,17 @@ export default function Component() {
 
   // useEffect para cargar datos cuando cambien los filtros
   useEffect(() => {
+    if (showTop3) {
+      // Si está en modo top 3, no recargar automáticamente
+      return
+    }
+    
     const timer = setTimeout(() => {
       loadPersonalData()
     }, searchTerm ? 500 : 0) // Debounce solo si hay búsqueda
 
     return () => clearTimeout(timer)
-  }, [currentPage, limit, searchTerm, userType, generalStartDate, generalEndDate])
+  }, [currentPage, limit, searchTerm, userType, generalStartDate, generalEndDate, showTop3])
 
   // Calcular métricas totales
   const totalAsignadas = currentData.reduce((acc, item) => acc + item.cazadorAsignadas + item.operadorAsignadas, 0)
@@ -271,6 +338,21 @@ export default function Component() {
     }
 
     navigate({ search: searchParams.toString() })
+  }
+
+  // Función para manejar el botón Top 3 Cazadores
+  const handleTop3Toggle = () => {
+    if (showTop3) {
+      // Si está activo, volver a la vista normal
+      setShowTop3(false)
+      setSearchTerm("")
+      loadPersonalData()
+    } else {
+      // Si no está activo, mostrar top 3
+      setShowTop3(true)
+      setSearchTerm("")
+      loadTop3Cazadores()
+    }
   }
 
 
@@ -460,8 +542,15 @@ export default function Component() {
         <div className="mb-6">
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Rendimiento Individual</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Métricas detalladas de Cazadores</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {showTop3 ? 'Top 3 Cazadores' : 'Rendimiento Individual'}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {showTop3 
+                  ? 'Los 3 cazadores con mayor número de incidencias resueltas en el período seleccionado'
+                  : 'Métricas detalladas de Cazadores'
+                }
+              </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
@@ -478,32 +567,46 @@ export default function Component() {
                 className="w-[190px]"
               /> */}
 
+              {/* Botón Top 3 Cazadores */}
+              <button
+                onClick={handleTop3Toggle}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  showTop3
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-700'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm'
+                }`}
+              >
+                {showTop3 ? 'Ver Todos' : 'Top 3 Cazadores'}
+              </button>
+
               {/* Campo de búsqueda moderno */}
-              <div className="relative group flex-1 sm:flex-initial">
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <Search className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+              {!showTop3 && (
+                <div className="relative group flex-1 sm:flex-initial">
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                    <Search className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Buscar persona..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-[320px] sm:w-[320px] h-11 pl-11 pr-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 placeholder-gray-400 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-300 hover:shadow-sm group-hover:shadow-sm"
+                  />
+                  {/* Efecto de búsqueda activa */}
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                      title="Limpiar búsqueda"
+                    >
+                      <svg className="w-3 h-3 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
                 </div>
-                <input
-                  type="text"
-                  placeholder="Buscar persona..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-[320px] sm:w-[320px] h-11 pl-11 pr-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 placeholder-gray-400 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-300 hover:shadow-sm group-hover:shadow-sm"
-                />
-                {/* Efecto de búsqueda activa */}
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
-                    title="Limpiar búsqueda"
-                  >
-                    <svg className="w-3 h-3 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
-              </div>
+              )}
 
             </div>
           </div>
@@ -649,7 +752,7 @@ export default function Component() {
             </div>
 
             {/* Paginación con componente reutilizable */}
-            {totalCount > 0 && (
+            {totalCount > 0 && !showTop3 && (
               <CustomTablePagination
                 count={totalCount}
                 page={currentPage}

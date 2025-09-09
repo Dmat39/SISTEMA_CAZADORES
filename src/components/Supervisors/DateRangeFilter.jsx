@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, ClickAwayListener, Button } from '@mui/material';
-import { useTheme } from '../../contexts/ThemeContext.jsx';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
@@ -11,8 +10,6 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
     const [tempDateRange, setTempDateRange] = useState({ startDate: new Date(), endDate: new Date(), key: 'selection' });
     const [isOpen, setIsOpen] = useState(false);
     const [displayValue, setDisplayValue] = useState('');
-
-    const { isDark } = useTheme();
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -165,12 +162,8 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
 
     // Estilos
     const labelStyles = {
-        position: 'absolute',
-        left: '12px',
-        color: isDark ? '#9ca3af' : '#6b7280',
-        backgroundColor: isDark ? '#2a2a2a' : 'white',
-        transition: 'all 0.2s ease',
-        pointerEvents: 'none',
+        position: 'absolute', left: '12px', color: '#6b7280', backgroundColor: 'white',
+        transition: 'all 0.2s ease', pointerEvents: 'none',
         top: displayValue ? '-8px' : '50%',
         transform: displayValue ? 'translateY(0)' : 'translateY(-50%)',
         fontSize: displayValue ? '12px' : '14px',
@@ -189,18 +182,18 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
                             borderRadius: '10px',
                             padding: '8px 14px',
                             cursor: 'pointer',
-                            backgroundColor: isDark ? '#2a2a2a' : 'white',
+                            backgroundColor: 'white',
                             position: 'relative',
                             display: 'flex',
                             alignItems: 'center',
                             fontSize: '14px',
                             outline: 'none',
                             boxShadow: 'none',
-                            color: displayValue ? (isDark ? '#e5e7eb' : '#374151') : '#9ca3af',
-                            border: isOpen ? `3px solid ${isDark ? '#ea580c' : '#1976d2'}` : `1px solid ${isDark ? '#404040' : '#d1d5db'}`,
+                            color: displayValue ? '#374151' : '#9ca3af',
+                            border: isOpen ? '3px solid #1976d2' : '1px solid #d1d5db',
                             transition: 'all 0.2s ease',
                             '&:hover': {
-                                borderColor: isOpen ? (isDark ? '#ea580c' : '#1976d2') : (isDark ? '#9ca3af' : '#374151'),
+                                borderColor: isOpen ? '#1976d2' : '#374151',
                                 borderWidth: isOpen ? '3px' : '1px'
                             }
                         }}
@@ -213,21 +206,14 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
 
                     {isOpen && (
                         <Box sx={{
-                            position: 'absolute', top: '100%', right: 0, zIndex: 1300,
-                            backgroundColor: isDark ? '#1a1a1a' : 'white',
-                            border: `1px solid ${isDark ? '#404040' : '#d1d5db'}`,
-                            borderRadius: '8px', marginTop: 1, overflow: 'hidden',
-                            boxShadow: isDark
-                                ? '0 10px 15px -3px rgba(255,255,255,0.05), 0 4px 6px -2px rgba(255,255,255,0.03)'
-                                : '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)',
-                            '& .rdrCalendarWrapper': { fontSize: '0.75rem', backgroundColor: isDark ? '#1a1a1a' : 'white', color: isDark ? '#e5e7eb' : 'inherit' },
-                            '& .rdrMonthAndYearPickers select': { backgroundColor: isDark ? '#2a2a2a' : 'white', color: isDark ? '#e5e7eb' : '#111827', borderColor: isDark ? '#404040' : '#d1d5db' },
-                            '& .rdrDayDisabled': { backgroundColor: isDark ? '#111827' : '#f9fafb' },
-                            '& .rdrDayNumber span': { color: isDark ? '#e5e7eb' : '#111827' },
+                            position: 'absolute', top: '100%', right: 0, zIndex: 1300, backgroundColor: 'white',
+                            border: '1px solid #d1d5db', borderRadius: '8px', marginTop: 1, overflow: 'hidden',
+                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                            '& .rdrCalendarWrapper': { fontSize: '0.75rem' },
                             '& .rdrDateDisplayWrapper': { display: 'none' }
                         }}>
-                            <Box sx={{ p: 2, borderBottom: `1px solid ${isDark ? '#404040' : '#e5e7eb'}` }}>
-                                <Typography variant="caption" sx={{ fontSize: '0.7rem', color: isDark ? '#9ca3af' : 'text.secondary', mb: 1, display: 'block' }}>
+                            <Box sx={{ p: 2, borderBottom: '1px solid #e5e7eb' }}>
+                                <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'text.secondary', mb: 1, display: 'block' }}>
                                     Selección rápida:
                                 </Typography>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -235,9 +221,8 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
                                         <Button key={index} size="small" variant="outlined" onClick={() => handleQuickSelect(option)}
                                             sx={{
                                                 fontSize: '0.7rem', py: 0.5, px: 1, minWidth: 'auto',
-                                                borderColor: isDark ? '#404040' : '#d1d5db',
-                                                color: isDark ? '#e5e7eb' : '#374151',
-                                                '&:hover': { borderColor: isDark ? '#ea580c' : '#4052af', backgroundColor: isDark ? '#2a2a2a' : '#f8f9ff' }
+                                                borderColor: '#d1d5db', color: '#374151',
+                                                '&:hover': { borderColor: '#4052af', backgroundColor: '#f8f9ff' }
                                             }}>
                                             {option.label}
                                         </Button>
@@ -247,17 +232,17 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
 
                             <DateRange
                                 editableDateInputs={true} onChange={handleRangeChange} moveRangeOnFirstSelection={false}
-                                ranges={[tempDateRange]} maxDate={new Date()} rangeColors={[isDark ? '#ea580c' : '#4052af']}
+                                ranges={[tempDateRange]} maxDate={new Date()} rangeColors={['#4052af']}
                                 months={1} direction="horizontal" showDateDisplay={false}
                             />
 
-                            <Box sx={{ p: 2, borderTop: `1px solid ${isDark ? '#404040' : '#e5e7eb'}`, display: 'flex', justifyContent: 'space-between', gap: 1 }}>
+                            <Box sx={{ p: 2, borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', gap: 1 }}>
                                 <Button size="small" variant="outlined" onClick={() => setIsOpen(false)}
-                                    sx={{ borderColor: isDark ? '#404040' : '#d1d5db', color: isDark ? '#9ca3af' : '#6b7280', '&:hover': { borderColor: isDark ? '#9ca3af' : '#9ca3af', backgroundColor: isDark ? '#2a2a2a' : '#f9fafb' } }}>
+                                    sx={{ borderColor: '#d1d5db', color: '#6b7280', '&:hover': { borderColor: '#9ca3af', backgroundColor: '#f9fafb' } }}>
                                     Cancelar
                                 </Button>
                                 <Button size="small" variant="contained" onClick={applyDateFilter}
-                                    sx={{ backgroundColor: isDark ? '#ea580c' : '#4052af', '&:hover': { backgroundColor: isDark ? '#c2410c' : '#364091' } }}>
+                                    sx={{ backgroundColor: '#4052af', '&:hover': { backgroundColor: '#364091' } }}>
                                     Aplicar Filtro
                                 </Button>
                             </Box>
@@ -268,7 +253,7 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
 
             {hasActiveFilter() && (
                 <button onClick={clearDateRangeFilter}
-                    className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white text-sm px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="text-gray-500 hover:text-gray-700 text-sm px-2 py-1 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
                     title="Limpiar filtro de rango">
                     ✕
                 </button>
