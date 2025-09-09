@@ -108,3 +108,14 @@ export const deleteIncidenceApi = async (id) => {
     throw error.response ? error.response.data : new Error('Failed to fetch incidence');
   }
 }
+
+// Función para cambiar el estado de una incidencia
+export const updateIncidenceStatusApi = async (id, status) => {
+  try {
+    const response = await mainApi.patch(`/incidence/status/${id}`, { status });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating incidence status:", error);
+    throw error.response ? error.response.data : new Error('Failed to update incidence status');
+  }
+}

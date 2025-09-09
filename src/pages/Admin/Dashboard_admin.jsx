@@ -71,27 +71,29 @@ export default function Component() {
   const [loading, setLoading] = useState(false)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
+  const [showTop3, setShowTop3] = useState(false)
+  const [top3Data, setTop3Data] = useState([])
 
   // Obtener parámetros de URL para paginación y filtros
   const searchParams = new URLSearchParams(location.search)
   const currentPage = parseInt(searchParams.get('page')) || 1
   const limit = parseInt(searchParams.get('limit')) || 10
-  
+
   // Calcular fechas del último mes (30 días desde ayer) por defecto
   const getDefaultDateRange = () => {
     const today = new Date()
     const yesterday = new Date(today)
     yesterday.setDate(today.getDate() - 1)
-    
+
     const startDate = new Date(yesterday)
     startDate.setDate(yesterday.getDate() - 29) // 30 días incluyendo ayer
-    
+
     return {
       start: startDate.toISOString().split('T')[0],
       end: yesterday.toISOString().split('T')[0]
     }
   }
-  
+
   const defaultDates = getDefaultDateRange()
   const generalStartDate = searchParams.get('start') || defaultDates.start
   const generalEndDate = searchParams.get('end') || defaultDates.end
@@ -200,6 +202,66 @@ export default function Component() {
     }
   }
 
+  // Función para cargar top 3 cazadores
+  const loadTop3Cazadores = async () => {
+    setLoading(true)
+    try {
+      const params = {
+        limit: 0, // Traer todos los datos
+        page: 0,
+        userType: "hunter" // Solo cazadores
+      }
+
+      // Usar las fechas globales del DateRangeFilter
+      if (generalStartDate) {
+        params.start = generalStartDate
+      }
+
+      if (generalEndDate) {
+        params.end = generalEndDate
+      }
+
+      // Usar la nueva API dashboard
+      const response = await dashboardData(params)
+
+      if (response.data.status) {
+        const performanceData = response.data.data.performance
+        const apiData = performanceData.data.map(user => ({
+          id: user.id,
+          nombre: `${user.name} ${user.lastname}`,
+          tipo: "Cazador",
+          asignadas: user.asigned,
+          resueltas: user.finished,
+          conversion: user.asigned > 0 ? ((user.finished / user.asigned) * 100).toFixed(1) : 0,
+          avatar: `${user.name.charAt(0)}${user.lastname.charAt(0)}`,
+          dni: user.dni,
+          phone: user.phone
+        }))
+
+        // Ordenar por resueltas (descendente) y en caso de empate, por asignadas (descendente)
+        const top3 = apiData
+          .sort((a, b) => {
+            // Primero ordenar por resueltas (descendente)
+            if (b.resueltas !== a.resueltas) {
+              return b.resueltas - a.resueltas
+            }
+            // En caso de empate, ordenar por asignadas (descendente)
+            return b.asignadas - a.asignadas
+          })
+          .slice(0, 3)
+
+        setTop3Data(top3)
+        setPersonalData(top3)
+        setTotalPages(1)
+        setTotalCount(3)
+      }
+    } catch (error) {
+      console.error('Error loading top 3 cazadores:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // useEffect para cargar datos generales cuando cambien las fechas desde URL
   useEffect(() => {
     loadGeneralData()
@@ -207,12 +269,17 @@ export default function Component() {
 
   // useEffect para cargar datos cuando cambien los filtros
   useEffect(() => {
+    if (showTop3) {
+      // Si está en modo top 3, no recargar automáticamente
+      return
+    }
+    
     const timer = setTimeout(() => {
       loadPersonalData()
     }, searchTerm ? 500 : 0) // Debounce solo si hay búsqueda
 
     return () => clearTimeout(timer)
-  }, [currentPage, limit, searchTerm, userType, generalStartDate, generalEndDate])
+  }, [currentPage, limit, searchTerm, userType, generalStartDate, generalEndDate, showTop3])
 
   // Calcular métricas totales
   const totalAsignadas = currentData.reduce((acc, item) => acc + item.cazadorAsignadas + item.operadorAsignadas, 0)
@@ -273,6 +340,21 @@ export default function Component() {
     navigate({ search: searchParams.toString() })
   }
 
+  // Función para manejar el botón Top 3 Cazadores
+  const handleTop3Toggle = () => {
+    if (showTop3) {
+      // Si está activo, volver a la vista normal
+      setShowTop3(false)
+      setSearchTerm("")
+      loadPersonalData()
+    } else {
+      // Si no está activo, mostrar top 3
+      setShowTop3(true)
+      setSearchTerm("")
+      loadTop3Cazadores()
+    }
+  }
+
 
 
   // Debounce para la búsqueda
@@ -316,7 +398,7 @@ export default function Component() {
       </div>
 
       {/* Métricas principales - Datos del endpoint dashboard */}
-      <div className="grid gap-4 md:grid-cols-6 lg:grid-cols-6">
+      <div className="grid gap-4 md:grid-cols-5 lg:grid-cols-5">
         {/* Total Incidencias */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -360,7 +442,7 @@ export default function Component() {
         </div>
 
         {/* Incidencias Finalizadas */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
+        {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Finalizadas</h3>
             <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
@@ -378,12 +460,12 @@ export default function Component() {
               </>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* Incidencias Completadas */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Completado</h3>
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Concretadas</h3>
             <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div>
@@ -395,7 +477,7 @@ export default function Component() {
             ) : (
               <>
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">{generalData.incidenciasCompletadas.toLocaleString()}</div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Incidencias completadas</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Incidencias Concretadas</p>
               </>
             )}
           </div>
@@ -445,132 +527,30 @@ export default function Component() {
       </div>
 
       {/* Gráficos principales */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <IncidentChartToggle />
-        <CrimeRadarDashboard />
+      <div className="grid gap-6 md:grid-cols-5">
+        <div className="col-span-5 md:col-span-3">
+          <IncidentChartToggle />
+        </div>
+        <div className="col-span-5 md:col-span-2">
+          <CrimeRadarDashboard />
+        </div>
       </div>
 
-      {/* Análisis detallado */}
-      {/* <div className="grid gap-6 md:grid-cols-3">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Tasa de Conversión por Tipo</h3>
-            <p className="text-sm text-gray-500">Eficiencia de resolución</p>
-          </div>
-          <div>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={conversionData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {conversionData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => `${value}%`} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex justify-center space-x-4 mt-4">
-              {conversionData.map((item, index) => (
-                <div key={item.name} className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="text-sm">
-                    {item.name}: {item.value}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Resumen por Usuario</h3>
-            <p className="text-sm text-gray-500">Total de incidencias atendidas</p>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Users className="h-5 w-5 text-blue-600" />
-                <div>
-                  <p className="font-medium">Cazadores</p>
-                  <p className="text-sm text-gray-500">Especialistas</p>
-                </div>
-              </div>
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
-                {cazadorTotal.toLocaleString()}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Users className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="font-medium">Operadores</p>
-                  <p className="text-sm text-gray-500">Soporte general</p>
-                </div>
-              </div>
-              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
-                {operadorTotal.toLocaleString()}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Indicadores Clave</h3>
-            <p className="text-sm text-gray-500">KPIs principales del período</p>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Promedio diario</span>
-              <span className="text-sm">{Math.round(totalAtendidas / (timeFilter === "weekly" ? 28 : 180))}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Mejor período</span>
-              <span className="text-sm">
-                {
-                  currentData.reduce((max, item) =>
-                    item.cazadorAtendidas + item.operadorAtendidas > max.cazadorAtendidas + max.operadorAtendidas
-                      ? item
-                      : max,
-                  ).period
-                }
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Pendientes</span>
-              <span className="border border-orange-600 text-orange-600 px-2 py-1 rounded text-sm">
-                {totalAsignadas - totalAtendidas}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Estado</span>
-              <span className={`px-2 py-1 rounded text-sm ${Number(tendencia) >= 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                {Number(tendencia) >= 0 ? "Mejorando" : "Declinando"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>  */}
 
       {/* Tabla detallada por persona */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-900/20 transition-colors duration-200">
         <div className="mb-6">
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Rendimiento Individual</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Métricas detalladas de Cazadores</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {showTop3 ? 'Top 3 Cazadores' : 'Rendimiento Individual'}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {showTop3 
+                  ? 'Los 3 cazadores con mayor número de incidencias resueltas en el período seleccionado'
+                  : 'Métricas detalladas de Cazadores'
+                }
+              </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
@@ -587,32 +567,46 @@ export default function Component() {
                 className="w-[190px]"
               /> */}
 
+              {/* Botón Top 3 Cazadores */}
+              <button
+                onClick={handleTop3Toggle}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  showTop3
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-700'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm'
+                }`}
+              >
+                {showTop3 ? 'Ver Todos' : 'Top 3 Cazadores'}
+              </button>
+
               {/* Campo de búsqueda moderno */}
-              <div className="relative group flex-1 sm:flex-initial">
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <Search className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+              {!showTop3 && (
+                <div className="relative group flex-1 sm:flex-initial">
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                    <Search className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Buscar persona..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-[320px] sm:w-[320px] h-11 pl-11 pr-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 placeholder-gray-400 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-300 hover:shadow-sm group-hover:shadow-sm"
+                  />
+                  {/* Efecto de búsqueda activa */}
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                      title="Limpiar búsqueda"
+                    >
+                      <svg className="w-3 h-3 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
                 </div>
-                <input
-                  type="text"
-                  placeholder="Buscar persona..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-[320px] sm:w-[320px] h-11 pl-11 pr-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 placeholder-gray-400 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-300 hover:shadow-sm group-hover:shadow-sm"
-                />
-                {/* Efecto de búsqueda activa */}
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
-                    title="Limpiar búsqueda"
-                  >
-                    <svg className="w-3 h-3 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
-              </div>
+              )}
 
             </div>
           </div>
@@ -758,7 +752,7 @@ export default function Component() {
             </div>
 
             {/* Paginación con componente reutilizable */}
-            {totalCount > 0 && (
+            {totalCount > 0 && !showTop3 && (
               <CustomTablePagination
                 count={totalCount}
                 page={currentPage}

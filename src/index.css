@@ -155,3 +155,21 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Scrollbar invisible para el Kanban */
+.scrollbar-hide {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  -webkit-scrollbar: none;
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scrolling */
+.scrollbar-hide {
+  scroll-behavior: smooth;
+}
