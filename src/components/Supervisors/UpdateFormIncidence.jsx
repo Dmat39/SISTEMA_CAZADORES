@@ -8,6 +8,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { getIncidenceCodesApi } from '../../api/operador/incidenceApi';
 import { getAllCrimesApi } from '../../api/crime/CrimeApi';
 import { useTheme } from '../../contexts/ThemeContext';
+import MapSelector from '../MapSelector';
 
 const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) => {
     const { zones = [], communications = [] } = dataSelect || {};
@@ -53,6 +54,8 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
         latitude: '',
         longitude: '',
         crimeId: '',
+        homeLatitude: null,
+        homeLongitude: null,
     });
 
     // Precargar datos cuando se abra el modal
@@ -75,6 +78,8 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                 longitude: data.longitude || '',
                 id: data.id,
                 crimeId: data.crimeId || '',
+                homeLatitude: data.homeLatitude || null,
+                homeLongitude: data.homeLongitude || null,
             });
         }
     }, [data]);
@@ -129,6 +134,14 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleLocationSelect = (lat, lng) => {
+        setForm((prev) => ({
+            ...prev,
+            homeLatitude: lat,
+            homeLongitude: lng,
+        }));
+    };
+
     const handleCodeSelection = (event, selectedOption) => {
         if (selectedOption) {
             if (typeof selectedOption === 'object') {
@@ -169,10 +182,19 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
             ?.millisecond(0)
             ?.toISOString();
 
-        onSubmit?.({
+        const payload = {
             ...form,
             date: combinedDateTime,
-        });
+            homeLatitude: form.homeLatitude && !isNaN(form.homeLatitude) ? Number(form.homeLatitude) : null,
+            homeLongitude: form.homeLongitude && !isNaN(form.homeLongitude) ? Number(form.homeLongitude) : null,
+        };
+
+        // Solo incluir el código si tiene valor
+        if (!form.code || !form.code.trim()) {
+            delete payload.code;
+        }
+
+        onSubmit?.(payload);
 
     };
 
@@ -460,6 +482,25 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                         className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
                                     />
                                 </div>
+
+                                {/* Ubicación en el mapa - Solo visible cuando el estado es "previous" */}
+                                {form.status === 'previous' && (
+                                    <div className="mb-4">
+                                        <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                                            Ubicación del Incidente
+                                        </label>
+                                        <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                            Haz clic en el mapa para actualizar la ubicación del incidente
+                                        </p>
+                                        <MapSelector
+                                            latitude={form.homeLatitude}
+                                            longitude={form.homeLongitude}
+                                            onLocationSelect={handleLocationSelect}
+                                            height="250px"
+                                            isDark={isDark}
+                                        />
+                                    </div>
+                                )}
 
                                 <div className="flex justify-end">
                                     <button

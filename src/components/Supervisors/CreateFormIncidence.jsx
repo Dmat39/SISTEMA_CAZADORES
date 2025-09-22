@@ -16,6 +16,7 @@ import utc from "dayjs/plugin/utc";
 
 import { getIncidenceCodesApi } from "../../api/operador/incidenceApi";
 import { useTheme } from "../../contexts/ThemeContext";
+import MapSelector from "../MapSelector";
 
 // Extiende dayjs
 dayjs.extend(utc);
@@ -27,6 +28,8 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     description: "",
     date: null,
     time: null,
+    homeLatitude: null,
+    homeLongitude: null,
   });
 
   const [inputValue, setInputValue] = useState("");
@@ -63,6 +66,14 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleLocationSelect = (lat, lng) => {
+    setFormData((prev) => ({
+      ...prev,
+      homeLatitude: lat,
+      homeLongitude: lng,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -81,14 +92,28 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
       .format("YYYY-MM-DDTHH:mm:ss[Z]");
 
     const payload = {
-      code,
       name,
       description,
       date: combinedDateTime,
+      homeLatitude: formData.homeLatitude && !isNaN(formData.homeLatitude) ? Number(formData.homeLatitude) : null,
+      homeLongitude: formData.homeLongitude && !isNaN(formData.homeLongitude) ? Number(formData.homeLongitude) : null,
     };
 
+    // Solo incluir el código si tiene valor
+    if (code && code.trim()) {
+      payload.code = code.trim();
+    }
+
     onSubmit(payload);
-    setFormData({ code: "", name: "", description: "", date: null, time: null });
+    setFormData({
+      code: "",
+      name: "",
+      description: "",
+      date: null,
+      time: null,
+      homeLatitude: null,
+      homeLongitude: null,
+    });
     onClose();
     setLoading(false);
   };
@@ -270,6 +295,23 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   className={`block p-2.5 w-full text-[16px] rounded-lg focus:ring-gray-500 focus:border-gray-500 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400 hover:border-gray-500' : 'bg-gray-50 border-gray-300 text-gray-900 hover:border-gray-900'}`}
                   placeholder="Descripción opcional..."
                 ></textarea>
+              </div>
+
+              {/* Ubicación en el mapa */}
+              <div className="col-span-2">
+                <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                  Ubicación del Incidente
+                </label>
+                <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Haz clic en el mapa para seleccionar la ubicación del incidente
+                </p>
+                <MapSelector
+                  latitude={formData.homeLatitude}
+                  longitude={formData.homeLongitude}
+                  onLocationSelect={handleLocationSelect}
+                  height="250px"
+                  isDark={isDark}
+                />
               </div>
             </div>
 

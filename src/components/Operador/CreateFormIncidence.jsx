@@ -24,6 +24,7 @@ import {
 } from "../../api/operador/incidenceApi";
 import { getAllCrimesApi } from "../../api/crime/CrimeApi";
 import { useTheme } from "../../contexts/ThemeContext";
+import MapSelector from "../MapSelector";
 
 // Extender dayjs con soporte UTC
 dayjs.extend(utc);
@@ -63,6 +64,8 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     latitud: "",
     longitud: "",
     crimeId: "",
+    homeLatitude: null,
+    homeLongitude: null,
   });
 
   // Estados auxiliares
@@ -106,6 +109,15 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     }
   };
 
+  // Handler para selección de ubicación en el mapa
+  const handleLocationSelect = (lat, lng) => {
+    setFormData((prev) => ({
+      ...prev,
+      homeLatitude: lat,
+      homeLongitude: lng,
+    }));
+  };
+
   // Handler para envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -127,7 +139,6 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
       .format("YYYY-MM-DDTHH:mm:ss[Z]");
 
     const payload = {
-      code: code?.trim() || null,
       name,
       description,
       communicationId,
@@ -136,7 +147,14 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
       latitude,
       longitude,
       crimeId,
+      homeLatitude: formData.homeLatitude && !isNaN(formData.homeLatitude) ? Number(formData.homeLatitude) : null,
+      homeLongitude: formData.homeLongitude && !isNaN(formData.homeLongitude) ? Number(formData.homeLongitude) : null,
     };
+
+    // Solo incluir el código si tiene valor
+    if (code && code.trim()) {
+      payload.code = code.trim();
+    }
 
     onSubmit(payload);
     resetForm();
@@ -155,6 +173,8 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
       latitude: "",
       longitude: "",
       crimeId: "",
+      homeLatitude: null,
+      homeLongitude: null,
     });
     setLoading(false);
     onClose();
@@ -523,6 +543,23 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                     placeholder="Descripción opcional..."
                     required
                   ></textarea>
+                </div>
+
+                {/* Ubicación en el mapa */}
+                <div className="col-span-2">
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                    Ubicación del Incidente
+                  </label>
+                  <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Haz clic en el mapa para seleccionar la ubicación del incidente
+                  </p>
+                  <MapSelector
+                    latitude={formData.homeLatitude}
+                    longitude={formData.homeLongitude}
+                    onLocationSelect={handleLocationSelect}
+                    height="250px"
+                    isDark={isDark}
+                  />
                 </div>
               </div>
 
