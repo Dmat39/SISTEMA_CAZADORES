@@ -46,6 +46,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
         code: '',
         name: '',
         description: '',
+        plate: '',
         zoneId: '',
         communicationId: '',
         date: '',
@@ -69,6 +70,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
             setForm({
                 code: data.code || '',
                 name: data.name || '',
+                plate: data.plate || '',
                 description: data.description || '',
                 zoneId: data.zone?.id || data.zoneId || '',
                 communicationId: data.communication?.id || data.communicationId || '',
@@ -326,6 +328,19 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                 </div>
 
                                 <div className="mb-4">
+                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Placa</label>
+                                    <input
+                                        type="text"
+                                        name="plate"
+                                        value={form.plate}
+                                        onChange={handleChange}
+                                        onKeyDown={e => e.key === 'Enter' && e.preventDefault()}
+                                        placeholder="Ingrese la placa del vehículo"
+                                        className={`w-full border px-3 py-2 rounded mt-1 uppercase tracking-wide ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                    />
+                                </div>
+
+                                <div className="mb-4">
                                     <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Descripción</label>
                                     <textarea
                                         name="description"
@@ -487,10 +502,10 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                 {form.status === 'previous' && (
                                     <div className="mb-4">
                                         <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
-                                            Ubicación del Incidente
+                                            Ubicación del infractor
                                         </label>
                                         <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                            Haz clic en el mapa para actualizar la ubicación del incidente
+                                            Haz clic en el mapa para actualizar la ubicación del infractor
                                         </p>
                                         <MapSelector
                                             latitude={form.homeLatitude}

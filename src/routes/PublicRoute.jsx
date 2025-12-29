@@ -13,6 +13,8 @@ const PublicRouter = ({ element }) => {
     switch (normalizedRole) {
       case 'administrator':
         return '/dashboard/admin/incidencia';
+      case 'visualizer':
+        return '/dashboard/visualizer/incidencia';
       case 'supervisor':
         return '/dashboard/supervisors/incidencia';
       case 'operator':

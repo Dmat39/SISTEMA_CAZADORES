@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from 'react-redux';
 import { getIncidenceByIdApi, updateIncidenceApi } from "../../api/operador/incidenceApi";
 import { createSubRegistroIncidenceApi } from "../../api/operador/registroIncidenceApi";
 import Icon from "@mdi/react";
@@ -12,6 +13,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import UpdateCodeModal from "../../components/Operador/UpdateCodeModal";
 import { toast } from "sonner";
 import { useTheme } from "../../contexts/ThemeContext";
+import { isVisualizer } from '../../lib/utils.js';
 
 const IncidenciaDetalles = () => {
   const [incidencia, setIncidencia] = useState(null);
@@ -20,6 +22,8 @@ const IncidenciaDetalles = () => {
   const navigate = useNavigate();
   const hasFetched = useRef(false);
   const { isDark } = useTheme();
+  const { role } = useSelector((state) => state.auth);
+  const readOnly = isVisualizer(role);
 
   // Mapeo de estado a estilos y texto
   const formatStatus = (status) => {
@@ -120,12 +124,12 @@ const IncidenciaDetalles = () => {
                     {statusInfo.text}
                   </span>
                   <span
-                    onClick={() => setShowCodeModal(true)}
-                    className={`text-sm px-4 py-1 rounded-full font-medium cursor-pointer whitespace-nowrap w-auto ${isDark ? 'bg-gray-600 text-gray-200' : 'bg-gray-100 text-gray-900'}`}
+                    onClick={() => { if (!readOnly) setShowCodeModal(true); }}
+                    className={`text-sm px-4 py-1 rounded-full font-medium ${readOnly ? 'cursor-default' : 'cursor-pointer'} whitespace-nowrap w-auto ${isDark ? 'bg-gray-600 text-gray-200' : 'bg-gray-100 text-gray-900'}`}
                   >
                     {code || "Sin Código"}
                   </span>
-                  {code && (
+                  {code && !readOnly && (
                     <a
                       target="_blank"
                       rel="noopener noreferrer"
@@ -167,12 +171,14 @@ const IncidenciaDetalles = () => {
             </div>
 
             <div className="flex gap-3 mt- md:mt-0">
-              <button
-                className={`flex items-center gap-2 text-white hover:bg-[#32A3B5] transition px-4.5 py-2.5 rounded-lg text-sm cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-gray-900'}`}
-                onClick={() => setShowRegistroForm(true)}
-              >
-                <Icon path={icons.plus} size={0.8} /> Agregar Registro
-              </button>
+              {!readOnly && (
+                <button
+                  className={`flex items-center gap-2 text-white hover:bg-[#32A3B5] transition px-4.5 py-2.5 rounded-lg text-sm cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-gray-900'}`}
+                  onClick={() => setShowRegistroForm(true)}
+                >
+                  <Icon path={icons.plus} size={0.8} /> Agregar Registro
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -189,12 +195,12 @@ const IncidenciaDetalles = () => {
           </div>
 
           {/* Listado de Registros */}
-          <RegistrosList records={records} fetchRecords={fetchIncidencia} />
+          <RegistrosList records={records} fetchRecords={fetchIncidencia} readOnly={readOnly} />
         </div>
       </div>
 
       {/* Modal de Formulario */}
-      {showRegistroForm && (
+      {!readOnly && showRegistroForm && (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <CreateFormRegister
             incidenceId={id}
@@ -204,19 +210,21 @@ const IncidenciaDetalles = () => {
         </LocalizationProvider>
       )}
 
-      <UpdateCodeModal
-        isOpen={showCodeModal}
-        onClose={() => setShowCodeModal(false)}
-        data={incidencia}
-        onSubmit={async (payload) => {
-          try {
-            await updateIncidenceApi(payload, payload.id);
-            fetchIncidencia();
-          } catch (err) {
-            toast.error(`Error actualizando código: ${err?.response?.data?.message || err.message || 'Error desconocido'}`);
-          }
-        }}
-      />
+      {!readOnly && (
+        <UpdateCodeModal
+          isOpen={showCodeModal}
+          onClose={() => setShowCodeModal(false)}
+          data={incidencia}
+          onSubmit={async (payload) => {
+            try {
+              await updateIncidenceApi(payload, payload.id);
+              fetchIncidencia();
+            } catch (err) {
+              toast.error(`Error actualizando código: ${err?.response?.data?.message || err.message || 'Error desconocido'}`);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -128,7 +128,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
             boxShadow: 24,
             p: 4,
             width: "100%",
-            maxWidth: 500,
+            maxWidth: 600,
             maxHeight: "90vh",
             overflowY: "auto",
           }}
@@ -300,10 +300,10 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
               {/* Ubicación en el mapa */}
               <div className="col-span-2">
                 <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
-                  Ubicación del Incidente
+                  Ubicación del infractor
                 </label>
                 <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Haz clic en el mapa para seleccionar la ubicación del incidente
+                  Haz clic en el mapa para seleccionar la ubicación del infractor
                 </p>
                 <MapSelector
                   latitude={formData.homeLatitude}

@@ -9,7 +9,7 @@ import { useState } from "react";
 import UpdateFormRecord from "../Record/UpdateFormRecord";
 import { useTheme } from "../../contexts/ThemeContext";
 
-const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
+const RegistrosList = ({ records = [], fetchRecords = () => {}, readOnly = false }) => {
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -96,20 +96,24 @@ const RegistrosList = ({ records = [], fetchRecords = () => {} }) => {
                   </div>
                 </div>
                 <div className="flex gap-3 items-center shrink-0">
-                  <button
-                    onClick={() => handleEdit(rec)}
-                    className={`cursor-pointer transition ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
-                    title="Editar registro"
-                  >
-                    <Icon path={icons.edit} size={0.8} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(rec)}
-                    className={`cursor-pointer transition ${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-800'}`}
-                    title="Eliminar registro"
-                  >
-                    <Icon path={icons.delete} size={0.8} />
-                  </button>
+                {!readOnly && (
+                    <>
+                      <button
+                        onClick={() => handleEdit(rec)}
+                        className={`cursor-pointer transition ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
+                        title="Editar registro"
+                      >
+                        <Icon path={icons.edit} size={0.8} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(rec)}
+                        className={`cursor-pointer transition ${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-800'}`}
+                        title="Eliminar registro"
+                      >
+                        <Icon path={icons.delete} size={0.8} />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 

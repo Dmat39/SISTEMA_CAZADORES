@@ -118,14 +118,14 @@ const Navbar = () => {
                   className: 'dark:bg-gray-800 dark:text-white'
                 }}
               >
-                {(
+                {/* {(
                   <MenuItem 
                     onClick={handleConfiguration}
                     className="dark:hover:bg-gray-700 dark:text-white"
                   >
                     Configuración
                   </MenuItem>
-                )}
+                )} */}
                 <MenuItem 
                   onClick={handleLogout}
                   className="dark:hover:bg-gray-700 dark:text-white"

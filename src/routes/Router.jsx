@@ -63,6 +63,20 @@ export default function Router() {
           <Route path="cazadores" element={<CazadoresAdmin />} />
         </Route>
 
+        {/* Rutas protegidas - VISUALIZER (mismas vistas que admin pero solo dashboard + incidencias) */}
+        <Route
+          path="/dashboard/visualizer"
+          element={
+            <PrivateRoute requiredRole="visualizer">
+              <DashboardLayoutAdmin />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<DashboardAdmin />} />
+          <Route path="incidencia" element={<Incidence />} />
+          <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
+        </Route>
+
         {/* Rutas protegidas - SUPERVISOR */}
         <Route
           path="/dashboard/supervisors"

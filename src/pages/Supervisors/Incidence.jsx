@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import FilterCrimer from '../../components/Supervisors/FilterCrimer.jsx';
 import DateRangeFilter from '../../components/Supervisors/DateRangeFilter.jsx';
 import StatusFilter from '../../components/Supervisors/StatusFilter.jsx';
+import { isVisualizer } from '../../lib/utils.js';
 
 const Incidence = () => {
     const { role } = useSelector((state) => state.auth);
@@ -126,7 +127,7 @@ const Incidence = () => {
         fetched.current = true;
         // Solo cargar datos auxiliares en el primer mount
         // fetchIncidents se maneja en los otros useEffect
-        fetchOperators();
+        if (!isVisualizer(role)) fetchOperators();
         fetchZones();
         fetchCommunications();
     }, []);
@@ -225,14 +226,16 @@ const Incidence = () => {
                         </div>
 
                         {/* Botón agregar */}
-                        <button
-                            onClick={() => setShowForm(true)}
-                            className="w-full sm:w-auto cursor-pointer flex flex-row items-center justify-center text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out whitespace-nowrap"
-                            type="button"
-                        >   <Icon path={icons.add} size={1} />
-                            <span className="block sm:hidden">Agregar Incidencias</span>
-                            <span className="hidden sm:block"> Agregar</span>
-                        </button>
+                        {!isVisualizer(role) && (
+                          <button
+                              onClick={() => setShowForm(true)}
+                              className="w-full sm:w-auto cursor-pointer flex flex-row items-center justify-center text-white bg-gray-900 hover:bg-[#32A3B5] focus:ring-4 focus:outline-none focus:[#32A3B5] font-medium rounded-lg text-sm px-4 py-2.5 text-center transition-all duration-300 ease-in-out whitespace-nowrap"
+                              type="button"
+                          >   <Icon path={icons.add} size={1} />
+                              <span className="block sm:hidden">Agregar Incidencias</span>
+                              <span className="hidden sm:block"> Agregar</span>
+                          </button>
+                        )}
                     </div>
                 </div>
                 {/* <hr className='border-gray-200' /> */}
@@ -261,6 +264,7 @@ const Incidence = () => {
                                                 <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Nombre</th>
                                                 <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Crimen</th>
                                                 <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Descripción</th>
+                                                <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Placa</th>
                                                 <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Zona</th>
                                                 <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Medio</th>
                                                 <th className="px-3 py-1 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider transition-colors duration-200">Fecha incidente</th>
@@ -284,6 +288,8 @@ const Incidence = () => {
                                                         const normalizedRole = role?.toLowerCase();
                                                         if (normalizedRole === 'administrator') {
                                                             navigate("/dashboard/admin/incidencia/detalle");
+                                                        } else if (normalizedRole === 'visualizer') {
+                                                            navigate("/dashboard/visualizer/incidencia/detalle");
                                                         } else {
                                                             navigate("/dashboard/supervisors/incidencia/detalle");
                                                         }
@@ -306,6 +312,9 @@ const Incidence = () => {
                                                             const value = item.description || '—';
                                                             return typeof value === 'string' && value.length > 50 ? value.slice(0, 50) + ' . . .' : value;
                                                         })()}
+                                                    </td>
+                                                    <td className="px-3 py-1 text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
+                                                        {item.plate ?? '—'}
                                                     </td>
                                                     <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 cursor-pointer transition-colors duration-200">
                                                         {item.zone?.name ?? '—'}
@@ -385,6 +394,7 @@ const Incidence = () => {
                                                     </td>
                                                     <td className="px-3 py-1  text-sm text-gray-800 dark:text-gray-200 space-x-2 transition-colors duration-200">
                                                         <div className="flex justify-center">
+                                                        {!isVisualizer(role) && (
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
@@ -401,6 +411,8 @@ const Incidence = () => {
                                                                     className="text-black-600 dark:text-gray-300 hover:text-black-800 dark:hover:text-white"
                                                                 />
                                                             </button>
+                                                            )}
+                                                            {!isVisualizer(role)  && (
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
@@ -415,6 +427,8 @@ const Incidence = () => {
                                                                     className="text-blue-600 hover:text-blue-800"
                                                                 />
                                                             </button>
+                                                            )}
+                                                            {!isVisualizer(role)  && (
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
@@ -429,6 +443,7 @@ const Incidence = () => {
                                                                     className="text-red-600 hover:text-red-800"
                                                                 />
                                                             </button>
+                                                            )}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -457,12 +472,14 @@ const Incidence = () => {
                                     <p className="text-sm sm:text-base text-gray-500 mb-6 max-w-md">
                                         Aún no se han reportado incidencias por parte de los operadores
                                     </p>
+                                    {!isVisualizer(role)  && (
                                     <button
                                         onClick={() => setShowForm(true)}
                                         className="inline-flex items-center px-4 py-2 bg-gray-900 hover:bg-[#32A3B5] text-white rounded-lg text-sm font-medium transition-colors duration-200"
                                     >
                                         Crear primera incidencia
                                     </button>
+                                    )}
                                 </div>
                             </div>
                         )

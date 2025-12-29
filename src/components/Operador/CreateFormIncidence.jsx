@@ -56,6 +56,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     code: "",
     name: "",
+    plate: "",
     communicationId: "",
     zoneId: "",
     date: null,
@@ -124,7 +125,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     setError(null);
     setLoading(true);
 
-    const { code, name, date, time, description, communicationId, zoneId, latitude, longitude, crimeId } = formData;
+    const { code, name, date, time, description, communicationId, zoneId, latitude, longitude, crimeId,plate } = formData;
 
     if (!name || !date || !time || !communicationId || !zoneId || !crimeId) {
       setError("Por favor, completa todos los campos obligatorios (*)");
@@ -140,6 +141,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
     const payload = {
       name,
+      plate,
       description,
       communicationId,
       zoneId,
@@ -165,6 +167,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     setFormData({
       code: "",
       name: "",
+      plate,
       communicationId: "",
       zoneId: "",
       date: null,
@@ -241,7 +244,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
               boxShadow: 24,
               p: 4,
               width: "100%",
-              maxWidth: 500,
+              maxWidth: 600,
               maxHeight: "90vh",
               overflowY: "auto",
             }}
@@ -344,6 +347,18 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                     className={`border text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400 hover:border-gray-500' : 'bg-gray-50 border-gray-300 text-gray-900 hover:border-gray-900'}`}
                     placeholder="Ingresa el título de la incidencia"
                     required
+                  />
+                </div>
+
+                <div className="col-span-2 sm:col-span-1">
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Placa</label>
+                  <input
+                    type="text"
+                    name="plate"
+                    value={formData.plate}
+                    onChange={handleChange}
+                    className={`border text-[16px] rounded-lg block w-full px-2.5 py-4 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900'}`}
+                    placeholder="Ejemplo: ABC123"
                   />
                 </div>
 
@@ -548,10 +563,10 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                 {/* Ubicación en el mapa */}
                 <div className="col-span-2">
                   <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
-                    Ubicación del Incidente
+                    Ubicación del Infractor
                   </label>
                   <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Haz clic en el mapa para seleccionar la ubicación del incidente
+                    Haz clic en el mapa para seleccionar la ubicación del infractor
                   </p>
                   <MapSelector
                     latitude={formData.homeLatitude}
