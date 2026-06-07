@@ -38,10 +38,10 @@ export default function AppNavbar() {
   const { title, subtitle, live } = usePageTitle();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center border-b border-gray-300 dark:border-white/10 shadow-sm transition-colors duration-200">
+    <nav className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center border-b border-gray-200 dark:border-white/10 shadow-sm transition-colors duration-200">
 
       {/* ── Logo (desktop) ── */}
-      <div className="hidden sm:flex items-center justify-center w-60 h-full shrink-0 bg-white dark:bg-[#0f172a] border-r border-gray-200 dark:border-white/10">
+      <div className="hidden sm:flex items-center justify-center w-60 h-full shrink-0 bg-slate-50 dark:bg-[#0f172a] border-r border-slate-200 dark:border-white/10">
         <img
           src={isDark ? logoDark : logoLight}
           alt="San Juan de Lurigancho"
@@ -50,7 +50,7 @@ export default function AppNavbar() {
       </div>
 
       {/* ── Navbar body ── */}
-      <div className="flex flex-1 items-center px-4 gap-3 bg-white/90 dark:bg-[#0a0f1e]/90 backdrop-blur-xl h-full">
+      <div className="flex flex-1 items-center px-4 gap-3 bg-slate-50/95 dark:bg-[#0a0f1e]/90 backdrop-blur-xl h-full">
 
         {/* Mobile: hamburger */}
         <button

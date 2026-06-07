@@ -17,7 +17,7 @@ const TableForm = ({
   return (
     <div className="pt-6">
       <div className="overflow-x-auto shadow rounded-lg max-h-[60vh] h-full border border-gray-200 dark:border-white/10">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-white/10 bg-white dark:bg-[#111827]">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-white/10 bg-slate-50 dark:bg-[#111827]">
           <thead className="sticky top-0 bg-gray-50 dark:bg-[#1e293b] z-10">
             <tr>
               {columns.map((col, idx) => (
@@ -35,7 +35,7 @@ const TableForm = ({
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-white dark:bg-[#111827]">
+          <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-slate-50 dark:bg-[#111827]">
             {actualData.length > 0 ? (
               actualData.map((item, idx) => (
                 <tr

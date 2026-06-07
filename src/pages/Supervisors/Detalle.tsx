@@ -15,6 +15,7 @@ import { ArrowLeft, Plus, Calendar, Clock, Info } from 'lucide-react';
 import { useSetPageTitle } from '../../contexts/PageTitleContext';
 
 const STATUS_MAP = {
+    previous:  { label: 'En Proceso',  classes: 'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-400' },
     process:   { label: 'En Proceso',  classes: 'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-400' },
     completed: { label: 'Completado',  classes: 'bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400' },
     finished:  { label: 'Finalizado',  classes: 'bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-400' },
@@ -84,7 +85,7 @@ const IncidenciaDetalles = () => {
 
     return (
         <div className="px-4 py-6">
-            <div className="rounded-xl bg-white dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-6">
+            <div className="rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-6">
 
                 {/* Header */}
                 <div className="border-b border-gray-200 dark:border-white/10 pb-5 mb-6">

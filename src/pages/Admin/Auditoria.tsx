@@ -90,7 +90,7 @@ export default function Auditoria() {
 
   return (
     <div className="p-2 sm:p-4 h-[calc(100vh-5rem)] flex flex-col">
-      <div className="flex-1 min-h-0 rounded-xl bg-white dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
+      <div className="flex-1 min-h-0 rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
 
         <div className="flex items-center justify-between">
           <div>
@@ -137,7 +137,7 @@ export default function Auditoria() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
+                <tbody className="bg-slate-50 dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
                   {logs.map((log, idx) => (
                     <tr key={log.id ?? idx} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
 

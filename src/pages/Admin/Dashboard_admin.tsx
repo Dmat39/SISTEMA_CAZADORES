@@ -213,7 +213,7 @@ export default function DashboardAdmin() {
 
         {/* ── Stats bar + Date filter ──────────────────────────────── */}
         <div
-          className="animate-in fade-in-0 fill-mode-both flex items-center gap-4 bg-white dark:bg-[#111827] shadow-sm rounded-xl border border-gray-200 dark:border-white/10 px-5 py-4"
+          className="animate-in fade-in-0 fill-mode-both flex items-center gap-4 bg-slate-50 dark:bg-[#111827] shadow-sm rounded-xl border border-gray-200 dark:border-white/10 px-5 py-4"
           style={{ animationDuration: '400ms', fontFamily: FONT.body }}
         >
           {/* Inline stats — spread evenly */}
@@ -260,7 +260,7 @@ export default function DashboardAdmin() {
         {/* ── Resolution Bar ───────────────────────────────────────── */}
         {!loadingGeneral && resolution.total > 0 ? (
           <div
-            className="flex items-center gap-4 px-4 py-2 bg-white dark:bg-[#111827] shadow-sm rounded-xl border border-gray-200 dark:border-white/10"
+            className="flex items-center gap-4 px-4 py-2 bg-slate-50 dark:bg-[#111827] shadow-sm rounded-xl border border-gray-200 dark:border-white/10"
             style={{ fontFamily: FONT.body }}
           >
             <Zap className="h-4 w-4 text-orange-500 shrink-0" strokeWidth={2.5} />
@@ -305,7 +305,7 @@ export default function DashboardAdmin() {
         {/* ── Performance Table ─────────────────────────────────────── */}
         <div
           className="animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both
-                     bg-white dark:bg-[#111827] shadow-sm rounded-2xl
+                     bg-slate-50 dark:bg-[#111827] shadow-sm rounded-2xl
                      border border-gray-200 dark:border-white/10 overflow-hidden"
           style={{ animationDuration: '500ms', animationDelay: '400ms' }}
         >

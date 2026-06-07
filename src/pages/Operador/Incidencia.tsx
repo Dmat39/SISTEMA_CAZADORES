@@ -83,7 +83,7 @@ const IncidenciaOperador = () => {
     if (incidencias.length === 0) {
         return (
             <div className="m-4">
-                <div className="rounded-xl bg-white dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-6">
+                <div className="rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-6">
                     <CreateFirstEntity
                         title="No hay incidencias registradas"
                         body="Comienza creando tu primera incidencia para organizar tus registros"
@@ -113,7 +113,7 @@ const IncidenciaOperador = () => {
     /* ── Cards view ────────────────────────────────────────────── */
     return (
         <div className="p-4 h-[calc(100vh-5rem)] flex flex-col">
-            <div className="flex-1 min-h-0 rounded-xl bg-white dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-6 flex flex-col">
+            <div className="flex-1 min-h-0 rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-6 flex flex-col">
 
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">

@@ -101,7 +101,7 @@ const OperatorsAdmin = () => {
 
     return (
         <div className="m-2 sm:m-4">
-            <div className="rounded-xl bg-white dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
+            <div className="rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
 
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
@@ -146,7 +146,7 @@ const OperatorsAdmin = () => {
                                         <th className="px-5 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
+                                <tbody className="bg-slate-50 dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
                                     {operators.map((item, idx) => (
                                         <tr key={item.id || idx} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                                             <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.name || '—'}</td>

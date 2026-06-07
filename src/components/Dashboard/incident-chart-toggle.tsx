@@ -120,7 +120,7 @@ export function IncidentChartToggle() {
   const isLineActive = chartType === 'line';
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 overflow-hidden h-full flex flex-col">
+    <div className="rounded-2xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 overflow-hidden h-full flex flex-col">
       {/* Header */}
       <div className="px-4 pt-3 pb-2 border-b border-gray-200 dark:border-white/10">
         <div className="flex items-center justify-between gap-3">
