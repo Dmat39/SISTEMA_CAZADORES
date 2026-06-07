@@ -49,7 +49,7 @@ export const getIncidenceByIdApi = async(id) => {
 
 export const updateIncidenceApi = async(id , payload) => {
   try {
-    const response = await mainApi.patch(`/incidence/${id}` , payload);
+    const response = await mainApi.patch(`/incidence/update/${id}` , payload);
     return response.data;
   } catch (error) {
      console.error("Error fetching incidence:", error);

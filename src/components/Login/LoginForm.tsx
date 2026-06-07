@@ -17,7 +17,7 @@ export default function LoginForm({ onSubmit, loading }) {
   };
 
   return (
-    <div className="w-full px-6 py-8 bg-white rounded-2xl shadow-xl border border-gray-100">
+    <div className="w-full px-6 py-8 bg-white rounded-2xl shadow-xl border border-gray-200">
       <div className="mb-2 flex justify-center">
         <img
           src="/logo-muni.png"

@@ -33,7 +33,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
       mode: isDark ? 'dark' : 'light',
       ...(isDark && {
         background: {
-          paper: '#1f2937',
+          paper: '#111827',
           default: '#111827',
         },
         text: {
@@ -41,7 +41,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
           secondary: '#d1d5db',
         },
         primary: {
-          main: '#3b82f6',
+          main: '#f97316',
         },
       }),
     },
@@ -117,7 +117,8 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
       >
         <Box
           sx={{
-            bgcolor: isDark ? "#1f2937" : "background.paper",
+            bgcolor: isDark ? "#111827" : "background.paper",
+          border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #e5e7eb',
             borderRadius: 2,
             boxShadow: 24,
             p: 4,
@@ -175,7 +176,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
                         '&.Mui-focused fieldset': {
                           borderColor: '#3b82f6',
                         },
-                        backgroundColor: '#374151',
+                        backgroundColor: '#1e293b',
                       },
                       '& .MuiSvgIcon-root': {
                         color: '#d1d5db',
@@ -219,7 +220,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
                           color: '#f9fafb',
                         },
                         '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#374151',
+                          backgroundColor: '#1e293b',
                           '& fieldset': {
                             borderColor: '#6b7280',
                           },
@@ -251,7 +252,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
                           color: '#f9fafb',
                         },
                         '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#374151',
+                          backgroundColor: '#1e293b',
                           '& fieldset': {
                             borderColor: '#6b7280',
                           },
@@ -330,7 +331,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
                 onClick={handleEmit}
                 variant="contained"
                 disabled={!form.cameraId || !form.date || !form.time}
-                className={`text-white cursor-pointer font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-4 focus:outline-none disabled:opacity-50 ${isDark ? 'bg-gray-600 hover:bg-gray-700 focus:ring-gray-600' : 'bg-gray-500 hover:bg-gray-800 focus:ring-gray-300'}`}
+                className="text-white cursor-pointer font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-4 focus:outline-none disabled:opacity-50 bg-orange-500 hover:bg-orange-600 focus:ring-orange-500/40"
               >
                 Crear Registro
               </Button>

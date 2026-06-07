@@ -210,7 +210,7 @@ const DashboardAdmin = () => {
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Métricas de Incidencias</h1>
-          <p className="text-gray-500">Análisis de rendimiento de Cazadores y Operadores</p>
+          <p className="text-gray-600 dark:text-gray-400">Análisis de rendimiento de Cazadores y Operadores</p>
         </div>
 
         <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">

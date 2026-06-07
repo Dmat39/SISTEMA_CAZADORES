@@ -138,7 +138,7 @@ export function CalendarPicker({ startDate, endDate, onDateRangeChange, classNam
             {/* Days of Week */}
             <div className="grid grid-cols-7 gap-1 mb-2">
               {["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"].map((day) => (
-                <div key={day} className="text-center text-sm font-medium text-gray-500 p-2">
+                <div key={day} className="text-center text-sm font-medium text-gray-600 dark:text-gray-400 p-2">
                   {day}
                 </div>
               ))}

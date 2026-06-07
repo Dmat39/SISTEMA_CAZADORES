@@ -72,8 +72,8 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
   };
 
   return (
-    <div className={`mt-6 p-4 border rounded-lg transition-colors duration-300 ${isDark ? 'border-[#404040] bg-[#2a2a2a]' : 'border-gray-200 bg-gray-50'}`} style={isDark ? { backgroundColor: '#2a2a2a', borderColor: '#404040' } : {}}>
-      <h3 className={`text-md font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Asignar nuevo cazador</h3>
+    <div className="mt-6 p-4 border rounded-lg bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10">
+      <h3 className="text-md font-semibold mb-4 text-gray-900 dark:text-white">Asignar nuevo cazador</h3>
       <form onSubmit={handleSubmit} >
         <div className="mb-4">
           <Autocomplete
@@ -130,7 +130,7 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
                     '&.Mui-focused fieldset': {
                       borderColor: '#3b82f6',
                     },
-                    backgroundColor: '#374151',
+                    backgroundColor: '#1e293b',
                   },
                   '& .MuiSvgIcon-root': {
                     color: '#d1d5db',
@@ -145,13 +145,13 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
           <button
             type="button"
             onClick={handleCancel}
-            className={`px-4 py-2 border rounded-lg cursor-pointer transition-colors ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+            className="px-4 py-2 border rounded-lg cursor-pointer transition-colors border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className={`px-4 py-2 text-white rounded-lg hover:bg-[#32A3B5] cursor-pointer transition-colors ${isDark ? 'bg-gray-700' : 'bg-gray-900'}`}
+            className="px-4 py-2 text-white rounded-lg cursor-pointer transition-colors bg-orange-500 hover:bg-orange-600"
           >
             Asignar
           </button>

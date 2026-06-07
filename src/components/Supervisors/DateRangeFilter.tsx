@@ -1,126 +1,120 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, ClickAwayListener, Button } from '@mui/material';
-import { useTheme } from '../../contexts/ThemeContext.jsx';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { Box, Typography, Button } from '@mui/material';
+import { useTheme } from '../../contexts/ThemeContext.tsx';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DateRange } from 'react-date-range';
+import { CalendarDays, X } from 'lucide-react';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 
-const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
-    const [dateRange, setDateRange] = useState({ startDate: new Date(), endDate: new Date(), key: 'selection' });
+interface DropPos { top: number; right: number; }
+
+const DateRangeFilter = ({ containerStyle = {}, sx = {} }: { containerStyle?: React.CSSProperties; sx?: object }) => {
+    const [dateRange, setDateRange]       = useState({ startDate: new Date(), endDate: new Date(), key: 'selection' });
     const [tempDateRange, setTempDateRange] = useState({ startDate: new Date(), endDate: new Date(), key: 'selection' });
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen]             = useState(false);
     const [displayValue, setDisplayValue] = useState('');
+    const [dropPos, setDropPos]           = useState<DropPos>({ top: 0, right: 0 });
+
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const { isDark } = useTheme();
+    const location   = useLocation();
+    const navigate   = useNavigate();
 
-    const location = useLocation();
-    const navigate = useNavigate();
-
-    // Helpers para fechas
-    const formatDateToLocal = (date) => {
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
+    /* ── Date helpers ─────────────────────────────────────────────── */
+    const formatDateToLocal = (date: Date) => {
+        const y = date.getFullYear();
+        const m = (date.getMonth() + 1).toString().padStart(2, '0');
+        const d = date.getDate().toString().padStart(2, '0');
+        return `${y}-${m}-${d}`;
     };
 
-    const parseDateFromLocal = (dateString) => {
-        const [year, month, day] = dateString.split('-').map(Number);
-        return new Date(year, month - 1, day);
+    const parseDateFromLocal = (s: string) => {
+        const [y, m, d] = s.split('-').map(Number);
+        return new Date(y, m - 1, d);
     };
 
-    const formatDisplayDate = (date) => {
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+    const formatDisplay = (date: Date) => {
+        const d = date.getDate().toString().padStart(2, '0');
+        const m = (date.getMonth() + 1).toString().padStart(2, '0');
+        return `${d}/${m}/${date.getFullYear()}`;
     };
 
-    // Opciones de selección rápida
-    const quickSelectOptions = [
-        { label: 'Hoy', getValue: () => ({ startDate: new Date(), endDate: new Date() }) },
-        {
-            label: 'Ayer', getValue: () => {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                return { startDate: yesterday, endDate: yesterday };
-            }
-        },
-        {
-            label: 'Últimos 7 días', getValue: () => {
-                const today = new Date();
-                const weekAgo = new Date();
-                weekAgo.setDate(weekAgo.getDate() - 6);
-                return { startDate: weekAgo, endDate: today };
-            }
-        },
-        {
-            label: 'Últimos 30 días', getValue: () => {
-                const today = new Date();
-                const monthAgo = new Date();
-                monthAgo.setDate(monthAgo.getDate() - 29);
-                return { startDate: monthAgo, endDate: today };
-            }
-        },
-        {
-            label: 'Este mes', getValue: () => {
-                const today = new Date();
-                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-                return { startDate: firstDay, endDate: today };
-            }
-        }
+    const updateDisplayValue = (s: Date, e: Date) => {
+        if (!s || !e) return;
+        const ss = formatDisplay(s);
+        const es = formatDisplay(e);
+        setDisplayValue(ss === es ? ss : `${ss} — ${es}`);
+    };
+
+    /* ── Quick select options ─────────────────────────────────────── */
+    const quickOptions = [
+        { label: 'Hoy',           getValue: () => { const t = new Date(); return { startDate: t, endDate: t }; } },
+        { label: 'Ayer',          getValue: () => { const y = new Date(); y.setDate(y.getDate() - 1); return { startDate: y, endDate: y }; } },
+        { label: 'Últ. 7 días',   getValue: () => { const t = new Date(); const s = new Date(); s.setDate(s.getDate() - 6); return { startDate: s, endDate: t }; } },
+        { label: 'Últ. 30 días',  getValue: () => { const t = new Date(); const s = new Date(); s.setDate(s.getDate() - 29); return { startDate: s, endDate: t }; } },
+        { label: 'Este mes',      getValue: () => { const t = new Date(); return { startDate: new Date(t.getFullYear(), t.getMonth(), 1), endDate: t }; } },
     ];
 
-    // Actualizar display value
-    const updateDisplayValue = (startDate, endDate) => {
-        if (!startDate || !endDate) return;
-        const startStr = formatDisplayDate(startDate);
-        const endStr = formatDisplayDate(endDate);
-        setDisplayValue(startStr === endStr ? startStr : `${startStr} - ${endStr}`);
-    };
-
-    // Cargar fechas desde URL
+    /* ── URL sync ─────────────────────────────────────────────────── */
     useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const start = searchParams.get('start');
-        const end = searchParams.get('end');
-
+        const sp = new URLSearchParams(location.search);
+        const start = sp.get('start');
+        const end   = sp.get('end');
         if (start || end) {
-            const startDate = start ? parseDateFromLocal(start) : new Date();
-            const endDate = end ? parseDateFromLocal(end) : new Date();
-            const range = { startDate, endDate, key: 'selection' };
-
+            const s = start ? parseDateFromLocal(start) : new Date();
+            const e = end   ? parseDateFromLocal(end)   : new Date();
+            const range = { startDate: s, endDate: e, key: 'selection' };
             setDateRange(range);
             setTempDateRange(range);
-            updateDisplayValue(startDate, endDate);
+            updateDisplayValue(s, e);
         } else {
             setDisplayValue('');
-            const today = new Date();
-            const defaultRange = { startDate: today, endDate: today, key: 'selection' };
-            setDateRange(defaultRange);
-            setTempDateRange(defaultRange);
+            const t = new Date();
+            const r = { startDate: t, endDate: t, key: 'selection' };
+            setDateRange(r);
+            setTempDateRange(r);
         }
     }, [location.search]);
 
-    // Actualizar URL
-    const updateURL = (startDate, endDate) => {
-        const searchParams = new URLSearchParams(location.search);
-        searchParams.delete('start');
-        searchParams.delete('end');
-
-        if (startDate) searchParams.set('start', formatDateToLocal(startDate));
-        if (endDate && formatDateToLocal(endDate) !== formatDateToLocal(startDate)) {
-            searchParams.set('end', formatDateToLocal(endDate));
-        }
-
-        searchParams.set('page', '1');
-        navigate({ search: searchParams.toString() });
+    const updateURL = (s: Date, e: Date) => {
+        const sp = new URLSearchParams(location.search);
+        sp.delete('start'); sp.delete('end');
+        if (s) sp.set('start', formatDateToLocal(s));
+        if (e && formatDateToLocal(e) !== formatDateToLocal(s)) sp.set('end', formatDateToLocal(e));
+        sp.set('page', '1');
+        navigate({ search: sp.toString() });
     };
 
-    // Event handlers
-    const handleRangeChange = (item) => setTempDateRange(item.selection);
+    /* ── Click-away via document listener ────────────────────────── */
+    const handleClickAway = useCallback((e: MouseEvent) => {
+        if (
+            triggerRef.current?.contains(e.target as Node) ||
+            dropdownRef.current?.contains(e.target as Node)
+        ) return;
+        setIsOpen(false);
+        setTempDateRange(dateRange);
+    }, [dateRange]);
 
+    useEffect(() => {
+        if (isOpen) document.addEventListener('mousedown', handleClickAway);
+        return ()  => document.removeEventListener('mousedown', handleClickAway);
+    }, [isOpen, handleClickAway]);
+
+    /* ── Open / close ─────────────────────────────────────────────── */
+    const handleOpen = () => {
+        if (!isOpen && triggerRef.current) {
+            const r = triggerRef.current.getBoundingClientRect();
+            setDropPos({ top: r.bottom + 6, right: window.innerWidth - r.right });
+        }
+        setIsOpen((v) => !v);
+        if (!isOpen) setTempDateRange(dateRange);
+    };
+
+    /* ── Actions ──────────────────────────────────────────────────── */
     const applyDateFilter = () => {
         setDateRange(tempDateRange);
         updateDisplayValue(tempDateRange.startDate, tempDateRange.endDate);
@@ -128,153 +122,156 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }) => {
         setIsOpen(false);
     };
 
-    const handleQuickSelect = (option) => {
-        const { startDate, endDate } = option.getValue();
-        setTempDateRange({ startDate, endDate, key: 'selection' });
-    };
-
-    const clearDateRangeFilter = () => {
-        const searchParams = new URLSearchParams(location.search);
-        searchParams.delete('start');
-        searchParams.delete('end');
-        searchParams.set('page', '1');
-
-        const today = new Date();
-        const defaultRange = { startDate: today, endDate: today, key: 'selection' };
-        setDateRange(defaultRange);
-        setTempDateRange(defaultRange);
-        setDisplayValue('');
+    const clearFilter = () => {
+        const sp = new URLSearchParams(location.search);
+        sp.delete('start'); sp.delete('end'); sp.set('page', '1');
+        const t = new Date();
+        const r = { startDate: t, endDate: t, key: 'selection' };
+        setDateRange(r); setTempDateRange(r); setDisplayValue('');
         setIsOpen(false);
-        navigate({ search: searchParams.toString() });
+        navigate({ search: sp.toString() });
     };
 
-    const handleInputClick = () => {
-        setIsOpen(!isOpen);
-        if (!isOpen) setTempDateRange(dateRange);
+    const hasActive = () => {
+        const sp = new URLSearchParams(location.search);
+        return sp.has('start') || sp.has('end');
     };
 
-    const handleClickAway = () => {
-        setIsOpen(false);
-        setTempDateRange(dateRange);
-    };
+    /* ── Styles ───────────────────────────────────────────────────── */
+    const bg      = isDark ? '#1e293b' : '#ffffff';
+    const border  = isDark ? 'rgba(255,255,255,0.1)' : '#e5e7eb';
+    const text    = isDark ? '#f1f5f9' : '#374151';
+    const muted   = isDark ? '#64748b' : '#9ca3af';
+    const popupBg = isDark ? '#111827' : '#ffffff';
 
-    const hasActiveFilter = () => {
-        const searchParams = new URLSearchParams(location.search);
-        return searchParams.has('start') || searchParams.has('end');
-    };
+    /* ── Dropdown portal ──────────────────────────────────────────── */
+    const dropdown = isOpen ? createPortal(
+        <div
+            ref={dropdownRef}
+            style={{
+                position: 'fixed',
+                top:   dropPos.top,
+                right: dropPos.right,
+                zIndex: 99999,
+                background: popupBg,
+                border: `1px solid ${border}`,
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: isDark
+                    ? '0 20px 40px rgba(0,0,0,0.6)'
+                    : '0 20px 40px rgba(0,0,0,0.15)',
+            }}
+        >
+            {/* Quick select */}
+            <Box sx={{
+                p: 1.5,
+                borderBottom: `1px solid ${border}`,
+                '& .rdrCalendarWrapper': { fontSize: '0.75rem', backgroundColor: popupBg, color: text },
+                '& .rdrMonthAndYearPickers select': { backgroundColor: bg, color: text, borderColor: border },
+                '& .rdrDayDisabled': { backgroundColor: isDark ? '#0f172a' : '#f9fafb' },
+                '& .rdrDayNumber span': { color: text },
+                '& .rdrDateDisplayWrapper': { display: 'none' },
+            }}>
+                <Typography variant="caption" sx={{ fontSize: '0.65rem', color: muted, mb: 0.75, display: 'block', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Selección rápida
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {quickOptions.map((o) => (
+                        <Button
+                            key={o.label}
+                            size="small"
+                            variant="outlined"
+                            onClick={() => setTempDateRange({ ...o.getValue(), key: 'selection' })}
+                            sx={{
+                                fontSize: '0.68rem', py: 0.4, px: 1, minWidth: 'auto',
+                                borderColor: border, color: text, borderRadius: '6px',
+                                '&:hover': { borderColor: '#ea580c', color: '#ea580c', backgroundColor: isDark ? '#1e293b' : '#fff7ed' },
+                            }}
+                        >
+                            {o.label}
+                        </Button>
+                    ))}
+                </Box>
+            </Box>
 
-    // Estilos
-    const labelStyles = {
-        position: 'absolute',
-        left: '12px',
-        color: isDark ? '#9ca3af' : '#6b7280',
-        backgroundColor: isDark ? '#2a2a2a' : 'white',
-        transition: 'all 0.2s ease',
-        pointerEvents: 'none',
-        top: displayValue ? '-8px' : '50%',
-        transform: displayValue ? 'translateY(0)' : 'translateY(-50%)',
-        fontSize: displayValue ? '12px' : '14px',
-        padding: displayValue ? '0 4px' : '0'
-    };
+            {/* Calendar */}
+            <Box sx={{
+                '& .rdrCalendarWrapper': { fontSize: '0.75rem', backgroundColor: popupBg, color: text },
+                '& .rdrMonthAndYearPickers select': { backgroundColor: bg, color: text, borderColor: border },
+                '& .rdrDayDisabled': { backgroundColor: isDark ? '#0f172a' : '#f9fafb' },
+                '& .rdrDayNumber span': { color: text },
+                '& .rdrDateDisplayWrapper': { display: 'none' },
+            }}>
+                <DateRange
+                    editableDateInputs={true}
+                    onChange={(item: any) => setTempDateRange(item.selection)}
+                    moveRangeOnFirstSelection={false}
+                    ranges={[tempDateRange]}
+                    maxDate={new Date()}
+                    rangeColors={['#ea580c']}
+                    months={1}
+                    direction="horizontal"
+                    showDateDisplay={false}
+                />
+            </Box>
 
+            {/* Footer */}
+            <Box sx={{ p: 1.5, borderTop: `1px solid ${border}`, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                <Button
+                    size="small" variant="outlined"
+                    onClick={() => setIsOpen(false)}
+                    sx={{ borderColor: border, color: muted, borderRadius: '8px', fontSize: '0.75rem',
+                          '&:hover': { borderColor: muted, backgroundColor: isDark ? '#1e293b' : '#f9fafb' } }}
+                >
+                    Cancelar
+                </Button>
+                <Button
+                    size="small" variant="contained"
+                    onClick={applyDateFilter}
+                    sx={{ backgroundColor: '#ea580c', borderRadius: '8px', fontSize: '0.75rem',
+                          '&:hover': { backgroundColor: '#c2410c' } }}
+                >
+                    Aplicar
+                </Button>
+            </Box>
+        </div>,
+        document.body
+    ) : null;
+
+    /* ── Render ───────────────────────────────────────────────────── */
     return (
         <div className="flex items-center gap-2" style={containerStyle}>
-            <ClickAwayListener onClickAway={handleClickAway}>
-                <Box sx={{ position: 'relative', minWidth: 130, ...sx }}>
-                    <Box
-                        onClick={handleInputClick}
-                        sx={{
-                            width: '100%',
-                            height: '40px',
-                            borderRadius: '10px',
-                            padding: '8px 14px',
-                            cursor: 'pointer',
-                            backgroundColor: isDark ? '#2a2a2a' : 'white',
-                            position: 'relative',
-                            display: 'flex',
-                            alignItems: 'center',
-                            fontSize: '14px',
-                            outline: 'none',
-                            boxShadow: 'none',
-                            color: displayValue ? (isDark ? '#e5e7eb' : '#374151') : '#9ca3af',
-                            border: isOpen ? `3px solid ${isDark ? '#ea580c' : '#1976d2'}` : `1px solid ${isDark ? '#404040' : '#d1d5db'}`,
-                            transition: 'all 0.2s ease',
-                            '&:hover': {
-                                borderColor: isOpen ? (isDark ? '#ea580c' : '#1976d2') : (isDark ? '#9ca3af' : '#374151'),
-                                borderWidth: isOpen ? '3px' : '1px'
-                            }
-                        }}
-                    >
-                        <span style={labelStyles}>Rango de Fechas</span>
-                        <span style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {displayValue}
-                        </span>
-                    </Box>
+            {/* Trigger */}
+            <div
+                ref={triggerRef}
+                onClick={handleOpen}
+                className={[
+                    'flex items-center gap-2 h-9 px-3 rounded-lg cursor-pointer select-none transition-all text-sm',
+                    isOpen
+                        ? 'bg-orange-500 text-white'
+                        : 'bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-orange-400 dark:hover:border-orange-500',
+                ].join(' ')}
+            >
+                <CalendarDays className="h-4 w-4 shrink-0" />
+                <span className="whitespace-nowrap font-medium">
+                    {displayValue || 'Rango de fechas'}
+                </span>
+            </div>
 
-                    {isOpen && (
-                        <Box sx={{
-                            position: 'absolute', top: '100%', right: 0, zIndex: 1300,
-                            backgroundColor: isDark ? '#1a1a1a' : 'white',
-                            border: `1px solid ${isDark ? '#404040' : '#d1d5db'}`,
-                            borderRadius: '8px', marginTop: 1, overflow: 'hidden',
-                            boxShadow: isDark
-                                ? '0 10px 15px -3px rgba(255,255,255,0.05), 0 4px 6px -2px rgba(255,255,255,0.03)'
-                                : '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)',
-                            '& .rdrCalendarWrapper': { fontSize: '0.75rem', backgroundColor: isDark ? '#1a1a1a' : 'white', color: isDark ? '#e5e7eb' : 'inherit' },
-                            '& .rdrMonthAndYearPickers select': { backgroundColor: isDark ? '#2a2a2a' : 'white', color: isDark ? '#e5e7eb' : '#111827', borderColor: isDark ? '#404040' : '#d1d5db' },
-                            '& .rdrDayDisabled': { backgroundColor: isDark ? '#111827' : '#f9fafb' },
-                            '& .rdrDayNumber span': { color: isDark ? '#e5e7eb' : '#111827' },
-                            '& .rdrDateDisplayWrapper': { display: 'none' }
-                        }}>
-                            <Box sx={{ p: 2, borderBottom: `1px solid ${isDark ? '#404040' : '#e5e7eb'}` }}>
-                                <Typography variant="caption" sx={{ fontSize: '0.7rem', color: isDark ? '#9ca3af' : 'text.secondary', mb: 1, display: 'block' }}>
-                                    Selección rápida:
-                                </Typography>
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {quickSelectOptions.map((option, index) => (
-                                        <Button key={index} size="small" variant="outlined" onClick={() => handleQuickSelect(option)}
-                                            sx={{
-                                                fontSize: '0.7rem', py: 0.5, px: 1, minWidth: 'auto',
-                                                borderColor: isDark ? '#404040' : '#d1d5db',
-                                                color: isDark ? '#e5e7eb' : '#374151',
-                                                '&:hover': { borderColor: isDark ? '#ea580c' : '#4052af', backgroundColor: isDark ? '#2a2a2a' : '#f8f9ff' }
-                                            }}>
-                                            {option.label}
-                                        </Button>
-                                    ))}
-                                </Box>
-                            </Box>
-
-                            <DateRange
-                                editableDateInputs={true} onChange={handleRangeChange} moveRangeOnFirstSelection={false}
-                                ranges={[tempDateRange]} maxDate={new Date()} rangeColors={[isDark ? '#ea580c' : '#4052af']}
-                                months={1} direction="horizontal" showDateDisplay={false}
-                            />
-
-                            <Box sx={{ p: 2, borderTop: `1px solid ${isDark ? '#404040' : '#e5e7eb'}`, display: 'flex', justifyContent: 'space-between', gap: 1 }}>
-                                <Button size="small" variant="outlined" onClick={() => setIsOpen(false)}
-                                    sx={{ borderColor: isDark ? '#404040' : '#d1d5db', color: isDark ? '#9ca3af' : '#6b7280', '&:hover': { borderColor: isDark ? '#9ca3af' : '#9ca3af', backgroundColor: isDark ? '#2a2a2a' : '#f9fafb' } }}>
-                                    Cancelar
-                                </Button>
-                                <Button size="small" variant="contained" onClick={applyDateFilter}
-                                    sx={{ backgroundColor: isDark ? '#ea580c' : '#4052af', '&:hover': { backgroundColor: isDark ? '#c2410c' : '#364091' } }}>
-                                    Aplicar Filtro
-                                </Button>
-                            </Box>
-                        </Box>
-                    )}
-                </Box>
-            </ClickAwayListener>
-
-            {hasActiveFilter() && (
-                <button onClick={clearDateRangeFilter}
-                    className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white text-sm px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                    title="Limpiar filtro de rango">
-                    ✕
+            {/* Clear button */}
+            {hasActive() && (
+                <button
+                    onClick={clearFilter}
+                    title="Limpiar filtro"
+                    className="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200 dark:border-white/10 text-gray-400 hover:text-red-500 hover:border-red-300 dark:hover:border-red-500/50 transition-colors"
+                >
+                    <X className="h-4 w-4" />
                 </button>
             )}
+
+            {dropdown}
         </div>
     );
 };
 
-export default DateRangeFilter; 
+export default DateRangeFilter;

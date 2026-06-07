@@ -112,7 +112,7 @@ export const deleteIncidenceApi = async (id) => {
 // Función para cambiar el estado de una incidencia
 export const updateIncidenceStatusApi = async (id, status) => {
   try {
-    const response = await mainApi.patch(`/incidence/status/${id}`, { status });
+    const response = await mainApi.patch(`/incidence/update/${id}`, { status });
     return response.data;
   } catch (error) {
     console.error("Error updating incidence status:", error);

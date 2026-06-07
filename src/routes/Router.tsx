@@ -1,4 +1,3 @@
-// src/Router.jsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // LAYOUTS
@@ -8,31 +7,26 @@ import DashboardLayoutOperador from "../layouts/DashboardLayoutOperador";
 
 // PAGES LOGIN
 import LoginPage from "../pages/Login";
-// NO AUTORIZADO PAGE
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 import NotFoundPage from "../pages/NotFoundPage";
+
 // PAGES ADMIN
 import DashboardAdmin from "../pages/Admin/Dashboard_admin";
 import SupervisorsAdmin from "../pages/Admin/Supervisors";
-import OperatorsAdmin from "../pages/Supervisors/Operators";
 import CazadoresAdmin from "../pages/Admin/Cazadores";
-// Nueva importación para Cazadores Supervisor
-import CazadoresSupervisor from "../pages/Supervisors/Cazadores";
+import Auditoria from "../pages/Admin/Auditoria";
 
 // PAGES SUPERVISOR
-import DashboardSupervisor from "../pages/Supervisors/Dashboard";
-import ReportesSupervisor from "../pages/Supervisors/Reportes";
-// PAGES OPERADOR
-import DashboardOperador from "../pages/Operador/Dashboard";
+import CazadoresSupervisor from "../pages/Supervisors/Cazadores";
+import SupervisorProfile from "../pages/Supervisors/Configuration";
+import Incidence from "../pages/Supervisors/Incidence";
+
+// PAGES CAZADOR
 import IncidenciaOperador from "../pages/Operador/Incidencia";
 import IncidenciaDetalle from "../pages/Operador/Detalle";
 import ConfigurationProfile from "../pages/Operador/Configuration";
-import SupervisorProfile from "../pages/Supervisors/Configuration";
-import IncidenciaSupervisor from "../pages/Supervisors/Incidencia"
-import IncidenciaDetalleSupervisor from "../pages/Supervisors/Detalle"
 
 import PrivateRoute from "../routes/PrivateRoute";
-import Incidence from "../pages/Supervisors/Incidence";
 import PublicRouter from "./PublicRoute";
 
 export default function Router() {
@@ -56,11 +50,10 @@ export default function Router() {
         >
           <Route index element={<DashboardAdmin />} />
           <Route path="supervisor" element={<SupervisorsAdmin />} />
-          <Route path="operadores" element={<OperatorsAdmin />} />
           <Route path="incidencia" element={<Incidence />} />
           <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
-          {/* Nueva ruta para Cazadores */}
           <Route path="cazadores" element={<CazadoresAdmin />} />
+          <Route path="auditoria" element={<Auditoria />} />
         </Route>
 
         {/* Rutas protegidas - VISUALIZER (mismas vistas que admin pero solo dashboard + incidencias) */}
@@ -86,19 +79,18 @@ export default function Router() {
             </PrivateRoute>
           }
         >
-          <Route path="operadores" element={<OperatorsAdmin />} />
+          <Route index element={<DashboardAdmin />} />
           <Route path="incidencia" element={<Incidence />} />
           <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
           <Route path="incidencia/configuracion" element={<SupervisorProfile />} />
-          {/* Ruta de Cazadores para Supervisor */}
           <Route path="cazadores" element={<CazadoresSupervisor />} />
         </Route>
 
-        {/* Rutas protegidas - OPERADOR */}
+        {/* Rutas protegidas - CAZADOR */}
         <Route
-          path="/dashboard/operador"
+          path="/dashboard/cazador"
           element={
-            <PrivateRoute requiredRole="operator">
+            <PrivateRoute requiredRole="hunter">
               <DashboardLayoutOperador />
             </PrivateRoute>
           }

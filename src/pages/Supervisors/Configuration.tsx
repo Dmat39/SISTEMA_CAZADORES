@@ -3,11 +3,13 @@ import { useSelector } from 'react-redux';
 import FormProfile from "../../components/Supervisors/FormProfile";
 import { getOperatorProfileApi } from "../../api/supervisor/ProfileApi";
 import { toast } from 'sonner';
+import { useSetPageTitle } from '../../contexts/PageTitleContext';
 
 const ConfigurationProfile = () => {
+  useSetPageTitle('Mi Perfil', 'Configuración de cuenta');
   const [operatorData, setOperatorData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Obtén el ID directamente de Redux
   const operatorId = useSelector((state) => state.auth.id);
 

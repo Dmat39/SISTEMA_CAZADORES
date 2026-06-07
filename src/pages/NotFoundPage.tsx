@@ -4,33 +4,20 @@ import { useSelector } from 'react-redux';
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
-  const role = useSelector((state) => state.auth?.role);
+  const role = useSelector((state: any) => state.auth?.role);
 
-  // Lógica de redirección según rol
   const getRedirectPath = () => {
-    // Normalizar rol para comparación case-insensitive
-    const normalizedRole = role;
-    
-    switch (normalizedRole) {
-      case 'administrator':
-        return '/dashboard/admin';
-      case 'supervisor':
-        // return '/dashboard/supervisors';
-        return '/dashboard/supervisors/operadores';
-      case 'operator':
-      case 'hunter':
-        // return '/dashboard/operador';
-        return '/dashboard/operador/incidencia';
-      default:
-        return '/'; // fallback para no logueados o sin rol
+    switch (role) {
+      case 'administrator': return '/dashboard/admin';
+      case 'visualizer':    return '/dashboard/visualizer/incidencia';
+      case 'supervisor':    return '/dashboard/supervisors/incidencia';
+      case 'hunter':        return '/dashboard/cazador/incidencia';
+      default:              return '/login';
     }
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      navigate(getRedirectPath());
-    }, 2000);
-
+    const timeout = setTimeout(() => navigate(getRedirectPath()), 2000);
     return () => clearTimeout(timeout);
   }, [navigate, role]);
 

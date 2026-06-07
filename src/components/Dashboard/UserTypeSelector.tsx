@@ -63,7 +63,7 @@ const UserTypeSelector = ({ value, onChange, className = '' }) => {
               <Listbox.Options className="
                 absolute z-50 mt-2 w-full bg-white shadow-lg max-h-60 rounded-xl py-1
                 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none
-                border border-gray-100
+                border border-gray-200
               ">
                 {userTypeOptions.map((option) => (
                   <Listbox.Option
@@ -90,7 +90,7 @@ const UserTypeSelector = ({ value, onChange, className = '' }) => {
                               }`}>
                                 {option.label}
                               </span>
-                              <span className="text-xs text-gray-500 mt-0.5">
+                              <span className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                                 {option.description}
                               </span>
                             </div>

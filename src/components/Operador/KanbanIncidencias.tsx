@@ -2,16 +2,13 @@ import { Button } from "../UI/button";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "../../contexts/ThemeContext";
 import { KANBAN_STATES } from "./kanban/kanbanConfig";
 import { useDragAndDrop } from "./kanban/useDragAndDrop";
 import { useKanbanScroll } from "./kanban/useKanbanScroll";
 import KanbanColumn from "./kanban/KanbanColumn";
 import StatusChangeModal from "./kanban/StatusChangeModal";
-
 const KanbanIncidencias = ({ incidencias = [], onIncidenciaUpdate, onAddIncidencia }) => {
   const navigate = useNavigate();
-  const { isDark } = useTheme();
 
   // Custom hooks
   const dragAndDrop = useDragAndDrop(incidencias, onIncidenciaUpdate);
@@ -33,21 +30,21 @@ const KanbanIncidencias = ({ incidencias = [], onIncidenciaUpdate, onAddIncidenc
   const handleCardClick = (e, id) => {
     if (!dragAndDrop.isDragging && !dragAndDrop.draggedItem) {
       localStorage.setItem("last_created_incidence_id", id);
-      navigate("/dashboard/operador/incidencia/detalle");
+      navigate('/dashboard/cazador/incidencia/detalle');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="p-6">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white mb-2">Sistema de Control de Incidencias</h1>
-          <p className="text-gray-400">Flujo de seguimiento para operadores</p>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Sistema de Control de Incidencias</h1>
+          <p className="text-gray-500 dark:text-gray-400">Flujo de seguimiento para operadores</p>
         </div>
         <Button
           onClick={onAddIncidencia}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-orange-500 hover:bg-orange-600 text-white"
         >
           <Icon path={icons.add} size={0.8} className="mr-2" />
           Agregar Incidencia
@@ -97,9 +94,9 @@ const KanbanIncidencias = ({ incidencias = [], onIncidenciaUpdate, onAddIncidenc
       {/* Loading overlay */}
       {dragAndDrop.isUpdating && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
-          <div className="bg-gray-800 p-4 rounded-lg flex items-center gap-3">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-            <span className="text-white">Actualizando estado...</span>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg flex items-center gap-3">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 dark:border-white"></div>
+            <span className="text-gray-900 dark:text-white">Actualizando estado...</span>
           </div>
         </div>
       )}
