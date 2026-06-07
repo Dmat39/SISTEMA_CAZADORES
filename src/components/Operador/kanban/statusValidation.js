@@ -1,10 +1,10 @@
 // Validaciones para transiciones de estado del Kanban
 
-// Flujo válido de estados
+// Flujo válido de estados (puede avanzar o retroceder, excepto desde finished)
 const VALID_TRANSITIONS = {
     previous: ['process'],
-    process: ['completed'],
-    completed: ['finished'],
+    process: ['completed', 'previous'],
+    completed: ['finished', 'process', 'previous'],
     finished: [] // Estado final, no puede cambiar
 };
 
@@ -29,15 +29,7 @@ export const validateStatusTransition = (fromStatus, toStatus, incidencia = {}) 
         return { isValid: false, errorMessage: "No se puede cambiar al mismo estado" };
     }
 
-    // Verificar si es un retroceso
-    if (STATE_ORDER[toStatus] < STATE_ORDER[fromStatus]) {
-        return {
-            isValid: false,
-            errorMessage: "Cannot move backwards in the workflow"
-        };
-    }
-
-    // Verificar si se está saltando estados
+    // Verificar si se está saltando estados hacia adelante (no se puede saltar más de 1)
     if (STATE_ORDER[toStatus] > STATE_ORDER[fromStatus] + 1) {
         return {
             isValid: false,
