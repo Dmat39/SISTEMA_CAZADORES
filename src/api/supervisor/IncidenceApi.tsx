@@ -5,7 +5,13 @@ import { mainApi, incidenceApi } from "../config";
 export const getIncidenceCodesApi = async () => {
   try {
     const response = await incidenceApi.get('/buscar_incidencias');
-    return response.data;
+    const data = response.data?.data ?? response.data;
+    const normalized = data.map((i) => ({
+      codigo_incidencia: i.codigoIncidencia ?? i.codigo_incidencia,
+      latitud: i.latitud,
+      longitud: i.longitud,
+    }));
+    return { ...response.data, data: normalized };
   } catch (error) {
     console.error("Error fetching incidence codes:", error);
     throw error.response ? error.response.data : new Error('Failed to fetch incidence codes');
