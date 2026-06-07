@@ -5,7 +5,7 @@ const VALID_TRANSITIONS = {
     previous: ['process'],
     process: ['completed', 'previous'],
     completed: ['finished', 'process', 'previous'],
-    finished: [] // Estado final, no puede cambiar
+    finished: ['process', 'completed', 'previous'] // Puede reabrirse
 };
 
 // Orden de los estados para detectar retrocesos
@@ -30,6 +30,7 @@ export const validateStatusTransition = (fromStatus, toStatus, incidencia = {}) 
     }
 
     // Verificar si se está saltando estados hacia adelante (no se puede saltar más de 1)
+    // Solo aplica cuando se avanza, no cuando se retrocede
     if (STATE_ORDER[toStatus] > STATE_ORDER[fromStatus] + 1) {
         return {
             isValid: false,

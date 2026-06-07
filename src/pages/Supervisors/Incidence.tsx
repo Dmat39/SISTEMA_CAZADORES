@@ -20,11 +20,12 @@ import { Search, Plus, AlertCircle } from 'lucide-react';
 import { useSetPageTitle } from '../../contexts/PageTitleContext';
 
 const STATUS_BADGE = {
+    previous:  'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-400',
     process:   'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-400',
     completed: 'bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400',
     finished:  'bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-400',
 };
-const STATUS_LABEL = { process: 'En Proceso', completed: 'Completado', finished: 'Finalizado' };
+const STATUS_LABEL = { previous: 'En Proceso', process: 'En Proceso', completed: 'Completado', finished: 'Finalizado' };
 
 const Incidence = () => {
     useSetPageTitle('Incidencias', 'Monitoreo · En tiempo real', true);
@@ -155,7 +156,7 @@ const Incidence = () => {
 
     return (
         <div className="p-2 sm:p-4 h-[calc(100vh-5rem)] flex flex-col overflow-hidden">
-            <div className="flex-1 min-h-0 rounded-xl bg-white dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-3 sm:p-6 flex flex-col gap-4 overflow-hidden">
+            <div className="flex-1 min-h-0 rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-3 sm:p-6 flex flex-col gap-4 overflow-hidden">
 
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-3">
@@ -200,7 +201,7 @@ const Incidence = () => {
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
+                                <tbody className="bg-slate-50 dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
                                     {incidents.map((item, idx) => (
                                         <tr
                                             key={item.id || idx}

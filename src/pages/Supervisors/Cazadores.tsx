@@ -107,8 +107,8 @@ const CazadoresSupervisor = () => {
     };
 
     return (
-        <div className="p-2 sm:p-4 h-[calc(100vh-5rem)] overflow-hidden">
-            <div className="rounded-xl bg-white dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
+        <div className="p-2 sm:p-4 h-[calc(100vh-5rem)] flex flex-col overflow-hidden">
+            <div className="flex-1 min-h-0 rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4 overflow-hidden">
 
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
@@ -138,8 +138,8 @@ const CazadoresSupervisor = () => {
                 {isLoading ? (
                     <Loading message="Cargando Cazadores" />
                 ) : cazadores.length > 0 ? (
-                    <div className="flex flex-col gap-3">
-                        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/8">
+                    <div className="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
+                        <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-gray-200 dark:border-white/8">
                             <table className="min-w-full divide-y divide-gray-100 dark:divide-white/8">
                                 <thead className="bg-gray-100 dark:bg-[#1e293b]">
                                     <tr>
@@ -149,7 +149,7 @@ const CazadoresSupervisor = () => {
                                         <th className="px-5 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
+                                <tbody className="bg-slate-50 dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
                                     {cazadores.map((item, idx) => (
                                         <tr key={item.id || idx} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                                             <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.name || '—'}</td>
@@ -175,7 +175,7 @@ const CazadoresSupervisor = () => {
                                 </tbody>
                             </table>
                         </div>
-                        <div className="flex justify-center">
+                        <div className="flex justify-center shrink-0">
                             <CustomTablePagination count={totalCount} page={currentPage} limit={limit} handlePageLimitChange={handlePageLimitChange} />
                         </div>
                     </div>

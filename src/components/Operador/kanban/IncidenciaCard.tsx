@@ -37,7 +37,7 @@ const IncidenciaCard = ({
 
   return (
     <Card
-      className="border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/30 backdrop-blur-sm transition-transform duration-200 hover:scale-[1.02] select-none"
+      className="border-slate-200 dark:border-gray-800 bg-slate-50 dark:bg-gray-900/30 backdrop-blur-sm transition-transform duration-200 hover:scale-[1.02] select-none"
       style={{ cursor: "grab" }}
       draggable={true}
       onDragStart={(e) => onDragStart(e, id)}

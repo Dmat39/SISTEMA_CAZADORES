@@ -22,8 +22,8 @@ export default function AppSidebar({ items }: AppSidebarProps) {
         className={[
           'fixed top-20 left-0 z-40 w-60 overflow-hidden',
           'h-[calc(100vh-5rem)] flex flex-col',
-          'bg-white dark:bg-[#0f172a]',
-          'border-r border-gray-300 dark:border-white/10 shadow-sm',
+          'bg-slate-50 dark:bg-[#0f172a]',
+          'border-r border-gray-200 dark:border-white/10 shadow-sm',
           'transition-all duration-300 ease-in-out',
           // Mobile: controlled by isOpen
           isOpen ? 'translate-x-0' : '-translate-x-full',

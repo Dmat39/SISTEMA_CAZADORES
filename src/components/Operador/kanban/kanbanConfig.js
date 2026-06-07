@@ -2,9 +2,9 @@
 export const KANBAN_STATES = {
   previous: {
     titulo: "Previo",
-    color: "text-orange-400",
-    bgColor: "bg-orange-400/10",
-    borderColor: "border-orange-400/30",
+    color: "text-violet-400",
+    bgColor: "bg-violet-400/10",
+    borderColor: "border-violet-400/30",
     description: "Este estado es de preincidencias"
   },
   process: {
@@ -31,7 +31,7 @@ export const KANBAN_STATES = {
 };
 
 export const STATUS_MAPPING = {
-  previous: { text: "previo", color: "bg-orange-600 hover:bg-orange-700" },
+  previous: { text: "previo", color: "bg-violet-600 hover:bg-violet-700" },
   process: { text: "proceso", color: "bg-blue-600 hover:bg-blue-700" },
   completed: { text: "ejecucion", color: "bg-purple-600 hover:bg-purple-700" },
   finished: { text: "finalizado", color: "bg-green-600 hover:bg-green-700" },

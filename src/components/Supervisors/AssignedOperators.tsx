@@ -60,7 +60,7 @@ const AssignedOperators = ({
             <div className="fixed inset-0 bg-black/60" aria-hidden="true" />
 
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <Dialog.Panel className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-w-6xl w-full p-6">
+                <Dialog.Panel className="bg-slate-50 dark:bg-[#111827] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-w-6xl w-full p-6">
                     <div className="mb-2 flex items-center">
                         <Dialog.Title className="text-lg font-bold text-gray-900 dark:text-white">
                             Personal asignado a:{' '}
