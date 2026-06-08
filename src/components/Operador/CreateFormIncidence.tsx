@@ -159,7 +159,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
     setFormData({
       code: "",
       name: "",
-      plate,
+      plate: "",
       communicationId: "",
       zoneId: "",
       date: null,
