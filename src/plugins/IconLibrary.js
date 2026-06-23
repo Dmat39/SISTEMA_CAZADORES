@@ -28,8 +28,7 @@ import {
     mdiFileDocument,
     mdiClock,
     mdiCheckBold,
-    mdiFlag,
-    mdiDownload
+    mdiFlag
 } from "@mdi/js";
 
 export const icons = {
@@ -62,6 +61,5 @@ export const icons = {
     mdiFileDocument:mdiFileDocument,
     mdiClock:mdiClock,
     mdiCheckBold:mdiCheckBold,
-    mdiFlag:mdiFlag,
-    download: mdiDownload
+    mdiFlag:mdiFlag
 };

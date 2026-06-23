@@ -2,33 +2,45 @@ import { useState, useEffect } from "react";
 import Icon from "@mdi/react";
 import { icons } from "../../plugins/IconLibrary";
 import { getSubRegistroIncidenceImageApi } from "../../api/operador/registroIncidenceApi";
+import { getToken } from "../../api/config";
 
-const ImageViewer = ({ Path, originalName, onDelete }) => {
+const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+
+const ImageViewer = ({ Path, originalName, onDelete }: { Path: string; originalName: string; onDelete?: () => void }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [mediaUrl, setMediaUrl] = useState(null);
-  const [mediaType, setMediaType] = useState(null); // 'image' | 'video'
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
+  const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Función auxiliar para detectar tipo
-  const getFileType = (filename) => {
-    const extension = filename.split(".").pop().toLowerCase();
+  const getFileType = (filename: string): "image" | "video" | null => {
+    const extension = filename.split(".").pop()?.toLowerCase();
     const imageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
     const videoTypes = ["mp4", "webm", "ogg"];
 
-    if (imageTypes.includes(extension)) return "image";
-    if (videoTypes.includes(extension)) return "video";
+    if (imageTypes.includes(extension ?? "")) return "image";
+    if (videoTypes.includes(extension ?? "")) return "video";
     return null;
   };
 
   useEffect(() => {
-    const fetchMedia = async () => {
+    if (!Path) return;
+
+    const type = getFileType(Path);
+    setMediaType(type);
+
+    if (type === "video") {
+      const token = getToken();
+      setMediaUrl(`${BASE_URL}/evidence/${Path}${token ? `?token=${token}` : ""}`);
+      return;
+    }
+
+    const fetchImage = async () => {
       setLoading(true);
       try {
         const blob = await getSubRegistroIncidenceImageApi(Path);
         const url = URL.createObjectURL(blob);
         setMediaUrl(url);
-        setMediaType(getFileType(Path));
       } catch (err) {
         console.error("Error fetching media:", err);
         setError("Error al cargar el archivo");
@@ -36,20 +48,11 @@ const ImageViewer = ({ Path, originalName, onDelete }) => {
         setLoading(false);
       }
     };
-    console.log("Loading media from path:", Path);
 
-    if (Path) fetchMedia();
+    fetchImage();
   }, [Path]);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
-
-  const handleDownload = () => {
-    if (!mediaUrl) return;
-    const a = document.createElement("a");
-    a.href = mediaUrl;
-    a.download = originalName || "archivo";
-    a.click();
-  };
 
   return (
     <>
@@ -62,17 +65,6 @@ const ImageViewer = ({ Path, originalName, onDelete }) => {
         >
           <Icon path={isVisible ? icons.eye : icons.eyeOff} size={0.9} />
         </button>
-
-        {mediaUrl && (
-          <button
-            type="button"
-            onClick={handleDownload}
-            title="Descargar archivo"
-            className="text-gray-500 hover:text-gray-800 transition-all duration-200 ease-in cursor-pointer"
-          >
-            <Icon path={icons.download} size={0.9} />
-          </button>
-        )}
 
         {onDelete && (
           <button
