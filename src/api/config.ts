@@ -6,6 +6,8 @@ export const setToken = (token: string | null): void => {
   globalToken = token;
 };
 
+export const getToken = (): string | null => globalToken;
+
 const config = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
