@@ -8,11 +8,13 @@ import {
     createHunterApi,
     updateHunterApi
 } from '../../api/supervisor/HunterService.tsx';
+import { changeUserRoleApi } from '../../api/admin/userApi';
 import Loading from '../../components/Loading';
 import { useDeleteConfirmation } from '../../hooks/commons/useDeleteConfirmation.tsx';
 import UpdateFormOperator from '../../components/Supervisors/UpdateFormOperator.tsx';
 import CreateFormOperator from '../../components/Supervisors/CreateFormOperator.tsx';
 import NewPwdForm from '../../components/NewPwdForm.tsx';
+import ChangeRoleModal from '../../components/Admin/ChangeRoleModal.tsx';
 import CustomTablePagination from '../../components/Pagination/TablePagination.tsx';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, Plus, Users } from 'lucide-react';
@@ -33,6 +35,8 @@ const CazadoresAdmin = () => {
     const [dataEditPwd, setDataEditPwd] = useState(null);
     const [showUpdate, setShowUpdate] = useState(false);
     const [showUpdatePwd, setShowUpdatePwd] = useState(false);
+    const [dataEditRole, setDataEditRole] = useState(null);
+    const [showChangeRole, setShowChangeRole] = useState(false);
 
     const rowsPerPage = 10;
     const searchParams = new URLSearchParams(location.search);
@@ -41,6 +45,7 @@ const CazadoresAdmin = () => {
 
     const openModalEdit = (payload) => { setDataEdit(payload); setShowUpdate(true); };
     const openModalEditPwd = (payload) => { setDataEditPwd(payload); setShowUpdatePwd(true); };
+    const openModalChangeRole = (payload) => { setDataEditRole(payload); setShowChangeRole(true); };
 
     const fetchCazadores = async () => {
         try {
@@ -106,6 +111,17 @@ const CazadoresAdmin = () => {
         }
     };
 
+    const handleChangeRole = async (id, role) => {
+        try {
+            await changeUserRoleApi(id, role);
+            await fetchCazadores();
+            setShowChangeRole(false);
+            toast.success('Rol actualizado exitosamente!');
+        } catch (error) {
+            toast.error(`Error al cambiar el rol: ${error.message}`);
+        }
+    };
+
     return (
         <div className="p-2 sm:p-4 h-[calc(100vh-5rem)] flex flex-col">
             <div className="flex-1 min-h-0 rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
@@ -165,6 +181,9 @@ const CazadoresAdmin = () => {
                                                     <button onClick={() => openModalEdit(item)} title="Editar" className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors">
                                                         <Icon path={icons.edit} size={0.85} className="text-blue-500 dark:text-blue-400" />
                                                     </button>
+                                                    <button onClick={() => openModalChangeRole(item)} title="Cambiar rol" className="p-1.5 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
+                                                        <Icon path={icons.changeRole} size={0.85} className="text-orange-500 dark:text-orange-400" />
+                                                    </button>
                                                     <button onClick={() => confirmDelete(item, (p) => `${p.name} ${p.lastname}`)} title="Eliminar" className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
                                                         <Icon path={icons.delete} size={0.85} className="text-red-500 dark:text-red-400" />
                                                     </button>
@@ -202,6 +221,7 @@ const CazadoresAdmin = () => {
             <NewPwdForm isOpen={showUpdatePwd} onClose={() => setShowUpdatePwd(false)} data={dataEditPwd} onSubmit={handleUpdateCazador} />
             <UpdateFormOperator isOpen={showUpdate} onClose={() => setShowUpdate(false)} data={dataEdit} onSubmit={handleUpdateCazador} />
             <CreateFormOperator isOpen={showCreate} onClose={() => setShowCreate(false)} onSubmit={handleCreateCazador} />
+            <ChangeRoleModal isOpen={showChangeRole} onClose={() => setShowChangeRole(false)} data={dataEditRole} onSubmit={handleChangeRole} />
         </div>
     );
 };

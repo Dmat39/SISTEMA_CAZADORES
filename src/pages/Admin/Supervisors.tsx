@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import CreateForm from '../../components/Admin/CreateForm.tsx';
 import { getAllSupervisorApi, addsupervidorServiceApi, deleteSupervisorApi, updateSupervisorApi } from '../../api/supervisor/SupervidorService';
+import { changeUserRoleApi } from '../../api/admin/userApi';
 import UpdateForm from '../../components/Admin/UpdateForm.tsx';
+import ChangeRoleModal from '../../components/Admin/ChangeRoleModal.tsx';
 import { toast } from 'sonner';
 import Icon from '@mdi/react';
 import { icons } from '../../plugins/IconLibrary.js';
@@ -23,6 +25,8 @@ const SupervisorsAdmin = () => {
     const fetched = useRef(false);
     const [dataEdit, setDataEdit] = useState(null);
     const [showUpdate, setShowUpdate] = useState(false);
+    const [dataEditRole, setDataEditRole] = useState(null);
+    const [showChangeRole, setShowChangeRole] = useState(false);
 
     const rowsPerPage = 10;
     const searchParams = new URLSearchParams(location.search);
@@ -30,6 +34,7 @@ const SupervisorsAdmin = () => {
     const limit = parseInt(searchParams.get('limit')) || rowsPerPage;
 
     const openModalEdit = (payload) => { setDataEdit(payload); setShowUpdate(true); };
+    const openModalChangeRole = (payload) => { setDataEditRole(payload); setShowChangeRole(true); };
 
     const fetchSupervisors = async () => {
         try {
@@ -84,6 +89,17 @@ const SupervisorsAdmin = () => {
             toast.success('Supervisor actualizado exitosamente!');
         } catch (error) {
             toast.error(`Error al actualizar el supervisor ${error.message}`);
+        }
+    };
+
+    const handleChangeRole = async (id, role) => {
+        try {
+            await changeUserRoleApi(id, role);
+            await fetchSupervisors();
+            setShowChangeRole(false);
+            toast.success('Rol actualizado exitosamente!');
+        } catch (error) {
+            toast.error(`Error al cambiar el rol: ${error.message}`);
         }
     };
 
@@ -174,6 +190,9 @@ const SupervisorsAdmin = () => {
                                                     <button onClick={() => openModalEdit(item)} title="Editar" className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors">
                                                         <Icon path={icons.edit} size={0.85} className="text-blue-500 dark:text-blue-400" />
                                                     </button>
+                                                    <button onClick={() => openModalChangeRole(item)} title="Cambiar rol" className="p-1.5 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
+                                                        <Icon path={icons.changeRole} size={0.85} className="text-orange-500 dark:text-orange-400" />
+                                                    </button>
                                                     <button onClick={() => deleteSupervisor(item)} title="Eliminar" className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
                                                         <Icon path={icons.delete} size={0.85} className="text-red-500 dark:text-red-400" />
                                                     </button>
@@ -219,6 +238,7 @@ const SupervisorsAdmin = () => {
                 }}
             />
             <CreateForm isOpen={showCreate} onClose={() => setShowCreate(false)} onSubmit={handleCreate} />
+            <ChangeRoleModal isOpen={showChangeRole} onClose={() => setShowChangeRole(false)} data={dataEditRole} onSubmit={handleChangeRole} />
         </div>
     );
 };
