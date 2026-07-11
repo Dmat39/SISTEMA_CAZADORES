@@ -207,20 +207,20 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                     <div className="fixed inset-0 bg-black/60" aria-hidden="true"></div>
 
                     <div className="fixed inset-0 flex items-center justify-center p-4">
-                        <Dialog.Panel className={`rounded-lg shadow-lg max-w-xl w-full p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+                        <Dialog.Panel className={`rounded-lg shadow-lg max-w-xl w-full p-6 ${isDark ? 'bg-gray-800' : 'bg-[#fdfbf5]'}`}>
                             <div className='mb-2 flex'>
-                                <h3 className={`text-lg font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Editar Incidencia</h3>
-                                <button type="button" onClick={onClose} className={`text-gray-400 bg-transparent rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center ${isDark ? 'hover:bg-gray-700 hover:text-gray-200' : 'hover:bg-gray-200 hover:text-gray-900'}`}>
+                                <h3 className={`text-lg font-bold ${isDark ? 'text-gray-100' : 'text-[#3d2f1f]'}`}>Editar Incidencia</h3>
+                                <button type="button" onClick={onClose} className={`bg-transparent rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center ${isDark ? 'text-gray-400 hover:bg-gray-700 hover:text-gray-200' : 'text-[#a89878] hover:bg-[#f0e6d0] hover:text-[#3d2f1f]'}`}>
                                     <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                                     </svg>
                                     <span className="sr-only">Close modal</span>
                                 </button>
                             </div>
-                            <hr className={`mb-4 ${isDark ? 'border-gray-600' : 'border-gray-200'}`} />
+                            <hr className={`mb-4 ${isDark ? 'border-gray-600' : 'border-[#e8dfc8]'}`} />
                             <form onSubmit={handleSubmit} className='max-h-[80vh] overflow-y-auto pb-4'>
                                 <div className="mb-4">
-                                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Código</label>
+                                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Código</label>
                                     <Autocomplete
                                         id="code-autocomplete"
                                         open={openCodeAutocomplete}
@@ -244,8 +244,8 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                         renderOption={(props, option) => (
                                             <li {...props}>
                                                 <div>
-                                                    <div className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>{option.codigo_incidencia}</div>
-                                                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                    <div className={`font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>{option.codigo_incidencia}</div>
+                                                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-[#a89878]'}`}>
                                                         Lat: {option.latitud}, Lng: {option.longitud}
                                                     </div>
                                                 </div>
@@ -287,19 +287,19 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                         )}
                                     />
                                     {form.latitude && form.longitude && (
-                                        <div className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        <div className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-[#7a6a52]'}`}>
                                             📍 Coordenadas: {form.latitude}, {form.longitude}
                                         </div>
                                     )}
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Crimen</label>
+                                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Crimen</label>
                                     <select
                                         name="crimeId"
                                         value={form.crimeId}
                                         onChange={handleChange}
-                                        className={`w-full border px-3 py-2 rounded mt-1 text-sm ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                        className={`w-full border px-3 py-2 rounded mt-1 text-sm ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                     >
                                         {!form.crimeId && (
                                             <option value="" disabled hidden>
@@ -316,19 +316,19 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Nombre</label>
+                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Nombre</label>
                                     <input
                                         type="text"
                                         name="name"
                                         value={form.name}
                                         onChange={handleChange}
                                         onKeyDown={e => e.key === 'Enter' && e.preventDefault()}
-                                        className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                        className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                     />
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Placa</label>
+                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Placa</label>
                                     <input
                                         type="text"
                                         name="plate"
@@ -336,29 +336,29 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                         onChange={handleChange}
                                         onKeyDown={e => e.key === 'Enter' && e.preventDefault()}
                                         placeholder="Ingrese la placa del vehículo"
-                                        className={`w-full border px-3 py-2 rounded mt-1 uppercase tracking-wide ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                        className={`w-full border px-3 py-2 rounded mt-1 uppercase tracking-wide ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                     />
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Descripción</label>
+                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Descripción</label>
                                     <textarea
                                         name="description"
                                         value={form.description ?? ''}
                                         onChange={handleChange}
                                         rows={4}
-                                        className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                        className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                     />
                                 </div>
 
                                 <div className='flex flex-col md:flex-row'>
                                     <div className="mb-4 w-full mr-4">
-                                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Zona</label>
+                                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Zona</label>
                                         <select
                                             name="zoneId"
                                             value={form.zoneId}
                                             onChange={handleChange}
-                                            className={`w-full border px-3 py-2 rounded mt-1 text-sm ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                            className={`w-full border px-3 py-2 rounded mt-1 text-sm ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                         >
                                             {!form.zoneId && (
                                                 <option value="" disabled hidden>
@@ -374,12 +374,12 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                     </div>
 
                                     <div className="mb-4 w-full">
-                                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Medio</label>
+                                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Medio</label>
                                         <select
                                             name="communicationId"
                                             value={form.communicationId}
                                             onChange={handleChange}
-                                            className={`w-full border px-3 py-2 rounded mt-1 text-sm ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                            className={`w-full border px-3 py-2 rounded mt-1 text-sm ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                         >
                                             {!form.communicationId && (
                                                 <option value="" disabled hidden>
@@ -397,7 +397,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
 
                                 <div className='flex flex-col md:flex-row'>
                                     <div className="mb-4 w-full mr-4">
-                                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Fecha</label>
+                                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Fecha</label>
                                         <DatePicker
                                             value={date}
                                             onChange={(newDate) => setDate(newDate)}
@@ -432,7 +432,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                         />
                                     </div>
                                     <div className="mb-4 w-full">
-                                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Hora</label>
+                                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Hora</label>
                                         <TimePicker
                                             ampm={false}
                                             value={time}
@@ -469,7 +469,7 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Estado</label>
+                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Estado</label>
                                     <select
                                         name="status"
                                         value={form.status}
@@ -478,31 +478,31 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                         ${form.status === "process" ? "bg-blue-200 focus:ring-blue-500 focus:border-blue-500 border-blue-300 text-blue-900" : ""}
                                         ${form.status === "completed" ? "bg-green-200 focus:ring-green-500 focus:border-green-500 border-green-300 text-green-900" : ""}
                                         ${!form.status && isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : ''}
-                                        ${!form.status && !isDark ? 'bg-white border-gray-300 text-gray-900' : ''}`}
+                                        ${!form.status && !isDark ? 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]' : ''}`}
                                     >
-                                        <option className='bg-white text-black' value="process">En Proceso</option>
-                                        <option className='bg-white text-black' value="completed">Completado</option>
+                                        <option className='bg-[#fdfbf5] text-[#3d2f1f]' value="process">En Proceso</option>
+                                        <option className='bg-[#fdfbf5] text-[#3d2f1f]' value="completed">Completado</option>
                                     </select>
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Observación</label>
+                                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Observación</label>
                                     <textarea
                                         name="observation"
                                         value={form.observation ?? ''}
                                         onChange={handleChange}
                                         rows={4}
-                                        className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                        className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                     />
                                 </div>
 
                                 {/* Ubicación en el mapa - Solo visible cuando el estado es "previous" */}
                                 {form.status === 'previous' && (
                                     <div className="mb-4">
-                                        <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                                        <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>
                                             Ubicación del infractor
                                         </label>
-                                        <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-[#7a6a52]'}`}>
                                             Haz clic en el mapa para actualizar la ubicación del infractor
                                         </p>
                                         <MapSelector
@@ -519,13 +519,13 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
                                     <button
                                         type="button"
                                         onClick={onClose}
-                                        className={`mr-2 px-4 py-2 border rounded cursor-pointer ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700' : 'border-gray-300 text-gray-900 hover:bg-gray-100'}`}
+                                        className={`mr-2 px-4 py-2 border rounded cursor-pointer ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700' : 'border-[#e8dfc8] text-[#3d2f1f] hover:bg-[#f0e6d0]'}`}
                                     >
                                         Cancelar
                                     </button>
                                     <button
                                         type="submit"
-                                        className={`px-4 py-2 rounded cursor-pointer text-white ${isDark ? 'bg-gray-600 hover:bg-gray-700' : 'bg-black hover:bg-gray-800'}`}
+                                        className={`px-4 py-2 rounded cursor-pointer text-white ${isDark ? 'bg-gray-600 hover:bg-gray-700' : 'bg-orange-500 hover:bg-orange-600'}`}
                                     >
                                         Guardar cambios
                                     </button>

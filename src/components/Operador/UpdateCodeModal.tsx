@@ -69,16 +69,16 @@ const UpdateCodeModal = ({ isOpen, onClose, data, onSubmit }) => {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Dialog */}
-      <div className="relative z-10 w-full max-w-md mx-4 bg-slate-50 dark:bg-[#111827] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl">
+      <div className="relative z-10 w-full max-w-md mx-4 bg-[#fdfbf5] dark:bg-[#111827] border border-[#e8dfc8] dark:border-white/10 rounded-xl shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8dfc8] dark:border-white/10">
+          <h2 className="text-base font-semibold text-[#3d2f1f] dark:text-white">
             Actualizar Código de Incidencia
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-lg text-[#a89878] hover:text-[#7a6a52] dark:hover:text-white hover:bg-[#f0e6d0] dark:hover:bg-white/10 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -87,7 +87,7 @@ const UpdateCodeModal = ({ isOpen, onClose, data, onSubmit }) => {
         {/* Body */}
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
           <div>
-            <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="block mb-1.5 text-sm font-medium text-[#7a6a52] dark:text-gray-300">
               Código
             </label>
             <ThemeProvider theme={muiTheme}>
@@ -107,7 +107,7 @@ const UpdateCodeModal = ({ isOpen, onClose, data, onSubmit }) => {
                   <li {...props}>
                     <div>
                       <div className="font-medium">{option.codigo_incidencia}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                      <div className="text-xs text-[#a89878] dark:text-gray-400">
                         Lat: {option.latitud}, Lng: {option.longitud}
                       </div>
                     </div>
@@ -136,7 +136,7 @@ const UpdateCodeModal = ({ isOpen, onClose, data, onSubmit }) => {
             </ThemeProvider>
 
             {selectedOption?.latitud && selectedOption?.longitud && (
-              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-2 text-xs text-[#a89878] dark:text-gray-400">
                 📍 Coordenadas: {selectedOption.latitud}, {selectedOption.longitud}
               </p>
             )}
@@ -147,7 +147,7 @@ const UpdateCodeModal = ({ isOpen, onClose, data, onSubmit }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+              className="px-4 py-2 text-sm font-medium rounded-lg border border-[#e8dfc8] dark:border-white/10 text-[#7a6a52] dark:text-gray-300 hover:bg-[#f0e6d0] dark:hover:bg-white/10 transition-colors"
             >
               Cancelar
             </button>

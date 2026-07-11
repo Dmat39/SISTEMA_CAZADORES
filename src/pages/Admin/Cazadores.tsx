@@ -124,19 +124,19 @@ const CazadoresAdmin = () => {
 
     return (
         <div className="p-2 sm:p-4 h-[calc(100vh-5rem)] flex flex-col">
-            <div className="flex-1 min-h-0 rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
+            <div className="flex-1 min-h-0 rounded-xl bg-[#fdfbf5] dark:bg-[#111827] shadow border border-[#e8dfc8] dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
 
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#a89878] pointer-events-none" />
                             <input
                                 type="text"
                                 placeholder="Buscar cazador..."
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
-                                className="w-full sm:w-64 h-9 pl-9 pr-3 text-sm bg-gray-100 dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder-gray-600 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500 outline-none transition-all"
+                                className="w-full sm:w-64 h-9 pl-9 pr-3 text-sm bg-[#fdfbf5] dark:bg-[#1e293b] border border-[#e8dfc8] dark:border-white/10 text-[#3d2f1f] dark:text-white placeholder-[#7a6a52] dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500 outline-none transition-all"
                             />
                         </div>
                         <button
@@ -155,28 +155,28 @@ const CazadoresAdmin = () => {
                     <Loading message="Cargando Cazadores" />
                 ) : cazadores.length > 0 ? (
                     <div className="flex flex-col gap-3 flex-1 min-h-0">
-                        <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-gray-200 dark:border-white/8">
-                            <table className="min-w-full divide-y divide-gray-100 dark:divide-white/8">
-                                <thead className="bg-gray-100 dark:bg-[#1e293b]">
+                        <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-[#e8dfc8] dark:border-white/8">
+                            <table className="min-w-full divide-y divide-[#e8dfc8] dark:divide-white/8">
+                                <thead className="bg-[#f0e6d0] dark:bg-[#1e293b]">
                                     <tr>
                                         {['Nombre', 'Apellido', 'DNI', 'Teléfono', 'Usuario'].map((h) => (
-                                            <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider">{h}</th>
+                                            <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-[#7a6a52] dark:text-gray-400 uppercase tracking-wider">{h}</th>
                                         ))}
-                                        <th className="px-5 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
+                                        <th className="px-5 py-3 text-center text-xs font-semibold text-[#7a6a52] dark:text-gray-400 uppercase tracking-wider">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-slate-50 dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
+                                <tbody className="bg-[#fdfbf5] dark:bg-[#111827] divide-y divide-[#e8dfc8] dark:divide-white/5">
                                     {cazadores.map((item, idx) => (
-                                        <tr key={item.id || idx} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.name || '—'}</td>
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.lastname || '—'}</td>
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.dni || '—'}</td>
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.phone || '—'}</td>
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.username || '—'}</td>
+                                        <tr key={item.id || idx} className="hover:bg-[#f7f0e0] dark:hover:bg-white/5 transition-colors">
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.name || '—'}</td>
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.lastname || '—'}</td>
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.dni || '—'}</td>
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.phone || '—'}</td>
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.username || '—'}</td>
                                             <td className="px-5 py-3.5">
                                                 <div className="flex justify-center gap-0.5">
-                                                    <button onClick={() => openModalEditPwd(item)} title="Nueva contraseña" className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/8 transition-colors">
-                                                        <Icon path={icons.mdiAccountKey} size={0.85} className="text-gray-500 dark:text-gray-400" />
+                                                    <button onClick={() => openModalEditPwd(item)} title="Nueva contraseña" className="p-1.5 rounded-lg hover:bg-[#f0e6d0] dark:hover:bg-white/8 transition-colors">
+                                                        <Icon path={icons.mdiAccountKey} size={0.85} className="text-[#a89878] dark:text-gray-400" />
                                                     </button>
                                                     <button onClick={() => openModalEdit(item)} title="Editar" className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors">
                                                         <Icon path={icons.edit} size={0.85} className="text-blue-500 dark:text-blue-400" />
@@ -205,9 +205,9 @@ const CazadoresAdmin = () => {
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-                        <Users className="h-12 w-12 text-gray-500 dark:text-gray-500" />
-                        <h3 className="text-base font-semibold text-gray-900 dark:text-white">No hay cazadores registrados</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs">Aún no se han registrado cazadores en el sistema</p>
+                        <Users className="h-12 w-12 text-[#a89878] dark:text-gray-500" />
+                        <h3 className="text-base font-semibold text-[#3d2f1f] dark:text-white">No hay cazadores registrados</h3>
+                        <p className="text-sm text-[#a89878] dark:text-gray-400 max-w-xs">Aún no se han registrado cazadores en el sistema</p>
                         <button
                             onClick={() => setShowCreate(true)}
                             className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"

@@ -193,18 +193,18 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
           overflowY: "auto",
         }}
       >
-        <div className={`flex items-center justify-between p-4 border-b rounded-t ${isDark ? 'border-gray-600' : 'border-gray-300'}`}>
+        <div className={`flex items-center justify-between p-4 border-b rounded-t ${isDark ? 'border-gray-600' : 'border-[#e8dfc8]'}`}>
           <div>
-            <h3 className={`text-2xl font-semibold mb-1 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
+            <h3 className={`text-2xl font-semibold mb-1 ${isDark ? 'text-gray-100' : 'text-[#3d2f1f]'}`}>
               Nuevo Registro
             </h3>
-            <span className={`font-normal text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <span className={`font-normal text-sm ${isDark ? 'text-gray-400' : 'text-[#7a6a52]'}`}>
               Agrega un nuevo registro a esta incidencia
             </span>
           </div>
           <button
             onClick={handleCloseModal}
-            className={`text-white flex flex-row items-center justify-center rounded-lg w-8 h-8 cursor-pointer ${isDark ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-500 hover:bg-gray-700'}`}
+            className={`text-white flex flex-row items-center justify-center rounded-lg w-8 h-8 cursor-pointer ${isDark ? 'bg-gray-600 hover:bg-gray-700' : 'bg-[#a89878] hover:bg-[#7a6a52]'}`}
           >
             ✕
           </button>
@@ -212,7 +212,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
 
         <form className="p-4 space-y-5">
           <div>
-            <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+            <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>
               Seleccionar Cámara *
             </label>
             <Autocomplete
@@ -253,8 +253,8 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               renderOption={(props, option) => (
                 <Box component="li" {...props} key={option.id}>
                   <div>
-                    <div className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>{option.name}</div>
-                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <div className={`font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>{option.name}</div>
+                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-[#7a6a52]'}`}>
                       {option.address} - {option.cameraType}
                     </div>
                   </div>
@@ -271,7 +271,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
 
           <div className="flex gap-4">
             <div className="w-full">
-              <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+              <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>
                 Fecha del Incidente *
               </label>
               <DatePicker
@@ -303,7 +303,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
               />
             </div>
             <div className="w-full">
-              <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+              <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>
                 Hora del Incidente *
               </label>
               <TimePicker
@@ -337,12 +337,12 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
           </div>
 
           <div>
-            <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+            <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>
               Descripción del Incidente
             </label>
             <TextareaAutosize
               minRows={4}
-              className={`w-full p-2 border rounded-md text-md ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400 hover:border-gray-500' : 'bg-white border-gray-300 text-gray-900 hover:border-gray-800'}`}
+              className={`w-full p-2 border rounded-md text-md ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400 hover:border-gray-500' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f] hover:border-[#a89878]'}`}
               placeholder="Describe los detalles del incidente, lo que observaste, acciones tomadas..."
               value={form.description}
               onChange={(e) => updateFormField("description", e.target.value)}
@@ -352,7 +352,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
           <div
             ref={pasteZoneRef}
             tabIndex={0}
-            className={`border-2 border-dashed p-6 rounded-lg relative ${isDark ? 'border-gray-600 hover:border-gray-400' : 'border-gray-400 hover:border-gray-800'}`}
+            className={`border-2 border-dashed p-6 rounded-lg relative ${isDark ? 'border-gray-600 hover:border-gray-400' : 'border-[#a89878] hover:border-[#7a6a52]'}`}
           >
             <input
               type="file"
@@ -364,14 +364,14 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
 
 
             <div className="flex flex-col items-center space-y-2">
-              <div className={`rounded-full p-2 ${isDark ? 'bg-gray-600' : 'bg-gray-200'}`}>
-                <CloudArrowUpIcon className={`w-10 h-10 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} />
+              <div className={`rounded-full p-2 ${isDark ? 'bg-gray-600' : 'bg-[#f0e6d0]'}`}>
+                <CloudArrowUpIcon className={`w-10 h-10 ${isDark ? 'text-gray-300' : 'text-[#7a6a52]'}`} />
               </div>
               <div className="text-center">
-                <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>
                   Haz clic para subir imágenes (máx. 5) o un video (máx. 1 min), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
                 </p>
-                <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-[#a89878]'}`}>
                   Formatos permitidos: PNG, JPG, JPEG y MP4
                 </span>
               </div>
@@ -386,7 +386,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
                 {form.files.map((file, index) => (
                   <div
                     key={index}
-                    className="relative group w-24 h-24 rounded overflow-hidden border border-gray-300"
+                    className="relative group w-24 h-24 rounded overflow-hidden border border-[#e8dfc8]"
                   >
                     {file.type.startsWith("image/") ? (
                       <img
@@ -418,7 +418,7 @@ const CreateFormRegister = ({ incidenceId, onClose, onSubmit }) => {
           <div className="flex justify-end gap-3 mt-6">
             <button
               onClick={handleCloseModal}
-              className={`cursor-pointer border font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-4 focus:outline-none ${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700 hover:text-white focus:ring-gray-600' : 'text-gray-900 border-gray-800 hover:bg-gray-700 hover:text-white focus:ring-gray-300'}`}
+              className={`cursor-pointer border font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-4 focus:outline-none ${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700 hover:text-white focus:ring-gray-600' : 'text-[#3d2f1f] border-[#a89878] hover:bg-[#7a6a52] hover:text-white focus:ring-[#e8dfc8]'}`}
             >
               Cancelar
             </button>

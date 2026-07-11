@@ -86,7 +86,7 @@ const MapSelector = ({
   };
 
   return (
-    <div className={`w-full rounded-lg overflow-hidden border ${isDark ? 'border-gray-600' : 'border-gray-300'}`}>
+    <div className={`w-full rounded-lg overflow-hidden border ${isDark ? 'border-gray-600' : 'border-[#e8dfc8]'}`}>
       <MapContainer
         key={mapKey}
         center={center}
@@ -118,7 +118,7 @@ const MapSelector = ({
       </MapContainer>
 
       {position && (
-        <div className={`p-2 text-sm ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-50 text-gray-600'}`}>
+        <div className={`p-2 text-sm ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-[#fdfbf5] text-[#7a6a52]'}`}>
           📍 Coordenadas seleccionadas: {position[0].toFixed(6)}, {position[1].toFixed(6)}
         </div>
       )}

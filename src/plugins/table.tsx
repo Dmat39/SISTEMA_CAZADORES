@@ -72,7 +72,7 @@ const CustomTable = ({
 
     return (
         <div className='w-full relative'>
-            <div className={`flex justify-center items-center bg-white/80 z-20 h-full w-full py-3 absolute
+            <div className={`flex justify-center items-center bg-[#fdfbf5]/80 z-20 h-full w-full py-3 absolute
                 transition-opacity duration-300 ease-in-out ${loading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <CircularProgress size={30} thickness={5} className='!text-[#4052af]' />
             </div>
@@ -82,7 +82,7 @@ const CustomTable = ({
                     <CustomTablePagination count={count} page={page} limit={limit} handlePageLimitChange={handlePageLimitChange} />
                 </div>
                 <Table size='small' className='text-nowrap'>
-                    <TableHead className='sticky top-0 z-10 bg-neutral-200'>
+                    <TableHead className='sticky top-0 z-10 bg-[#f0e6d0]'>
                         <TableRow>
                             <TableCell
                                 sx={{ fontWeight: 600 }}
@@ -161,7 +161,7 @@ const CustomTable = ({
                                                             arrow
                                                             placement='top'
                                                             onClick={item.action}
-                                                            className='cursor-pointer text-gray-500'
+                                                            className='cursor-pointer text-[#a89878]'
                                                         >
                                                             {item.icon}
                                                         </Tooltip>
@@ -200,7 +200,7 @@ const CustomTable = ({
                 </Table>
                 {sortedData.length === 0 && (
                     <div className='flex justify-center py-2 sticky left-0'>
-                        <span className='text-xs text-gray-500 italic'>{noDataText}</span>
+                        <span className='text-xs text-[#a89878] italic'>{noDataText}</span>
                     </div>
                 )}
                 <div className='flex justify-center items-center mt-1'>
@@ -209,7 +209,7 @@ const CustomTable = ({
             </div>
 
             {legend &&
-                <span className='text-xs text-gray-500 italic'>
+                <span className='text-xs text-[#a89878] italic'>
                     <strong>Leyenda:</strong> {legend}
                 </span>
             }

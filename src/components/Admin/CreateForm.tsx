@@ -40,14 +40,14 @@ const CreateForm = ({ isOpen, onClose, onSubmit }) => {
   const inputClass = `w-full border px-3 py-2 rounded mt-1 ${
     isDark
       ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-      : 'bg-white border-gray-300 text-gray-900'
+      : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'
   }`;
   const readonlyClass = `w-full border px-3 py-2 rounded mt-1 cursor-default ${
     isDark
       ? 'bg-gray-600 border-gray-500 text-gray-300'
-      : 'bg-gray-100 border-gray-300 text-gray-600'
+      : 'bg-[#f0e6d0] border-[#e8dfc8] text-[#7a6a52]'
   }`;
-  const labelClass = `block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`;
+  const labelClass = `block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`;
 
   const handleDniChange = (e) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 8);
@@ -108,8 +108,8 @@ const CreateForm = ({ isOpen, onClose, onSubmit }) => {
     <Dialog open={isOpen} onClose={handleClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/60" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className={`rounded-lg shadow-lg max-w-md w-full p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-          <Dialog.Title className={`text-lg font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
+        <Dialog.Panel className={`rounded-lg shadow-lg max-w-md w-full p-6 ${isDark ? 'bg-gray-800' : 'bg-[#fdfbf5]'}`}>
+          <Dialog.Title className={`text-lg font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-[#3d2f1f]'}`}>
             Crear Supervisor
           </Dialog.Title>
 
@@ -198,7 +198,7 @@ const CreateForm = ({ isOpen, onClose, onSubmit }) => {
                 className={`mr-2 px-4 py-2 border rounded cursor-pointer ${
                   isDark
                     ? 'border-gray-600 text-gray-200 hover:bg-gray-700'
-                    : 'border-gray-300 text-gray-900 hover:bg-gray-100'
+                    : 'border-[#e8dfc8] text-[#3d2f1f] hover:bg-[#f0e6d0]'
                 }`}
               >
                 Cancelar

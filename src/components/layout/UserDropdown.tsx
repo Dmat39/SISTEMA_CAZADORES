@@ -31,7 +31,7 @@ export default function UserDropdown() {
 
   return (
     <Menu as="div" className="relative">
-      <MenuButton className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors focus:outline-none">
+      <MenuButton className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-[#f7f0e0] dark:hover:bg-white/10 transition-colors focus:outline-none">
         {/* Orange avatar with initials */}
         <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0 select-none">
           {getInitials(username)}
@@ -39,7 +39,7 @@ export default function UserDropdown() {
 
         {/* Name + role — desktop only */}
         <div className="hidden sm:flex flex-col items-start leading-tight">
-          <span className="text-sm font-semibold text-gray-800 dark:text-white">
+          <span className="text-sm font-semibold text-[#3d2f1f] dark:text-white">
             {username || 'Usuario'}
           </span>
           <span className="text-xs text-orange-500 dark:text-orange-400 font-medium">
@@ -47,17 +47,17 @@ export default function UserDropdown() {
           </span>
         </div>
 
-        <ChevronDown className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400 hidden sm:block" />
+        <ChevronDown className="h-3.5 w-3.5 text-[#a89878] dark:text-gray-400 hidden sm:block" />
       </MenuButton>
 
       <MenuItems
         transition
         anchor="bottom end"
-        className="z-[60] mt-2 w-52 rounded-2xl bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 shadow-xl shadow-black/10 dark:shadow-black/40 transition duration-150 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
+        className="z-[60] mt-2 w-52 rounded-2xl bg-[#fdfbf5] dark:bg-[#0f172a] border border-[#e8dfc8] dark:border-white/10 shadow-xl shadow-black/10 dark:shadow-black/40 transition duration-150 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 focus:outline-none"
       >
         {/* Header */}
-        <div className="px-4 py-3 border-b border-gray-200 dark:border-white/10">
-          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+        <div className="px-4 py-3 border-b border-[#e8dfc8] dark:border-white/10">
+          <p className="text-sm font-semibold text-[#3d2f1f] dark:text-white">
             {username || 'Usuario'}
           </p>
           <p className="text-xs text-orange-500 dark:text-orange-400 font-medium mt-0.5">
@@ -70,7 +70,7 @@ export default function UserDropdown() {
           <MenuItem>
             <button
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-600 dark:text-gray-300 data-[focus]:bg-orange-50 dark:data-[focus]:bg-white/10 data-[focus]:text-orange-600 dark:data-[focus]:text-white transition-colors"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#7a6a52] dark:text-gray-300 data-[focus]:bg-orange-50 dark:data-[focus]:bg-white/10 data-[focus]:text-orange-600 dark:data-[focus]:text-white transition-colors"
             >
               <LogOut className="h-4 w-4 text-orange-500 shrink-0" />
               Cerrar Sesión

@@ -40,28 +40,28 @@ const NewPwdForm = ({ isOpen, onClose, data, onSubmit }) => {
             <div className="fixed inset-0 bg-black/60" aria-hidden="true"></div>
 
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <Dialog.Panel className={`rounded-lg shadow-lg max-w-md w-full p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-                    <Dialog.Title className={`text-lg font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Nueva contraseña</Dialog.Title>
+                <Dialog.Panel className={`rounded-lg shadow-lg max-w-md w-full p-6 ${isDark ? 'bg-gray-800' : 'bg-[#fdfbf5]'}`}>
+                    <Dialog.Title className={`text-lg font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-[#3d2f1f]'}`}>Nueva contraseña</Dialog.Title>
 
                     <form onSubmit={handleSubmit}>
                         <div className="mb-6">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Contraseña</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Contraseña</label>
                             <div className='relative mt-1'>
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={form.password}
                                     onChange={handleChange}
-                                    className={`w-full border px-3 py-2 rounded ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
+                                    className={`w-full border px-3 py-2 rounded ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                     pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
                                     title="La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo."
                                 />
                                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
                                     <button type="button" onClick={togglePasswordVisibility} className="focus:outline-none cursor-pointer">
                                         {showPassword ? (
-                                            <FaEyeSlash className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-gray-400'}`} />
+                                            <FaEyeSlash className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-[#a89878]'}`} />
                                         ) : (
-                                            <FaEye className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-gray-400'}`} />
+                                            <FaEye className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-[#a89878]'}`} />
                                         )
                                         }
                                     </button>
@@ -73,7 +73,7 @@ const NewPwdForm = ({ isOpen, onClose, data, onSubmit }) => {
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className={`mr-2 px-4 py-2 border rounded cursor-pointer ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700' : 'border-gray-300 text-gray-900 hover:bg-gray-100'}`}
+                                className={`mr-2 px-4 py-2 border rounded cursor-pointer ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700' : 'border-[#e8dfc8] text-[#3d2f1f] hover:bg-[#f7f0e0]'}`}
                             >
                                 Cancelar
                             </button>

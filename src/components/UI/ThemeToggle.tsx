@@ -11,9 +11,9 @@ const ThemeToggle = () => {
         relative inline-flex items-center justify-center
         w-12 h-6 rounded-full transition-all duration-300 ease-in-out
         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-        ${isDark 
-          ? 'bg-gray-700 hover:bg-gray-600' 
-          : 'bg-gray-200 hover:bg-gray-300'
+        ${isDark
+          ? 'bg-gray-700 hover:bg-gray-600'
+          : 'bg-[#e8dfc8] hover:bg-[#dcd0b0]'
         }
       `}
       aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
@@ -23,9 +23,9 @@ const ThemeToggle = () => {
         className={`
           absolute inline-block w-5 h-5 rounded-full transition-all duration-300 ease-in-out
           transform shadow-lg
-          ${isDark 
-            ? 'translate-x-3 bg-gray-900' 
-            : 'translate-x-[-11px] bg-white'
+          ${isDark
+            ? 'translate-x-3 bg-gray-900'
+            : 'translate-x-[-11px] bg-[#fdfbf5]'
           }
         `}
       >

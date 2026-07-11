@@ -89,13 +89,13 @@ export default function Auditoria() {
 
   return (
     <div className="p-2 sm:p-4 h-[calc(100vh-5rem)] flex flex-col">
-      <div className="flex-1 min-h-0 rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
+      <div className="flex-1 min-h-0 rounded-xl bg-[#fdfbf5] dark:bg-[#111827] shadow border border-[#e8dfc8] dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
 
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-gray-900 dark:text-white">Registro de actividad</h2>
+            <h2 className="text-base font-bold text-[#3d2f1f] dark:text-white">Registro de actividad</h2>
             {!isLoading && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              <p className="text-xs text-[#a89878] dark:text-gray-400 mt-0.5">
                 {totalCount} {totalCount === 1 ? 'evento' : 'eventos'} registrados
               </p>
             )}
@@ -104,7 +104,7 @@ export default function Auditoria() {
             onClick={refresh}
             disabled={isLoading}
             title="Actualizar"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#7a6a52] dark:text-gray-400 bg-[#f0e6d0] dark:bg-white/5 hover:bg-[#e8dfc8] dark:hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Actualizar</span>
@@ -115,9 +115,9 @@ export default function Auditoria() {
 
         {!isLoading && logs.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-            <ClipboardList className="h-12 w-12 text-gray-400 dark:text-gray-500" />
-            <h3 className="text-base font-semibold text-gray-900 dark:text-white">Sin actividad registrada</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs">
+            <ClipboardList className="h-12 w-12 text-[#a89878] dark:text-gray-500" />
+            <h3 className="text-base font-semibold text-[#3d2f1f] dark:text-white">Sin actividad registrada</h3>
+            <p className="text-sm text-[#a89878] dark:text-gray-400 max-w-xs">
               Los eventos del sistema aparecerán aquí al realizarse acciones
             </p>
           </div>
@@ -125,29 +125,29 @@ export default function Auditoria() {
 
         {!isLoading && logs.length > 0 && (
           <div className="flex flex-col gap-3 flex-1 min-h-0">
-            <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-gray-200 dark:border-white/8">
-              <table className="min-w-full divide-y divide-gray-100 dark:divide-white/8">
-                <thead className="bg-gray-100 dark:bg-[#1e293b] sticky top-0">
+            <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-[#e8dfc8] dark:border-white/8">
+              <table className="min-w-full divide-y divide-[#e8dfc8] dark:divide-white/8">
+                <thead className="bg-[#f0e6d0] dark:bg-[#1e293b] sticky top-0">
                   <tr>
                     {HEADERS.map((h) => (
-                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[#7a6a52] dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
                         {h}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-slate-50 dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
+                <tbody className="bg-[#fdfbf5] dark:bg-[#111827] divide-y divide-[#e8dfc8] dark:divide-white/5">
                   {logs.map((log, idx) => (
-                    <tr key={log.id ?? idx} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                    <tr key={log.id ?? idx} className="hover:bg-[#f7f0e0] dark:hover:bg-white/5 transition-colors">
 
                       {/* Fecha */}
-                      <td className="px-4 py-3 text-xs font-mono text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs font-mono text-[#7a6a52] dark:text-gray-400 whitespace-nowrap">
                         {fmt(log.createdAt)}
                       </td>
 
                       {/* Usuario */}
                       <td className="px-4 py-3">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                        <div className="text-sm font-medium text-[#3d2f1f] dark:text-white whitespace-nowrap">
                           {log.user?.name} {log.user?.lastname}
                         </div>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold mt-0.5 ${ROLE_COLOR[log.user?.role] ?? 'bg-gray-100 text-gray-600'}`}>
@@ -170,13 +170,13 @@ export default function Auditoria() {
                       </td>
 
                       {/* Afectado */}
-                      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 max-w-[140px]">
+                      <td className="px-4 py-3 text-sm text-[#7a6a52] dark:text-gray-300 max-w-[140px]">
                         <span className="truncate block">{log.targetName ?? '—'}</span>
                       </td>
 
                       {/* Campo */}
-                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        {log.field ? (FIELD_LABEL[log.field] ?? log.field) : <span className="text-gray-300 dark:text-gray-600">—</span>}
+                      <td className="px-4 py-3 text-sm text-[#7a6a52] dark:text-gray-400 whitespace-nowrap">
+                        {log.field ? (FIELD_LABEL[log.field] ?? log.field) : <span className="text-[#a89878] dark:text-gray-600">—</span>}
                       </td>
 
                       {/* Valor anterior */}
@@ -185,7 +185,7 @@ export default function Auditoria() {
                           ? <span className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded font-mono">
                               {translateValue(log.field, log.oldValue)}
                             </span>
-                          : <span className="text-gray-300 dark:text-gray-600 text-sm">—</span>
+                          : <span className="text-[#a89878] dark:text-gray-600 text-sm">—</span>
                         }
                       </td>
 
@@ -195,7 +195,7 @@ export default function Auditoria() {
                           ? <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded font-mono">
                               {translateValue(log.field, log.newValue)}
                             </span>
-                          : <span className="text-gray-300 dark:text-gray-600 text-sm">—</span>
+                          : <span className="text-[#a89878] dark:text-gray-600 text-sm">—</span>
                         }
                       </td>
 

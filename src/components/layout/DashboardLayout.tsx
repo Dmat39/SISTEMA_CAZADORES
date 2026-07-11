@@ -13,7 +13,7 @@ function LayoutShell({ items }: { items: ReturnType<typeof getMenuForRole> }) {
       <AppSidebar items={items} />
       <AppNavbar />
       <main className={[
-        'pt-20 h-screen overflow-y-auto bg-slate-200 dark:bg-[#0a0f1e]',
+        'pt-20 h-screen overflow-y-auto bg-[#f7f2e7] dark:bg-[#0a0f1e]',
         'transition-all duration-300 ease-in-out',
         isCollapsed ? 'sm:ml-[72px]' : 'sm:ml-60',
       ].join(' ')}>
