@@ -18,14 +18,15 @@ import StatusFilter from '../../components/Supervisors/StatusFilter.tsx';
 import { isVisualizer } from '../../lib/utils.js';
 import { Search, Plus, AlertCircle } from 'lucide-react';
 import { useSetPageTitle } from '../../contexts/PageTitleContext';
+import { getSoftBadgeClass } from '../../components/Operador/kanban/kanbanConfig';
 
+// Mismos colores y nombres que ve el cazador; "previous" se muestra junto a "process" como "En Proceso"
 const STATUS_BADGE = {
-    previous:  'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-400',
-    process:   'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-400',
-    completed: 'bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400',
-    finished:  'bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-400',
+    previous:  getSoftBadgeClass('process'),
+    process:   getSoftBadgeClass('process'),
+    completed: getSoftBadgeClass('completed'),
 };
-const STATUS_LABEL = { previous: 'En Proceso', process: 'En Proceso', completed: 'Completado', finished: 'Finalizado' };
+const STATUS_LABEL = { previous: 'En Proceso', process: 'En Proceso', completed: 'Completado' };
 
 const Incidence = () => {
     useSetPageTitle('Incidencias', 'Monitoreo · En tiempo real', true);
@@ -220,7 +221,7 @@ const Incidence = () => {
                                                 {(() => { const d = new Date(item.date); return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`; })()}
                                             </td>
                                             <td className="px-3 py-2.5 whitespace-nowrap">
-                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_BADGE[item.status] || 'bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300'}`}>
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_BADGE[item.status] || 'bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-400'}`}>
                                                     {STATUS_LABEL[item.status] || item.status}
                                                 </span>
                                             </td>
@@ -238,7 +239,7 @@ const Incidence = () => {
                                                     {!isVisualizer(role) && (
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); setSelectedIncidenceId(item.id); setSelectedIncidenceName(item.name); setShowAssignedOperators(true); }}
-                                                            title="Operadores asignados"
+                                                            title="Cazadores asignados"
                                                             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/8 transition-colors"
                                                         >
                                                             <Icon path={icons.mdiAccountGroup} size={0.8} className="text-gray-500 dark:text-gray-400" />
@@ -277,7 +278,7 @@ const Incidence = () => {
                     <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
                         <AlertCircle className="h-12 w-12 text-gray-500 dark:text-gray-500" />
                         <h3 className="text-base font-semibold text-gray-900 dark:text-white">No hay incidencias registradas</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">Aún no se han reportado incidencias por parte de los operadores</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">Aún no se han reportado incidencias por parte de los cazadores</p>
                         {!isVisualizer(role) && (
                             <button
                                 onClick={() => setShowForm(true)}

@@ -3,7 +3,7 @@ import { Button } from "../../UI/button";
 import { Badge } from "../../UI/badge";
 import Icon from "@mdi/react";
 import { icons } from "../../../plugins/IconLibrary";
-import { KANBAN_STATES } from "./kanbanConfig";
+import { KANBAN_STATES, translateStatusError } from "./kanbanConfig";
 
 const StatusChangeModal = ({ 
   isOpen, 
@@ -22,39 +22,13 @@ const StatusChangeModal = ({
     return KANBAN_STATES[status]?.titulo || status;
   };
 
-  // Mapeo de colores para los badges
+  // Mapeo de colores para los badges (misma paleta que el resto del Kanban)
   const getStatusColor = (status) => {
-    const colorMap = {
-      previous: "bg-orange-600",
-      process: "bg-blue-600", 
-      completed: "bg-purple-600",
-      finished: "bg-green-600"
-    };
-    return colorMap[status] || "bg-gray-600";
-  };
-
-  // Traducir mensajes de error al español
-  const translateErrorMessage = (message) => {
-    const translations = {
-      "Invalid transition: previous can only move to process": 
-        "Transición inválida: El estado 'Previo' solo puede cambiar a 'En Proceso'",
-      "Invalid transition: process can only move to completed": 
-        "Transición inválida: El estado 'En Proceso' solo puede cambiar a 'En Ejecución'",
-      "Invalid transition: completed can only move to finished": 
-        "Transición inválida: El estado 'En Ejecución' solo puede cambiar a 'Finalizado'",
-      "Cannot change status to completed without assigning a code to the incident": 
-        "No se puede cambiar a 'En Ejecución' sin asignar un código a la incidencia",
-      "Cannot move backwards in the workflow": 
-        "No se puede retroceder en el flujo de trabajo",
-      "Cannot skip states in the workflow": 
-        "No se puede saltar estados en el flujo de trabajo"
-    };
-    
-    return translations[message] || message;
+    return KANBAN_STATES[status]?.solidColor || "bg-gray-600";
   };
 
   const isError = !!errorMessage;
-  const translatedError = errorMessage ? translateErrorMessage(errorMessage) : null;
+  const translatedError = errorMessage ? translateStatusError(errorMessage) : null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

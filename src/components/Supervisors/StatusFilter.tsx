@@ -12,8 +12,7 @@ const StatusFilter = () => {
     const statusOptions = [
         { value: '', label: 'Todos los estados' },
         { value: 'process', label: 'En proceso' },
-        { value: 'completed', label: 'Completado' },
-        { value: 'finished', label: 'Finalizado' }
+        { value: 'completed', label: 'Completado' }
     ];
 
     const handleStatusChange = (event) => {

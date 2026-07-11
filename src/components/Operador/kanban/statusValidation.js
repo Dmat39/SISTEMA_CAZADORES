@@ -1,19 +1,17 @@
 // Validaciones para transiciones de estado del Kanban
 
-// Flujo válido de estados (puede avanzar o retroceder, excepto desde finished)
+// Flujo válido de estados (puede avanzar o retroceder, excepto desde completed)
 const VALID_TRANSITIONS = {
     previous: ['process'],
     process: ['completed', 'previous'],
-    completed: ['finished', 'process', 'previous'],
-    finished: ['process', 'completed', 'previous'] // Puede reabrirse
+    completed: ['process', 'previous'] // Puede reabrirse
 };
 
 // Orden de los estados para detectar retrocesos
 const STATE_ORDER = {
     previous: 0,
     process: 1,
-    completed: 2,
-    finished: 3
+    completed: 2
 };
 
 /**
@@ -43,8 +41,7 @@ export const validateStatusTransition = (fromStatus, toStatus, incidencia = {}) 
     if (!validNextStates.includes(toStatus)) {
         const errorMessages = {
             previous: "Invalid transition: previous can only move to process",
-            process: "Invalid transition: process can only move to completed",
-            completed: "Invalid transition: completed can only move to finished"
+            process: "Invalid transition: process can only move to completed"
         };
 
         return {
@@ -55,7 +52,7 @@ export const validateStatusTransition = (fromStatus, toStatus, incidencia = {}) 
 
     // Validaciones específicas por estado destino
     if (toStatus === 'completed') {
-        // Para cambiar a "En Ejecución" se necesita un código asignado
+        // Para cambiar a "Completado" se necesita un código asignado
         if (!incidencia.code) {
             return {
                 isValid: false,
@@ -83,5 +80,5 @@ export const getValidNextStates = (currentStatus) => {
  * @returns {boolean} - True si es estado final
  */
 export const isFinalState = (status) => {
-    return status === 'finished';
+    return status === 'completed';
 };

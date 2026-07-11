@@ -28,7 +28,7 @@ const ROLE_LABEL: Record<string, string> = {
   administrator: 'Administrador',
   supervisor:    'Supervisor',
   hunter:        'Cazador',
-  operator:      'Operador',
+  operator:      'Cazador',
   visualizer:    'Visualizador',
 };
 
@@ -61,7 +61,6 @@ const STATUS_LABEL: Record<string, string> = {
   previous:  'Previo',
   process:   'En proceso',
   completed: 'Completado',
-  finished:  'Finalizado',
 };
 
 function fmt(dateStr: string) {
