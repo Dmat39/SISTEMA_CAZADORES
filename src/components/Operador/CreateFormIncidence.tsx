@@ -25,6 +25,7 @@ import {
 import { getAllCrimesApi } from "../../api/crime/CrimeApi";
 import { useTheme } from "../../contexts/ThemeContext";
 import MapSelector from "../MapSelector";
+import { getZoneTierForJurisdiction, findZoneByTier } from "../../lib/jurisdictionZones";
 
 // Extender dayjs con soporte UTC
 dayjs.extend(utc);
@@ -103,11 +104,15 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
   };
 
   // Handler para selección de ubicación en el mapa
-  const handleLocationSelect = (lat, lng) => {
+  const handleLocationSelect = (lat, lng, jurisdictionName) => {
+    const tier = getZoneTierForJurisdiction(jurisdictionName);
+    const matchedZone = findZoneByTier(zonaOptions, tier);
+
     setFormData((prev) => ({
       ...prev,
       homeLatitude: lat,
       homeLongitude: lng,
+      ...(matchedZone && { zoneId: matchedZone.id }),
     }));
   };
 
