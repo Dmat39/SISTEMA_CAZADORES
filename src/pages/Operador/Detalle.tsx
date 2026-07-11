@@ -16,15 +16,13 @@ import { toast } from 'sonner';
 import { isVisualizer } from '../../lib/utils.js';
 import { ArrowLeft, Plus, Calendar, Clock, Info, Pencil } from 'lucide-react';
 import { useSetPageTitle } from '../../contexts/PageTitleContext';
+import { KANBAN_STATES } from '../../components/Operador/kanban/kanbanConfig';
 
-const STATUS_MAP = {
-    previous:  { text: 'Previo',      color: 'bg-violet-100 text-violet-800 dark:bg-violet-500/15 dark:text-violet-400' },
-    process:   { text: 'En Proceso',  color: 'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-400' },
-    completed: { text: 'Completado',  color: 'bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400' },
-    finished:  { text: 'Finalizado',  color: 'bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-400' },
+const formatStatus = (s) => {
+    const config = KANBAN_STATES[s];
+    if (!config) return { text: s, color: 'bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-gray-300' };
+    return { text: config.titulo, color: `${config.solidColor} text-white` };
 };
-
-const formatStatus = (s) => STATUS_MAP[s] || { text: s, color: 'bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-gray-300' };
 
 const IncidenciaDetalles = () => {
     useSetPageTitle('Detalle de Incidencia', 'Seguimiento y registros');
