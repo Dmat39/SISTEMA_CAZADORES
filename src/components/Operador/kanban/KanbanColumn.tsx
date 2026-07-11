@@ -36,20 +36,23 @@ const KanbanColumn = ({
       onDrop={(e) => onDrop(e, estado)}
     >
       {/* Column Header */}
-      <div className={cn("flex items-center justify-between mb-4 px-3 py-2 rounded-lg", config.borderColor, config.bgColor, "border")}>
-        <div className="flex items-center gap-2">
-          <div className={cn("w-3 h-3 rounded-full", config.bgColor, config.borderColor, "border")} />
-          <span className="text-gray-900 dark:text-white font-medium text-sm">{config.titulo}</span>
-          <span className="text-gray-500 dark:text-gray-400 text-sm">{stats.count}</span>
+      <div className={cn("relative overflow-hidden mb-3 px-3.5 py-3 rounded-xl border", config.borderColor, config.bgColor)}>
+        <div className={cn("absolute left-0 top-0 bottom-0 w-1", config.accentColor)} />
+        <div className="flex items-center justify-between pl-1.5">
+          <div className="flex items-center gap-2">
+            <span className={cn("w-2 h-2 rounded-full shrink-0", config.solidColor)} />
+            <span className="text-gray-900 dark:text-white font-semibold text-sm">{config.titulo}</span>
+          </div>
+          <span className={cn("inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5 rounded-full text-xs font-bold text-white", config.solidColor)}>
+            {stats.count}
+          </span>
         </div>
+        <p className={cn("text-xs mt-1 pl-1.5 font-medium", config.color)}>
+          {config.description}
+        </p>
       </div>
 
-      {/* Column Description */}
-      <p className="text-gray-500 dark:text-gray-400 text-xs mb-4 px-3">
-        {config.description}
-      </p>
-
-      {/* Cards Container */}
+      {/* Cards Container: altura fija (no visible) para que las 3 columnas se vean parejas */}
       <div className="flex-1 relative">
         <div
           ref={(el) => {
@@ -58,7 +61,7 @@ const KanbanColumn = ({
               setTimeout(() => checkScrollable(estado), 300);
             }
           }}
-          className="space-y-3 min-h-[500px] max-h-[calc(100vh-300px)] overflow-y-auto px-2 scrollbar-hide"
+          className="space-y-3 h-[calc(100vh-320px)] overflow-y-auto px-2 scrollbar-hide"
           onScroll={() => onScroll(estado)}
           style={{
             scrollbarWidth: 'none',
@@ -74,6 +77,13 @@ const KanbanColumn = ({
               onClick={onCardClick}
             />
           ))}
+
+          {incidencias.length === 0 && (
+            <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
+              <Icon path={icons.mdiNoteAlertOutline} size={1.2} className="text-gray-300 dark:text-gray-700" />
+              <p className="text-xs text-gray-400 dark:text-gray-600">Sin incidencias aquí</p>
+            </div>
+          )}
 
           {/* Add Item Button - Only in first column */}
           {estado === "previous" && (
@@ -95,7 +105,7 @@ const KanbanColumn = ({
             style={{
               background: isDark
                 ? 'linear-gradient(to top, rgb(10 15 30) 0%, rgb(10 15 30 / 0.95) 30%, rgb(10 15 30 / 0.7) 60%, transparent 100%)'
-                : 'linear-gradient(to top, rgb(229 231 235) 0%, rgb(229 231 235 / 0.95) 30%, rgb(229 231 235 / 0.7) 60%, transparent 100%)',
+                : 'linear-gradient(to top, rgb(243 244 246) 0%, rgb(243 244 246 / 0.95) 30%, rgb(243 244 246 / 0.7) 60%, transparent 100%)',
             }}
           />
         )}
