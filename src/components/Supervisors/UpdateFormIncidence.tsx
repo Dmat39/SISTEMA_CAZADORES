@@ -9,6 +9,7 @@ import { getIncidenceCodesApi } from '../../api/operador/incidenceApi';
 import { getAllCrimesApi } from '../../api/crime/CrimeApi';
 import { useTheme } from '../../contexts/ThemeContext';
 import MapSelector from '../MapSelector';
+import { getZoneTierForJurisdiction, findZoneByTier } from '../../lib/jurisdictionZones';
 
 const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) => {
     const { zones = [], communications = [] } = dataSelect || {};
@@ -136,11 +137,15 @@ const UpdateFormIncidence = ({ isOpen, onClose, data, onSubmit, dataSelect }) =>
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleLocationSelect = (lat, lng) => {
+    const handleLocationSelect = (lat, lng, jurisdictionName) => {
+        const tier = getZoneTierForJurisdiction(jurisdictionName);
+        const matchedZone = findZoneByTier(zones, tier);
+
         setForm((prev) => ({
             ...prev,
             homeLatitude: lat,
             homeLongitude: lng,
+            ...(matchedZone && { zoneId: matchedZone.id }),
         }));
     };
 

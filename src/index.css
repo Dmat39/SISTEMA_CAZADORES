@@ -27,3 +27,10 @@ html.dark body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Los <path> SVG de las capas GeoJSON de Leaflet son interactivos (tabindex);
+   el navegador les dibuja un outline de foco como rectángulo (bounding box),
+   no como el contorno real del polígono, al hacer clic sobre ellos. */
+.leaflet-interactive:focus {
+  outline: none;
+}
