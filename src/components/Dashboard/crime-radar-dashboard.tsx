@@ -122,19 +122,19 @@ export function CrimeRadarDashboard() {
   const tooltipBorder = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.1)';
 
   return (
-    <div className="rounded-2xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 overflow-hidden h-full flex flex-col">
+    <div className="rounded-2xl bg-[#fdfbf5] dark:bg-[#111827] shadow border border-[#e8dfc8] dark:border-white/10 overflow-hidden h-full flex flex-col">
       {/* Header */}
-      <div className="px-4 pt-3 pb-2 border-b border-gray-200 dark:border-white/10">
+      <div className="px-4 pt-3 pb-2 border-b border-[#e8dfc8] dark:border-white/10">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Shield className={`h-5 w-5 ${accentLight}`} />
-            <h3 className="text-base font-bold text-gray-900 dark:text-white">
+            <h3 className="text-base font-bold text-[#3d2f1f] dark:text-white">
               {isAssigned ? 'Crímenes Asignados' : 'Crímenes Finalizados'}
             </h3>
           </div>
 
           {/* Toggle assigned/finished */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-gray-100 dark:bg-white/8">
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#f0e6d0] dark:bg-white/8">
             {([
               { t: 'assigned', label: 'Asignadas', Icon: UserPlus },
               { t: 'finished', label: 'Finalizadas', Icon: CheckCircle },
@@ -146,7 +146,7 @@ export function CrimeRadarDashboard() {
                   'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
                   crimeType === t
                     ? 'bg-orange-500 text-white shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white',
+                    : 'text-[#7a6a52] dark:text-gray-400 hover:text-[#3d2f1f] dark:hover:text-white',
                 ].join(' ')}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -163,9 +163,9 @@ export function CrimeRadarDashboard() {
             { label: 'Mayor', value: topCrime?.value ?? 0, sub: topCrime?.crime ?? 'N/A' },
             { label: 'Período', value: period, sub: period === '24H' ? '24 horas' : period === '7D' ? '7 días' : '30 días' },
           ].map(({ label, value, sub }) => (
-            <div key={label} className="text-center rounded-xl bg-gray-100 dark:bg-white/5 px-2 py-3">
-              <p className="text-[10px] text-gray-600 dark:text-gray-400 font-medium mb-0.5">{label}</p>
-              <p className="text-base font-bold text-gray-900 dark:text-white leading-none">{value}</p>
+            <div key={label} className="text-center rounded-xl bg-[#f0e6d0] dark:bg-white/5 px-2 py-3">
+              <p className="text-[10px] text-[#7a6a52] dark:text-gray-400 font-medium mb-0.5">{label}</p>
+              <p className="text-base font-bold text-[#3d2f1f] dark:text-white leading-none">{value}</p>
               <p className={`text-[10px] mt-0.5 truncate ${accentLight}`}>{sub}</p>
             </div>
           ))}
@@ -187,7 +187,7 @@ export function CrimeRadarDashboard() {
                   'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
                   period === p
                     ? 'bg-orange-500 text-white'
-                    : 'bg-gray-100 dark:bg-white/8 text-gray-600 dark:text-gray-400 hover:bg-orange-50 dark:hover:bg-white/15 hover:text-orange-600 dark:hover:text-white',
+                    : 'bg-[#f0e6d0] dark:bg-white/8 text-[#7a6a52] dark:text-gray-400 hover:bg-orange-50 dark:hover:bg-white/15 hover:text-orange-600 dark:hover:text-white',
                 ].join(' ')}
               >
                 {p}
@@ -202,10 +202,10 @@ export function CrimeRadarDashboard() {
         {loading ? (
           <div className="h-[345px] flex flex-col items-center justify-center gap-3">
             <div className="h-8 w-8 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
-            <p className="text-sm text-gray-400">Cargando crímenes...</p>
+            <p className="text-sm text-[#a89878]">Cargando crímenes...</p>
           </div>
         ) : radarData.length === 0 ? (
-          <div className="h-[345px] flex flex-col items-center justify-center gap-2 text-gray-400">
+          <div className="h-[345px] flex flex-col items-center justify-center gap-2 text-[#a89878]">
             <Shield className="h-10 w-10 opacity-30" />
             <p className="text-sm">Sin datos para este período</p>
           </div>
@@ -273,10 +273,10 @@ export function CrimeRadarDashboard() {
                   'flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all cursor-default border',
                   hoveredCrime === item.crime
                     ? isAssigned ? 'bg-blue-500/10 border-blue-500/30' : 'bg-emerald-500/10 border-emerald-500/30'
-                    : 'bg-gray-50 dark:bg-white/5 border-transparent',
+                    : 'bg-[#f7f0e0] dark:bg-white/5 border-transparent',
                 ].join(' ')}
               >
-                <span className="font-medium text-gray-700 dark:text-gray-300 truncate">{item.crime}</span>
+                <span className="font-medium text-[#7a6a52] dark:text-gray-300 truncate">{item.crime}</span>
                 <span className={`font-bold ml-2 shrink-0 ${accentLight}`}>{item.value}</span>
               </div>
             ))}

@@ -242,9 +242,9 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
               overflowY: "auto",
             }}
           >
-            <div className={`flex items-center justify-between py-5 border-b rounded-t ${isDark ? 'border-gray-600' : 'border-gray-300'}`}>
-              <h3 className={`text-2xl font-semibold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Nueva Incidencia</h3>
-              <Button onClick={onClose} className={`text-white flex flex-row items-center justify-center rounded-md w-8 h-8 cursor-pointer ${isDark ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-500 hover:bg-gray-700'}`}>
+            <div className={`flex items-center justify-between py-5 border-b rounded-t ${isDark ? 'border-gray-600' : 'border-[#e8dfc8]'}`}>
+              <h3 className={`text-2xl font-semibold ${isDark ? 'text-gray-100' : 'text-[#3d2f1f]'}`}>Nueva Incidencia</h3>
+              <Button onClick={onClose} className={`text-white flex flex-row items-center justify-center rounded-md w-8 h-8 cursor-pointer ${isDark ? 'bg-gray-600 hover:bg-gray-700' : 'bg-[#a89878] hover:bg-[#7a6a52]'}`}>
                 <CloseIcon fontSize="small" />
               </Button>
             </div>
@@ -252,7 +252,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
               <div className="grid gap-4 mb-4 grid-cols-2">
                 {/* Código */}
                 <div className="col-span-2 mt-5">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Código</label>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Código</label>
                   <Autocomplete
                     id="code-autocomplete"
                     open={openAutocomplete}
@@ -277,8 +277,8 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                     renderOption={(props, option) => (
                       <li {...props}>
                         <div>
-                          <div className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>{option.codigo_incidencia}</div>
-                          <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <div className={`font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>{option.codigo_incidencia}</div>
+                          <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-[#a89878]'}`}>
                             Lat: {option.latitud}, Lng: {option.longitud}
                           </div>
                         </div>
@@ -323,7 +323,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
                   />
                   {/* Mostrar coordenadas si están disponibles */}
                   {formData.latitude && formData.longitude && (
-                    <div className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <div className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-[#7a6a52]'}`}>
                       📍 Coordenadas: {formData.latitude}, {formData.longitude}
                     </div>
                   )}
@@ -331,33 +331,33 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
                 {/* Título */}
                 <div className="col-span-2">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Título *</label>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Título *</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className={`border text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400 hover:border-gray-500' : 'bg-gray-50 border-gray-300 text-gray-900 hover:border-gray-900'}`}
+                    className={`border text-[16px] rounded-lg focus:ring-gray-600 focus:border-gray-600 block w-full px-2.5 py-4 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400 hover:border-gray-500' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f] hover:border-[#a89878]'}`}
                     placeholder="Ingresa el título de la incidencia"
                     required
                   />
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Placa</label>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Placa</label>
                   <input
                     type="text"
                     name="plate"
                     value={formData.plate}
                     onChange={handleChange}
-                    className={`border text-[16px] rounded-lg block w-full px-2.5 py-4 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900'}`}
+                    className={`border text-[16px] rounded-lg block w-full px-2.5 py-4 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                     placeholder="Ejemplo: ABC123"
                   />
                 </div>
 
                 {/* Crimen */}
                 <div className="col-span-2">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Crimen *</label>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Crimen *</label>
                   <Select
                     labelId="demo-simple-zona"
                     id="demo-simple-zona"
@@ -399,7 +399,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
                 {/* Medio */}
                 <div className="col-span-2 sm:col-span-1">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Medio *</label>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Medio *</label>
                   <Select
                     labelId="demo-simple-medio"
                     id="demo-simple-medio"
@@ -441,7 +441,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
                 {/* Zona */}
                 <div className="col-span-2 sm:col-span-1">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Zona *</label>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Zona *</label>
                   <Select
                     labelId="demo-simple-zona"
                     id="demo-simple-zona"
@@ -483,7 +483,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
                 {/* Fecha */}
                 <div className="col-span-2 sm:col-span-1">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Fecha del Incidente *</label>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Fecha del Incidente *</label>
                   <DatePicker
                     value={formData.date}
                     onChange={(date) => setFormData((prev) => ({ ...prev, date }))}
@@ -512,7 +512,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
                 {/* Hora */}
                 <div className="col-span-2 sm:col-span-1">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Hora del Incidente *</label>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Hora del Incidente *</label>
                   <TimePicker
                     ampm={false}
                     value={formData.time}
@@ -541,13 +541,13 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
                 {/* Descripción */}
                 <div className="col-span-2">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Descripción *</label>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Descripción *</label>
                   <textarea
                     name="description"
                     rows="4"
                     value={formData.description}
                     onChange={handleChange}
-                    className={`block p-2.5 w-full text-[16px] rounded-lg focus:ring-gray-500 focus:border-gray-500 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400 hover:border-gray-500' : 'bg-gray-50 border-gray-300 text-gray-900 hover:border-gray-900'}`}
+                    className={`block p-2.5 w-full text-[16px] rounded-lg focus:ring-gray-500 focus:border-gray-500 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400 hover:border-gray-500' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f] hover:border-[#a89878]'}`}
                     placeholder="Descripción opcional..."
                     required
                   ></textarea>
@@ -555,10 +555,10 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
 
                 {/* Ubicación en el mapa */}
                 <div className="col-span-2">
-                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                  <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>
                     Ubicación del Infractor
                   </label>
-                  <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-[#7a6a52]'}`}>
                     Haz clic en el mapa para seleccionar la ubicación del infractor
                   </p>
                   <MapSelector
@@ -574,7 +574,7 @@ const CreateForm = ({ open, onClose, onSubmit }) => {
               {error && <p className={`text-sm mb-3 ${isDark ? 'text-red-400' : 'text-red-500'}`}>{error}</p>}
 
               <div className="flex flex-row items-center justify-end gap-3">
-                <Button onClick={onClose} variant="outlined" className={`cursor-pointer border font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-4 focus:outline-none ${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700 hover:text-white focus:ring-gray-600' : 'text-gray-900 border-gray-800 hover:bg-gray-700 hover:text-white focus:ring-gray-300'}`}>Cancelar</Button>
+                <Button onClick={onClose} variant="outlined" className={`cursor-pointer border font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-4 focus:outline-none ${isDark ? 'text-gray-200 border-gray-600 hover:bg-gray-700 hover:text-white focus:ring-gray-600' : 'text-[#3d2f1f] border-[#a89878] hover:bg-[#7a6a52] hover:text-white focus:ring-[#e8dfc8]'}`}>Cancelar</Button>
                 <Button type="submit" variant="contained" disableRipple className="text-white cursor-pointer font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-4 focus:outline-none disabled:opacity-50 bg-orange-500 hover:bg-orange-600 focus:ring-orange-500/40" disabled={loading}>
                   {loading ? "Creando..." : "Crear Incidencia"}
                 </Button>

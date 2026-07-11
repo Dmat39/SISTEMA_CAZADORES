@@ -28,10 +28,10 @@ const Main = () => {
        <div id="crud-modal" tabindex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div className="relative p-4 w-full max-w-md max-h-full">
             {/* Modal content */}
-            <div className="relative bg-white rounded-lg shadow-sm">
+            <div className="relative bg-[#fdfbf5] rounded-lg shadow-sm">
                 {/* Modal header  */}
-                <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-300">
-                    <h3 className="text-lg font-semibold text-gray-900">
+                <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-[#e8dfc8]">
+                    <h3 className="text-lg font-semibold text-[#3d2f1f]">
                         Nuevo Supervisor
                     </h3>
                     <button type="button" className="text-white cursor-pointer rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center bg-gray-500 hover:bg-gray-700" data-modal-toggle="crud-modal">
@@ -45,24 +45,24 @@ const Main = () => {
                 <form className="p-4 md:p-5">
                     <div className="grid gap-4 mb-4 grid-cols-2">
                         <div className="col-span-2">
-                            <label for="name" className="block mb-2 text-sm font-medium text-gray-900">Nombres</label>
-                            <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="Jose Edu" required="" />
+                            <label for="name" className="block mb-2 text-sm font-medium text-[#3d2f1f]">Nombres</label>
+                            <input type="text" name="name" id="name" className="bg-[#fdfbf5] border border-[#e8dfc8] text-[#3d2f1f] text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="Jose Edu" required="" />
                         </div>
                         <div className="col-span-2">
-                            <label for="name" className="block mb-2 text-sm font-medium text-gray-900">Apellidos</label>
-                            <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="Perez Galvez" required="" />
+                            <label for="name" className="block mb-2 text-sm font-medium text-[#3d2f1f]">Apellidos</label>
+                            <input type="text" name="name" id="name" className="bg-[#fdfbf5] border border-[#e8dfc8] text-[#3d2f1f] text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="Perez Galvez" required="" />
                         </div>
                         <div className="col-span-2">
-                            <label for="name" className="block mb-2 text-sm font-medium text-gray-900">Celular</label>
-                            <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="999666555" required="" />
+                            <label for="name" className="block mb-2 text-sm font-medium text-[#3d2f1f]">Celular</label>
+                            <input type="text" name="name" id="name" className="bg-[#fdfbf5] border border-[#e8dfc8] text-[#3d2f1f] text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="999666555" required="" />
                         </div>
                         <div className="col-span-2 sm:col-span-1">
-                            <label for="price" className="block mb-2 text-sm font-medium text-gray-900">Usuario</label>
-                            <input type="text" name="price" id="price" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="98655213" required="" />
+                            <label for="price" className="block mb-2 text-sm font-medium text-[#3d2f1f]">Usuario</label>
+                            <input type="text" name="price" id="price" className="bg-[#fdfbf5] border border-[#e8dfc8] text-[#3d2f1f] text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="98655213" required="" />
                         </div>
                         <div className="col-span-2 sm:col-span-1 relative">
-                            <label for="price" className="block mb-2 text-sm font-medium text-gray-900">Contraseña</label>
-                            <input type={showPassword ? "text" : "password"} name="price" id="price" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="pepito123" required="" />
+                            <label for="price" className="block mb-2 text-sm font-medium text-[#3d2f1f]">Contraseña</label>
+                            <input type={showPassword ? "text" : "password"} name="price" id="price" className="bg-[#fdfbf5] border border-[#e8dfc8] text-[#3d2f1f] text-sm rounded-lg focus:ring-gray-600 focus:border-primary-600 block w-full p-2.5" placeholder="pepito123" required="" />
                             <div classNameName="absolute right-0 bottom-2.5 pr-4 flex items-center">
                               <button type="button" onClick={togglePasswordVisibility} classNameName="focus:outline-none cursor-pointer">
                                 {showPassword ? (
@@ -86,8 +86,8 @@ const Main = () => {
 
     {/* Tabla de Información */}
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-white border-b-1 border-b-gray-200">
+        <table className="w-full text-sm text-left rtl:text-right text-[#a89878] dark:text-gray-400">
+          <thead className="text-xs text-[#7a6a52] uppercase bg-[#fdfbf5] border-b-1 border-b-[#e8dfc8]">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Nombres
@@ -108,7 +108,7 @@ const Main = () => {
                 Fecha de Creación
               </th>
               <th scope="col" className="px-6 py-3">
-                <span className="text-black">Acciones</span>
+                <span className="text-[#3d2f1f]">Acciones</span>
               </th>
               <th scope="col" className="px-6 py-3">
                 <span className="sr-only">Delete</span>
@@ -116,13 +116,13 @@ const Main = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className="bg-white hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap hover:text-white">Jose Edu</th>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">Perez Galvez</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">999666333</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">jose123</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">jose123</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">2025-06-09</td>
+            <tr className="bg-[#fdfbf5] hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
+              <th scope="row" className="px-6 py-4 font-medium text-[#3d2f1f] whitespace-nowrap hover:text-white">Jose Edu</th>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">Perez Galvez</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">999666333</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">jose123</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">jose123</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">2025-06-09</td>
               <td className="px-4 py-4">
                 <div className="bg-[#E2FFF3] w-full px-4 py-3 flex flex-row items-center justify-center gap-1.5 rounded-lg cursor-pointer">
                   <FaRegEdit className="w-4 h-4 text-[#4AB58E]" />
@@ -136,13 +136,13 @@ const Main = () => {
                 </div>
               </td>
             </tr>
-            <tr className="bg-white hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-800 whitespace-nowrap hover:text-white">Marlene Linares</th>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">Zapata</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">999652312</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">marlene123</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">marlene123</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">2025-06-07</td>
+            <tr className="bg-[#fdfbf5] hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
+              <th scope="row" className="px-6 py-4 font-medium text-[#3d2f1f] whitespace-nowrap hover:text-white">Marlene Linares</th>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">Zapata</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">999652312</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">marlene123</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">marlene123</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">2025-06-07</td>
               <td className="px-4 py-4">
                 <div className="bg-[#E2FFF3] w-full px-4 py-3 flex flex-row items-center justify-center gap-1.5 rounded-lg cursor-pointer">
                   <FaRegEdit className="w-4 h-4 text-[#4AB58E]" />
@@ -156,13 +156,13 @@ const Main = () => {
                 </div>
               </td>
             </tr>
-            <tr className="bg-white hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-800 whitespace-nowrap hover:text-white">Joaquin Cesar</th>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">Vasquez</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">963258741</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">2025-06-08</td>
+            <tr className="bg-[#fdfbf5] hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
+              <th scope="row" className="px-6 py-4 font-medium text-[#3d2f1f] whitespace-nowrap hover:text-white">Joaquin Cesar</th>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">Vasquez</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">963258741</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">2025-06-08</td>
               <td className="px-4 py-4">
                 <div className="bg-[#E2FFF3] w-full px-4 py-3 flex flex-row items-center justify-center gap-1.5 rounded-lg cursor-pointer">
                   <FaRegEdit className="w-4 h-4 text-[#4AB58E]" />
@@ -176,13 +176,13 @@ const Main = () => {
                 </div>
               </td>
             </tr>
-            <tr className="bg-white hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-800 whitespace-nowrap hover:text-white">Joaquin Cesar</th>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">Vasquez</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">963258741</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">2025-06-08</td>
+            <tr className="bg-[#fdfbf5] hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
+              <th scope="row" className="px-6 py-4 font-medium text-[#3d2f1f] whitespace-nowrap hover:text-white">Joaquin Cesar</th>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">Vasquez</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">963258741</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">2025-06-08</td>
               <td className="px-4 py-4">
                 <div className="bg-[#E2FFF3] w-full px-4 py-3 flex flex-row items-center justify-center gap-1.5 rounded-lg cursor-pointer">
                   <FaRegEdit className="w-4 h-4 text-[#4AB58E]" />
@@ -196,13 +196,13 @@ const Main = () => {
                 </div>
               </td>
             </tr>
-            <tr className="bg-white hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-800 whitespace-nowrap hover:text-white">Joaquin Cesar</th>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">Vasquez</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">963258741</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">2025-06-08</td>
+            <tr className="bg-[#fdfbf5] hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
+              <th scope="row" className="px-6 py-4 font-medium text-[#3d2f1f] whitespace-nowrap hover:text-white">Joaquin Cesar</th>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">Vasquez</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">963258741</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">2025-06-08</td>
               <td className="px-4 py-4">
                 <div className="bg-[#E2FFF3] w-full px-4 py-3 flex flex-row items-center justify-center gap-1.5 rounded-lg cursor-pointer">
                   <FaRegEdit className="w-4 h-4 text-[#4AB58E]" />
@@ -216,13 +216,13 @@ const Main = () => {
                 </div>
               </td>
             </tr>
-            <tr className="bg-white hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-800 whitespace-nowrap hover:text-white">Joaquin Cesar</th>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">Vasquez</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">963258741</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">2025-06-08</td>
+            <tr className="bg-[#fdfbf5] hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
+              <th scope="row" className="px-6 py-4 font-medium text-[#3d2f1f] whitespace-nowrap hover:text-white">Joaquin Cesar</th>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">Vasquez</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">963258741</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">2025-06-08</td>
               <td className="px-4 py-4">
                 <div className="bg-[#E2FFF3] w-full px-4 py-3 flex flex-row items-center justify-center gap-1.5 rounded-lg cursor-pointer">
                   <FaRegEdit className="w-4 h-4 text-[#4AB58E]" />
@@ -236,13 +236,13 @@ const Main = () => {
                 </div>
               </td>
             </tr>
-            <tr className="bg-white hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-800 whitespace-nowrap hover:text-white">Joaquin Cesar</th>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">Vasquez</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">963258741</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">joaqui14</td>
-              <td className="px-6 py-4 text-gray-800 hover:text-white">2025-06-08</td>
+            <tr className="bg-[#fdfbf5] hover:bg-[#32A3B5] transition-all duration-300 ease-in-out">
+              <th scope="row" className="px-6 py-4 font-medium text-[#3d2f1f] whitespace-nowrap hover:text-white">Joaquin Cesar</th>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">Vasquez</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">963258741</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">joaqui14</td>
+              <td className="px-6 py-4 text-[#3d2f1f] hover:text-white">2025-06-08</td>
               <td className="px-4 py-4">
                 <div className="bg-[#E2FFF3] w-full px-4 py-3 flex flex-row items-center justify-center gap-1.5 rounded-lg cursor-pointer">
                   <FaRegEdit className="w-4 h-4 text-[#4AB58E]" />

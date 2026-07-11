@@ -81,7 +81,7 @@ const IncidenciaOperador = () => {
     if (incidencias.length === 0) {
         return (
             <div className="m-4">
-                <div className="rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-6">
+                <div className="rounded-xl bg-[#fdfbf5] dark:bg-[#111827] shadow border border-[#e8dfc8] dark:border-white/10 p-6">
                     <CreateFirstEntity
                         title="No hay incidencias registradas"
                         body="Comienza creando tu primera incidencia para organizar tus registros"
@@ -96,13 +96,13 @@ const IncidenciaOperador = () => {
 
     /* ── Toggle de vista (Kanban/Cards), compartido por ambas vistas ── */
     const viewToggle = (
-        <div className="inline-flex items-center gap-1 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-1 shadow-sm">
+        <div className="inline-flex items-center gap-1 bg-[#f0e6d0] dark:bg-white/5 border border-[#e8dfc8] dark:border-white/10 rounded-xl p-1 shadow-sm">
             <button
                 onClick={() => setViewMode('kanban')}
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
                     viewMode === 'kanban'
                         ? 'bg-orange-500 text-white shadow-md shadow-orange-500/30'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-white/10'
+                        : 'text-[#a89878] dark:text-gray-400 hover:text-[#3d2f1f] dark:hover:text-white hover:bg-[#e8dfc8]/60 dark:hover:bg-white/10'
                 }`}
             >
                 <KanbanSquare className="h-3.5 w-3.5" /> Kanban
@@ -112,7 +112,7 @@ const IncidenciaOperador = () => {
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
                     viewMode === 'cards'
                         ? 'bg-orange-500 text-white shadow-md shadow-orange-500/30'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-white/10'
+                        : 'text-[#a89878] dark:text-gray-400 hover:text-[#3d2f1f] dark:hover:text-white hover:bg-[#e8dfc8]/60 dark:hover:bg-white/10'
                 }`}
             >
                 <Table2 className="h-3.5 w-3.5" /> Tabla

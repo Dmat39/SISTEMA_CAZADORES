@@ -62,7 +62,7 @@ const DateFilter = () => {
             {selectedDate && (
                 <button
                     onClick={clearDateFilter}
-                    className="text-gray-500 hover:text-gray-700 text-sm px-2 py-1 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
+                    className="text-[#a89878] hover:text-[#7a6a52] text-sm px-2 py-1 rounded border border-[#e8dfc8] hover:bg-[#f7f0e0] transition-colors"
                     title="Limpiar filtro de fecha"
                 >
                     ✕

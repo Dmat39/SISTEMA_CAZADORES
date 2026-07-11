@@ -45,7 +45,7 @@ const ConfigurationProfile = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-lg text-gray-600">Cargando perfil...</div>
+        <div className="text-lg text-[#7a6a52]">Cargando perfil...</div>
       </div>
     );
   }

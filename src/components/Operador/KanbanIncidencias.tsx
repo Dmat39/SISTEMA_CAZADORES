@@ -98,9 +98,9 @@ const KanbanIncidencias = ({ incidencias = [], onIncidenciaUpdate, onAddIncidenc
       {/* Loading overlay */}
       {dragAndDrop.isUpdating && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg flex items-center gap-3">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 dark:border-white"></div>
-            <span className="text-gray-900 dark:text-white">Actualizando estado...</span>
+          <div className="bg-[#fdfbf5] dark:bg-gray-800 p-4 rounded-lg flex items-center gap-3">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#3d2f1f] dark:border-white"></div>
+            <span className="text-[#3d2f1f] dark:text-white">Actualizando estado...</span>
           </div>
         </div>
       )}

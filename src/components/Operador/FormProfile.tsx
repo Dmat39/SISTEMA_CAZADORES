@@ -105,11 +105,11 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
     };
 
     return (
-        <div className={`p-4 min-h-screen transition-colors duration-300 ${isDark ? 'bg-black' : 'bg-[#E8E8E8]'}`}>
-            <div className={`rounded-xl shadow-md p-6 transition-colors duration-300 ${isDark ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
-                <div className={`border-b pb-4 mb-6 ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
-                    <h1 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Configuración del Perfil</h1>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+        <div className={`p-4 min-h-screen transition-colors duration-300 ${isDark ? 'bg-black' : 'bg-[#f7f2e7]'}`}>
+            <div className={`rounded-xl shadow-md p-6 transition-colors duration-300 ${isDark ? 'bg-[#1a1a1a]' : 'bg-[#fdfbf5]'}`}>
+                <div className={`border-b pb-4 mb-6 ${isDark ? 'border-gray-600' : 'border-[#e8dfc8]'}`}>
+                    <h1 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-[#3d2f1f]'}`}>Configuración del Perfil</h1>
+                    <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-[#7a6a52]'}`}>
                         Actualiza tu información personal y credenciales de acceso
                     </p>
                 </div>
@@ -118,7 +118,7 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Información Personal */}
                         <div className="space-y-1">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#7a6a52]'}`}>
                                 Nombre *
                             </label>
                             <input
@@ -129,13 +129,13 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                                 required
                                 minLength={2}
                                 maxLength={50}
-                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                 placeholder="Ingresa tu nombre"
                             />
                         </div>
 
                         <div className="space-y-1">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#7a6a52]'}`}>
                                 Apellido *
                             </label>
                             <input
@@ -146,13 +146,13 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                                 required
                                 minLength={2}
                                 maxLength={50}
-                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                 placeholder="Ingresa tu apellido"
                             />
                         </div>
 
                         <div className="space-y-1">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#7a6a52]'}`}>
                                 Teléfono *
                             </label>
                             <input
@@ -162,13 +162,13 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                                 onChange={handleChange}
                                 required
                                 pattern="[0-9]{9,15}"
-                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                 placeholder="Ingresa tu teléfono"
                             />
                         </div>
 
                         <div className="space-y-1">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#7a6a52]'}`}>
                                 DNI *
                             </label>
                             <input
@@ -179,14 +179,14 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                                 required
                                 pattern="[0-9]{8}"
                                 maxLength={8}
-                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                 placeholder="Ingresa tu DNI"
                             />
                         </div>
 
                         {/* Información de Acceso */}
                         <div className="space-y-1">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#7a6a52]'}`}>
                                 Usuario
                             </label>
                             <input
@@ -196,13 +196,13 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                                 onChange={handleChange}
                                 minLength={3}
                                 maxLength={20}
-                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-600 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-600 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                 placeholder="Nombre de usuario"
                             />
                         </div>
 
                         <div className="space-y-1 relative">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#7a6a52]'}`}>
                                 Nueva Contraseña
                             </label>
                             <div className="relative mt-2">
@@ -212,20 +212,20 @@ const FormProfile = ({ operatorData, onProfileUpdated }) => {
                                     value={form.password}
                                     onChange={handleChange}
                                     minLength={8}
-                                    className={`w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
+                                    className={`w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                                     placeholder="Dejar en blanco para no cambiar"
                                 />
                                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
                                     <button type="button" onClick={togglePasswordVisibility} className="focus:outline-none cursor-pointer">
                                         {showPassword ? (
-                                            <FaEyeSlash className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-gray-400'}`} />
+                                            <FaEyeSlash className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-[#a89878]'}`} />
                                         ) : (
-                                            <FaEye className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-gray-400'}`} />
+                                            <FaEye className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-[#a89878]'}`} />
                                         )}
                                     </button>
                                 </div>
                             </div>
-                            <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                            <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-[#a89878]'}`}>
                                 Mínimo 8 caracteres (opcional)
                             </p>
                         </div>

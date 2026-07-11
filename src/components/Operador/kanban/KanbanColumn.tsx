@@ -41,7 +41,7 @@ const KanbanColumn = ({
         <div className="flex items-center justify-between pl-1.5">
           <div className="flex items-center gap-2">
             <span className={cn("w-2 h-2 rounded-full shrink-0", config.solidColor)} />
-            <span className="text-gray-900 dark:text-white font-semibold text-sm">{config.titulo}</span>
+            <span className="text-[#3d2f1f] dark:text-white font-semibold text-sm">{config.titulo}</span>
           </div>
           <span className={cn("inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5 rounded-full text-xs font-bold text-white", config.solidColor)}>
             {stats.count}
@@ -80,8 +80,8 @@ const KanbanColumn = ({
 
           {incidencias.length === 0 && (
             <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
-              <Icon path={icons.mdiNoteAlertOutline} size={1.2} className="text-gray-300 dark:text-gray-700" />
-              <p className="text-xs text-gray-400 dark:text-gray-600">Sin incidencias aquí</p>
+              <Icon path={icons.mdiNoteAlertOutline} size={1.2} className="text-[#e8dfc8] dark:text-gray-700" />
+              <p className="text-xs text-[#a89878] dark:text-gray-600">Sin incidencias aquí</p>
             </div>
           )}
 
@@ -90,7 +90,7 @@ const KanbanColumn = ({
             <Button
               onClick={onAddIncidencia}
               variant="ghost"
-              className="w-full justify-start text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800/50 border border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 bg-transparent h-auto py-3"
+              className="w-full justify-start text-[#a89878] dark:text-gray-400 hover:text-[#3d2f1f] dark:hover:text-white hover:bg-[#f0e6d0] dark:hover:bg-gray-800/50 border border-dashed border-[#e8dfc8] dark:border-gray-700 hover:border-[#a89878] dark:hover:border-gray-600 bg-transparent h-auto py-3"
             >
               <Icon path={icons.add} size={0.6} className="mr-2" />
               Agregar elemento
@@ -105,15 +105,15 @@ const KanbanColumn = ({
             style={{
               background: isDark
                 ? 'linear-gradient(to top, rgb(10 15 30) 0%, rgb(10 15 30 / 0.95) 30%, rgb(10 15 30 / 0.7) 60%, transparent 100%)'
-                : 'linear-gradient(to top, rgb(243 244 246) 0%, rgb(243 244 246 / 0.95) 30%, rgb(243 244 246 / 0.7) 60%, transparent 100%)',
+                : 'linear-gradient(to top, rgb(247 242 231) 0%, rgb(247 242 231 / 0.95) 30%, rgb(247 242 231 / 0.7) 60%, transparent 100%)',
             }}
           />
         )}
 
         {/* Scroll indicator */}
         {scrollState?.isScrollable && !scrollState?.isAtBottom && (
-          <div className="absolute bottom-2 right-2 flex items-center justify-center w-6 h-6 bg-gray-200 dark:bg-gray-700/80 rounded-full pointer-events-none z-20">
-            <div className="w-1 h-3 bg-gray-500 dark:bg-gray-400 rounded-full animate-pulse" />
+          <div className="absolute bottom-2 right-2 flex items-center justify-center w-6 h-6 bg-[#e8dfc8] dark:bg-gray-700/80 rounded-full pointer-events-none z-20">
+            <div className="w-1 h-3 bg-[#a89878] dark:bg-gray-400 rounded-full animate-pulse" />
           </div>
         )}
       </div>

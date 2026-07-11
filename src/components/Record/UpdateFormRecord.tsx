@@ -249,12 +249,12 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
         <Dialog open={isOpen} onClose={() => { }} className="relative z-50">
           <div className="fixed inset-0 bg-black/70" aria-hidden="true"></div>
           <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Dialog.Panel className={`${isDark ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg max-w-xl w-full p-6`}>
+            <Dialog.Panel className={`${isDark ? 'bg-gray-800' : 'bg-[#fdfbf5]'} rounded-lg shadow-lg max-w-xl w-full p-6`}>
               <div className="mb-2 flex">
-                <h3 className={`text-lg font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Editar Registro</h3>
+                <h3 className={`text-lg font-bold ${isDark ? 'text-gray-100' : 'text-[#3d2f1f]'}`}>Editar Registro</h3>
                 <button
                   onClick={handleClose}
-                  className={`ml-auto ${isDark ? 'text-gray-400 hover:text-gray-100 hover:bg-gray-700' : 'text-gray-400 hover:text-gray-900 hover:bg-gray-200'} rounded-lg p-1`}
+                  className={`ml-auto ${isDark ? 'text-gray-400 hover:text-gray-100 hover:bg-gray-700' : 'text-[#a89878] hover:text-[#3d2f1f] hover:bg-[#f0e6d0]'} rounded-lg p-1`}
                 >
                   <span className="sr-only">Cerrar modal</span>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -262,11 +262,11 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                   </svg>
                 </button>
               </div>
-              <hr className={`${isDark ? 'border-gray-600' : 'border-gray-200'} mb-4`} />
+              <hr className={`${isDark ? 'border-gray-600' : 'border-[#e8dfc8]'} mb-4`} />
               <div className="max-h-[70vh] overflow-y-auto pr-1">
                 <form className="space-y-4">
                   <div>
-                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Seleccionar Cámara</label>
+                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Seleccionar Cámara</label>
                     <Autocomplete
                       value={selectedCamera}
                       options={cameras}
@@ -305,7 +305,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                         <li {...props}>
                           <div>
                             <div className="font-medium">{option.name}</div>
-                            <div className="text-sm text-gray-600">{option.address} - {option.cameraType}</div>
+                            <div className="text-sm text-[#7a6a52]">{option.address} - {option.cameraType}</div>
                           </div>
                         </li>
                       )}
@@ -313,7 +313,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                   </div>
                   <div className="flex gap-4 flex-col sm:flex-row">
                     <div className="w-full">
-                      <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Fecha</label>
+                      <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Fecha</label>
                       <DatePicker
                         value={form.date}
                         onChange={val => updateFormField('date', val)}
@@ -343,7 +343,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                       />
                     </div>
                     <div className="w-full">
-                      <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Hora</label>
+                      <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Hora</label>
                       <TimePicker
                         value={form.time}
                         onChange={val => updateFormField('time', val)}
@@ -374,10 +374,10 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                     </div>
                   </div>
                   <div>
-                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Descripción</label>
+                    <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Descripción</label>
                     <TextareaAutosize
                       minRows={4}
-                      className={`w-full p-2 border rounded-md ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`}
+                      className={`w-full p-2 border rounded-md ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                       placeholder="Describe los detalles..."
                       value={form.description}
                       onChange={e => updateFormField('description', e.target.value)}
@@ -385,19 +385,19 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                   </div>
                   {images.length > 0 && (
                     <div>
-                      <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Imágenes adjuntas</label>
+                      <label className={`block mb-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Imágenes adjuntas</label>
                       <div className="flex flex-wrap gap-4 justify-center">
                         {images.map((img) => (
                           <div
                             key={img.id}
-                            className={`relative w-32 h-32 border rounded-md p-2 flex flex-col items-center justify-center ${isDark ? 'border-gray-600 bg-gray-700' : 'border-gray-300 bg-gray-50'}`}
+                            className={`relative w-32 h-32 border rounded-md p-2 flex flex-col items-center justify-center ${isDark ? 'border-gray-600 bg-gray-700' : 'border-[#e8dfc8] bg-[#f0e6d0]'}`}
                           >
                             <ImageViewer
                               Path={img.path}
                               originalName={img.originalName}
                               onDelete={() => confirmDelete(img, () => img.originalName, () => handleDeleteImage(img))}
                             />
-                            <span className={`text-xs text-center mt-1 line-clamp-1 w-full ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{img.originalName}</span>
+                            <span className={`text-xs text-center mt-1 line-clamp-1 w-full ${isDark ? 'text-gray-300' : 'text-[#7a6a52]'}`}>{img.originalName}</span>
                           </div>
                         ))}
                       </div>
@@ -406,7 +406,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                   <div
                     ref={pasteZoneRef}
                     tabIndex={0}
-                    className={`border-2 border-dashed p-6 rounded-lg relative focus:outline-none focus:ring-2 focus:ring-blue-500 z-10 ${isDark ? 'border-gray-600 hover:border-gray-400' : 'border-gray-400 hover:border-gray-800'}`}
+                    className={`border-2 border-dashed p-6 rounded-lg relative focus:outline-none focus:ring-2 focus:ring-blue-500 z-10 ${isDark ? 'border-gray-600 hover:border-gray-400' : 'border-[#e8dfc8] hover:border-[#a89878]'}`}
                   >
                     <input
                       type="file"
@@ -416,19 +416,19 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                       onChange={handleFileChange}
                     />
                     <div className="flex flex-col items-center space-y-2">
-                      <div className={`${isDark ? 'bg-gray-600' : 'bg-gray-200'} rounded-full p-2`}>
-                        <CloudArrowUpIcon className={`w-10 h-10 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} />
+                      <div className={`${isDark ? 'bg-gray-600' : 'bg-[#f0e6d0]'} rounded-full p-2`}>
+                        <CloudArrowUpIcon className={`w-10 h-10 ${isDark ? 'text-gray-300' : 'text-[#7a6a52]'}`} />
                       </div>
-                      <p className={`text-sm text-center font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                      <p className={`text-sm text-center font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>
                         Haz clic para subir imágenes (máx. 5) o un video (máx. 1 min), o pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>
                       </p>
-                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-[#a89878]'}`}>
                         Formatos permitidos: PNG, JPG, JPEG y MP4
                       </span>
                       {form.files.length > 0 && (
                         <div className="mt-2">
                           <p className={`text-sm ${isDark ? 'text-green-400' : 'text-green-600'}`}>{form.files.length} archivo(s) seleccionado(s)</p>
-                          <ul className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <ul className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-[#7a6a52]'}`}>
                             {form.files.map((file, index) => <li key={index}>• {file.name}</li>)}
                           </ul>
                         </div>
@@ -436,7 +436,7 @@ const UpdateFormRecord = ({ isOpen, onClose, data, onSubmit }) => {
                     </div>
                   </div>
                   <div className="flex justify-end gap-3 mt-6 mb-3">
-                    <button type="button" onClick={handleClose} className={`border text-sm px-5 py-2.5 rounded-lg ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:text-white' : 'border-gray-800 text-gray-900 hover:bg-gray-700 hover:text-white'}`}>
+                    <button type="button" onClick={handleClose} className={`border text-sm px-5 py-2.5 rounded-lg ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:text-white' : 'border-[#e8dfc8] text-[#3d2f1f] hover:bg-gray-700 hover:text-white'}`}>
                       Cancelar
                     </button>
                     <button

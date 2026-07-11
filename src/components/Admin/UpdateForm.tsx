@@ -43,34 +43,34 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
             <div className="fixed inset-0 bg-black/60" aria-hidden="true"></div>
 
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <Dialog.Panel className={`rounded-lg shadow-lg max-w-md w-full p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-                    <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Editar Supervisor</h3>
+                <Dialog.Panel className={`rounded-lg shadow-lg max-w-md w-full p-6 ${isDark ? 'bg-gray-800' : 'bg-[#fdfbf5]'}`}>
+                    <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-[#3d2f1f]'}`}>Editar Supervisor</h3>
 
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Nombre</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Nombre</label>
                             <input
                                 type="text"
                                 name="name"
                                 value={form.name}
                                 onChange={handleChange}
-                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Apellido</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Apellido</label>
                             <input
                                 type="text"
                                 name="lastname"
                                 value={form.lastname}
                                 onChange={handleChange}
-                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Dni</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Dni</label>
                             <input
                                 type="text"
                                 name="dni"
@@ -78,12 +78,12 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
                                 onChange={handleChange}
                                 pattern="\d{8}"
                                 title="El DNI debe tener exactamente 8 dígitos."
-                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Teléfono</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Teléfono</label>
                             <input
                                 type="text"
                                 name="phone"
@@ -91,29 +91,29 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
                                 onChange={handleChange}
                                 pattern="\d{9}"
                                 title="El número de teléfono debe tener exactamente 9 dígitos."
-                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Usuario</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Usuario</label>
                             <input
                                 type="text"
                                 name="username"
                                 value={form.username}
                                 onChange={handleChange}
-                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                             />
                         </div>
 
                         <div className="mb-6">
-                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Contraseña</label>
+                            <label className={`block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-[#3d2f1f]'}`}>Contraseña</label>
                             <input
                                 type="password"
                                 name="password"
                                 value={form.password}
                                 onChange={handleChange}
-                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
+                                className={`w-full border px-3 py-2 rounded mt-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-[#fdfbf5] border-[#e8dfc8] text-[#3d2f1f]'}`}
                             />
                         </div>
 
@@ -121,7 +121,7 @@ const UpdateForm = ({ isOpen, onClose, data, onSubmit }) => {
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className={`mr-2 px-4 py-2 border rounded ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700' : 'border-gray-300 text-gray-900 hover:bg-gray-100'}`}
+                                className={`mr-2 px-4 py-2 border rounded ${isDark ? 'border-gray-600 text-gray-200 hover:bg-gray-700' : 'border-[#e8dfc8] text-[#3d2f1f] hover:bg-[#f0e6d0]'}`}
                             >
                                 Cancelar
                             </button>

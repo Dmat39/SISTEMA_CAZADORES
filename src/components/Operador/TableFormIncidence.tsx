@@ -55,26 +55,26 @@ const TableFormIncidence = ({ incidencias = [], onIncidenciaUpdate }) => {
   if (incidencias.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
-        <DocumentTextIcon className="h-10 w-10 text-gray-400 dark:text-gray-600" />
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">No se encontraron incidencias</p>
+        <DocumentTextIcon className="h-10 w-10 text-[#a89878] dark:text-gray-600" />
+        <p className="text-sm font-medium text-[#a89878] dark:text-gray-400">No se encontraron incidencias</p>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
-      <table className="min-w-full divide-y divide-gray-100 dark:divide-white/8">
-        <thead className="bg-gray-50 dark:bg-[#1e293b]">
+      <div className="rounded-xl border border-[#e8dfc8] dark:border-white/10 overflow-hidden">
+      <table className="min-w-full divide-y divide-[#e8dfc8] dark:divide-white/8">
+        <thead className="bg-[#f0e6d0] dark:bg-[#1e293b]">
           <tr>
             {['Incidencia', 'Estado', 'Medio', 'Zona', 'Crimen', 'Fecha', 'Registros'].map((h) => (
-              <th key={h} className={`px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider ${h === 'Estado' ? 'text-center' : 'text-left'}`}>
+              <th key={h} className={`px-4 py-3 text-xs font-semibold text-[#a89878] dark:text-gray-400 uppercase tracking-wider ${h === 'Estado' ? 'text-center' : 'text-left'}`}>
                 {h}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white dark:bg-[#111827] divide-y divide-gray-50 dark:divide-white/5">
+        <tbody className="bg-[#fdfbf5] dark:bg-[#111827] divide-y divide-[#e8dfc8] dark:divide-white/5">
           {paginated.map((inc) => {
             const {
               id,
@@ -93,11 +93,11 @@ const TableFormIncidence = ({ incidencias = [], onIncidenciaUpdate }) => {
               <tr
                 key={id}
                 onClick={() => handleRowClick(id)}
-                className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                className="hover:bg-[#f7f0e0] dark:hover:bg-white/5 transition-colors cursor-pointer"
               >
                 <td className="px-4 py-3 max-w-[240px]">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{name || "Sin título"}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{code || "Sin código"}</p>
+                  <p className="text-sm font-medium text-[#3d2f1f] dark:text-white truncate">{name || "Sin título"}</p>
+                  <p className="text-xs text-[#a89878] dark:text-gray-400">{code || "Sin código"}</p>
                 </td>
                 <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                   <div className="flex justify-center">
@@ -109,20 +109,20 @@ const TableFormIncidence = ({ incidencias = [], onIncidenciaUpdate }) => {
                           </span>
                           <ChevronDown className="h-3 w-3 opacity-60 shrink-0" />
                         </Listbox.Button>
-                        <Listbox.Options className="absolute z-20 mt-1 min-w-[9rem] rounded-lg bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 shadow-lg py-1 focus:outline-none">
+                        <Listbox.Options className="absolute z-20 mt-1 min-w-[9rem] rounded-lg bg-[#fdfbf5] dark:bg-[#1e293b] border border-[#e8dfc8] dark:border-white/10 shadow-lg py-1 focus:outline-none">
                           {Object.entries(KANBAN_STATES).map(([value, config]) => (
                             <Listbox.Option
                               key={value}
                               value={value}
                               className={({ active }) => cn(
                                 "flex items-center gap-2 px-3 py-2 text-xs cursor-pointer",
-                                active ? "bg-gray-100 dark:bg-white/10" : "",
+                                active ? "bg-[#f0e6d0] dark:bg-white/10" : "",
                               )}
                             >
                               {({ selected }) => (
                                 <>
                                   <span className={cn("flex-1 font-medium", config.color)}>{config.titulo}</span>
-                                  {selected && <Check className="h-3.5 w-3.5 text-gray-400" />}
+                                  {selected && <Check className="h-3.5 w-3.5 text-[#a89878]" />}
                                 </>
                               )}
                             </Listbox.Option>
@@ -132,11 +132,11 @@ const TableFormIncidence = ({ incidencias = [], onIncidenciaUpdate }) => {
                     </Listbox>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 max-w-[120px] truncate">{comunication?.name || "Sin medio"}</td>
-                <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 max-w-[120px] truncate">{zone?.name || "Sin zona"}</td>
-                <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 max-w-[140px] truncate">{crime?.name || "Sin crimen"}</td>
-                <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{date.format("DD/MM/YYYY HH:mm")}</td>
-                <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{records.length}</td>
+                <td className="px-4 py-3 text-sm text-[#7a6a52] dark:text-gray-300 max-w-[120px] truncate">{comunication?.name || "Sin medio"}</td>
+                <td className="px-4 py-3 text-sm text-[#7a6a52] dark:text-gray-300 max-w-[120px] truncate">{zone?.name || "Sin zona"}</td>
+                <td className="px-4 py-3 text-sm text-[#7a6a52] dark:text-gray-300 max-w-[140px] truncate">{crime?.name || "Sin crimen"}</td>
+                <td className="px-4 py-3 text-sm text-[#7a6a52] dark:text-gray-300 whitespace-nowrap">{date.format("DD/MM/YYYY HH:mm")}</td>
+                <td className="px-4 py-3 text-sm text-[#7a6a52] dark:text-gray-300 whitespace-nowrap">{records.length}</td>
               </tr>
             );
           })}

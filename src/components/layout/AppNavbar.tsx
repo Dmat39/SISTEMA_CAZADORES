@@ -22,10 +22,10 @@ function LiveClock() {
 
   return (
     <div className="hidden md:flex flex-col items-center select-none translate-y-0.5">
-      <span className="text-base font-extrabold tabular-nums text-gray-800 dark:text-white leading-none tracking-tight">
+      <span className="text-base font-extrabold tabular-nums text-[#3d2f1f] dark:text-white leading-none tracking-tight">
         {h}:{m}
       </span>
-      <span className="text-[10px] font-medium text-gray-600 dark:text-gray-400 mt-0.5 capitalize">
+      <span className="text-[10px] font-medium text-[#7a6a52] dark:text-gray-400 mt-0.5 capitalize">
         {date}
       </span>
     </div>
@@ -38,10 +38,10 @@ export default function AppNavbar() {
   const { title, subtitle, live } = usePageTitle();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center border-b border-gray-200 dark:border-white/10 shadow-sm transition-colors duration-200">
+    <nav className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center border-b border-[#e8dfc8] dark:border-white/10 shadow-sm transition-colors duration-200">
 
       {/* ── Logo (desktop) ── */}
-      <div className="hidden sm:flex items-center justify-center w-60 h-full shrink-0 bg-slate-50 dark:bg-[#0f172a] border-r border-slate-200 dark:border-white/10">
+      <div className="hidden sm:flex items-center justify-center w-60 h-full shrink-0 bg-[#fdfbf5] dark:bg-[#0f172a] border-r border-[#e8dfc8] dark:border-white/10">
         <img
           src={isDark ? logoDark : logoLight}
           alt="San Juan de Lurigancho"
@@ -50,13 +50,13 @@ export default function AppNavbar() {
       </div>
 
       {/* ── Navbar body ── */}
-      <div className="flex flex-1 items-center px-4 gap-3 bg-slate-50/95 dark:bg-[#0a0f1e]/90 backdrop-blur-xl h-full">
+      <div className="flex flex-1 items-center px-4 gap-3 bg-[#fdfbf5]/95 dark:bg-[#0a0f1e]/90 backdrop-blur-xl h-full">
 
         {/* Mobile: hamburger */}
         <button
           type="button"
           onClick={toggle}
-          className="sm:hidden rounded-lg p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+          className="sm:hidden rounded-lg p-2 text-[#a89878] dark:text-gray-400 hover:bg-[#f7f0e0] dark:hover:bg-white/10 transition-colors"
           aria-label="Abrir menú"
         >
           <Menu className="h-5 w-5" />
@@ -65,10 +65,10 @@ export default function AppNavbar() {
         {/* Page title */}
         {title && (
           <div className="hidden sm:flex items-center gap-3">
-            <div className="h-7 w-px bg-gray-200 dark:bg-white/10" />
+            <div className="h-7 w-px bg-[#e8dfc8] dark:bg-white/10" />
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-extrabold text-gray-900 dark:text-white leading-none tracking-tight">
+                <span className="text-2xl font-extrabold text-[#3d2f1f] dark:text-white leading-none tracking-tight">
                   {title}
                 </span>
                 {live && (
@@ -84,7 +84,7 @@ export default function AppNavbar() {
                 )}
               </div>
               {subtitle && (
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 leading-none">
+                <p className="text-xs text-[#7a6a52] dark:text-gray-400 mt-0.5 leading-none">
                   {subtitle}
                 </p>
               )}
@@ -100,7 +100,7 @@ export default function AppNavbar() {
         {/* Right: toggle + separator + user */}
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <div className="h-6 w-px bg-gray-200 dark:bg-white/15" />
+          <div className="h-6 w-px bg-[#e8dfc8] dark:bg-white/15" />
           <UserDropdown />
         </div>
       </div>
