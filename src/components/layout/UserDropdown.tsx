@@ -5,7 +5,7 @@ import { logout } from '@/store/slices/authSlice';
 import type { UserRole } from '@/store/slices/authSlice';
 
 function displayRole(role: UserRole | null | undefined): string {
-  if (role === 'operator' || role === 'hunter') return 'Operador';
+  if (role === 'operator' || role === 'hunter') return 'Cazador';
   if (role === 'administrator') return 'Administrador';
   if (role === 'visualizer') return 'Visualizador';
   if (role === 'supervisor') return 'Supervisor';

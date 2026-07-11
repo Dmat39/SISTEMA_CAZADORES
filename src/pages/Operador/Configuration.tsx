@@ -15,7 +15,7 @@ const ConfigurationProfile = () => {
 
   const fetchOperatorProfile = async () => {
     if (!operatorId) {
-      toast.error('No se encontró ID de operador');
+      toast.error('No se encontró ID de cazador');
       setIsLoading(false);
       return;
     }
@@ -28,7 +28,7 @@ const ConfigurationProfile = () => {
       if (response.status && response.data) {
         setOperatorData(response.data);
       } else {
-        toast.error('No se pudieron cargar los datos del operador');
+        toast.error('No se pudieron cargar los datos del cazador');
       }
     } catch (error) {
       console.error("Error al obtener datos:", error);
