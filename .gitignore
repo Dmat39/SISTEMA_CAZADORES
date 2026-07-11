@@ -35,3 +35,4 @@ dist-ssr
 .agents/
 CLAUDE.md
 skills-lock.json
+.playwright-mcp/
