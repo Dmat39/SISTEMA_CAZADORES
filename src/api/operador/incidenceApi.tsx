@@ -11,6 +11,7 @@ export const getIncidenceCodesApi = async (codigo?: string) => {
     const response = await incidenceApi.get(url);
     const data = response.data?.data ?? response.data;
     const normalized = data.map((i) => ({
+      id: i.id,
       codigo_incidencia: i.codigoIncidencia ?? i.codigo_incidencia,
       latitud: i.latitud,
       longitud: i.longitud,

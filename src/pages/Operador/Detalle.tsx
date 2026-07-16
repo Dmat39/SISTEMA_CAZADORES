@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { getIncidenceByIdApi, updateIncidenceApi, getAllIncidenceZonesApi, getAllIncidenceComunicationApi } from '../../api/operador/incidenceApi';
+import { getIncidenceByIdApi, updateIncidenceApi, getAllIncidenceZonesApi, getAllIncidenceComunicationApi, getIncidenceCodesApi } from '../../api/operador/incidenceApi';
 import { createSubRegistroIncidenceApi } from '../../api/operador/registroIncidenceApi';
 import Icon from '@mdi/react';
 import { icons } from '../../plugins/IconLibrary';
@@ -31,6 +31,7 @@ const IncidenciaDetalles = () => {
     const [showCodeModal, setShowCodeModal] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
     const [dataSelect, setDataSelect] = useState({ zones: [], communications: [] });
+    const [externalId, setExternalId] = useState(null);
     const navigate = useNavigate();
     const hasFetched = useRef(false);
     const { role } = useSelector((state) => state.auth);
@@ -52,6 +53,25 @@ const IncidenciaDetalles = () => {
         hasFetched.current = true;
         fetchIncidencia();
     }, [fetchIncidencia]);
+
+    useEffect(() => {
+        const code = incidencia?.code;
+        if (!code) {
+            setExternalId(null);
+            return;
+        }
+        let cancelled = false;
+        (async () => {
+            try {
+                const response = await getIncidenceCodesApi(code);
+                const match = response?.data?.find((item) => item.codigo_incidencia === code);
+                if (!cancelled) setExternalId(match?.id ?? null);
+            } catch {
+                if (!cancelled) setExternalId(null);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [incidencia?.code]);
 
     const handleOpenEdit = async () => {
         if (!dataSelect.zones.length) {
@@ -135,7 +155,7 @@ const IncidenciaDetalles = () => {
                                     <a
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        href={`http://192.168.13.80:81/incidencias/codigo-incidencia/${code}`}
+                                        href={externalId ? `http://10.10.40.10:8081/incidencias/${externalId}` : '#'}
                                         className="text-xs font-medium px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/25 transition-colors"
                                     >
                                         Ver Detalle
