@@ -3,7 +3,7 @@ import { Button } from "../../UI/button";
 import { Badge } from "../../UI/badge";
 import Icon from "@mdi/react";
 import { icons } from "../../../plugins/IconLibrary";
-import { KANBAN_STATES } from "./kanbanConfig";
+import { KANBAN_STATES, translateStatusError } from "./kanbanConfig";
 
 const StatusChangeModal = ({ 
   isOpen, 
@@ -22,45 +22,19 @@ const StatusChangeModal = ({
     return KANBAN_STATES[status]?.titulo || status;
   };
 
-  // Mapeo de colores para los badges
+  // Mapeo de colores para los badges (misma paleta que el resto del Kanban)
   const getStatusColor = (status) => {
-    const colorMap = {
-      previous: "bg-orange-600",
-      process: "bg-blue-600", 
-      completed: "bg-purple-600",
-      finished: "bg-green-600"
-    };
-    return colorMap[status] || "bg-gray-600";
-  };
-
-  // Traducir mensajes de error al español
-  const translateErrorMessage = (message) => {
-    const translations = {
-      "Invalid transition: previous can only move to process": 
-        "Transición inválida: El estado 'Previo' solo puede cambiar a 'En Proceso'",
-      "Invalid transition: process can only move to completed": 
-        "Transición inválida: El estado 'En Proceso' solo puede cambiar a 'En Ejecución'",
-      "Invalid transition: completed can only move to finished": 
-        "Transición inválida: El estado 'En Ejecución' solo puede cambiar a 'Finalizado'",
-      "Cannot change status to completed without assigning a code to the incident": 
-        "No se puede cambiar a 'En Ejecución' sin asignar un código a la incidencia",
-      "Cannot move backwards in the workflow": 
-        "No se puede retroceder en el flujo de trabajo",
-      "Cannot skip states in the workflow": 
-        "No se puede saltar estados en el flujo de trabajo"
-    };
-    
-    return translations[message] || message;
+    return KANBAN_STATES[status]?.solidColor || "bg-gray-600";
   };
 
   const isError = !!errorMessage;
-  const translatedError = errorMessage ? translateErrorMessage(errorMessage) : null;
+  const translatedError = errorMessage ? translateStatusError(errorMessage) : null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-50 dark:bg-[#111827] rounded-lg shadow-xl max-w-md w-full mx-4 border border-gray-200 dark:border-white/10">
+      <div className="bg-[#fdfbf5] dark:bg-[#111827] rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#e8dfc8] dark:border-white/10">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/10">
+        <div className="flex items-center justify-between p-6 border-b border-[#e8dfc8] dark:border-white/10">
           <div className="flex items-center gap-3">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
               isError ? 'bg-red-600' : 'bg-green-600'
@@ -71,7 +45,7 @@ const StatusChangeModal = ({
                 className="text-white" 
               />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-semibold text-[#3d2f1f] dark:text-white">
               {isError ? 'Cambio de Estado No Permitido' : 'Confirmar Cambio de Estado'}
             </h3>
           </div>
@@ -79,7 +53,7 @@ const StatusChangeModal = ({
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-900 dark:hover:text-white p-1"
+            className="text-[#a89878] hover:text-[#3d2f1f] dark:hover:text-white p-1"
           >
             <Icon path={icons.close} size={0.8} />
           </Button>
@@ -89,12 +63,12 @@ const StatusChangeModal = ({
         <div className="p-6">
           {/* Incidencia Info */}
           <div className="mb-6">
-            <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Incidencia:</h4>
-            <p className="text-gray-900 dark:text-white font-medium text-sm line-clamp-2">
+            <h4 className="text-sm font-medium text-[#7a6a52] dark:text-gray-300 mb-2">Incidencia:</h4>
+            <p className="text-[#3d2f1f] dark:text-white font-medium text-sm line-clamp-2">
               {incidencia?.name || "Sin título"}
             </p>
             {incidencia?.code && (
-              <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+              <p className="text-[#a89878] dark:text-gray-400 text-xs mt-1">
                 Código: {incidencia.code}
               </p>
             )}
@@ -102,7 +76,7 @@ const StatusChangeModal = ({
 
           {/* Status Change Info */}
           <div className="mb-6">
-            <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-3">
+            <h4 className="text-sm font-medium text-[#7a6a52] dark:text-gray-300 mb-3">
               {isError ? 'Cambio Solicitado:' : 'Cambio de Estado:'}
             </h4>
             <div className="flex items-center justify-center gap-4">
@@ -110,20 +84,20 @@ const StatusChangeModal = ({
                 <Badge className={`${getStatusColor(fromStatus)} text-white text-xs mb-1`}>
                   {getStatusDisplayName(fromStatus)}
                 </Badge>
-                <p className="text-xs text-gray-500 dark:text-gray-500">Estado Actual</p>
+                <p className="text-xs text-[#a89878] dark:text-gray-500">Estado Actual</p>
               </div>
               
               <Icon 
                 path={icons.arrowLeft} 
                 size={1} 
-                className={`text-gray-400 rotate-180 ${isError ? 'text-red-400' : ''}`} 
+                className={`text-[#a89878] rotate-180 ${isError ? 'text-red-400' : ''}`}
               />
               
               <div className="text-center">
                 <Badge className={`${getStatusColor(toStatus)} text-white text-xs mb-1`}>
                   {getStatusDisplayName(toStatus)}
                 </Badge>
-                <p className="text-xs text-gray-500 dark:text-gray-500">Estado Destino</p>
+                <p className="text-xs text-[#a89878] dark:text-gray-500">Estado Destino</p>
               </div>
             </div>
           </div>
@@ -157,12 +131,12 @@ const StatusChangeModal = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-white/10">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-[#e8dfc8] dark:border-white/10">
           <Button
             variant="ghost"
             onClick={onClose}
             disabled={isLoading}
-            className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            className="text-[#a89878] dark:text-gray-400 hover:text-[#3d2f1f] dark:hover:text-white"
           >
             {isError ? 'Entendido' : 'Cancelar'}
           </Button>

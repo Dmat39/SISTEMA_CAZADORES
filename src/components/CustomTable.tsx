@@ -106,7 +106,7 @@ const CustomTable = ({
 
     return (
         <div className='w-full relative flex-1 flex flex-col min-h-0'>
-            <div className={`flex justify-center items-center bg-white/80 dark:bg-gray-800/80 z-20 h-full w-full py-3 absolute transition-colors duration-200
+            <div className={`flex justify-center items-center bg-[#fdfbf5]/80 dark:bg-gray-800/80 z-20 h-full w-full py-3 absolute transition-colors duration-200
                 transition-opacity duration-300 ease-in-out ${loading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <CircularProgress size={30} thickness={5} className='!text-[#4052af]' />
             </div>
@@ -122,7 +122,7 @@ const CustomTable = ({
                 </div>
                 <div className='flex-1 overflow-auto min-h-0'>
                     <Table size='small' className='text-nowrap min-w-[800px]'>
-                    <TableHead className='sticky top-0 z-10 bg-neutral-200'>
+                    <TableHead className='sticky top-0 z-10 bg-[#f0e6d0]'>
                         <TableRow>
                             <TableCell
                                 sx={{ 
@@ -136,7 +136,7 @@ const CustomTable = ({
                                     style={{
                                         fontSize: '0.75rem',
                                         fontWeight: 600,
-                                        color: 'rgba(0, 0, 0, 0.87)'
+                                        color: '#3d2f1f'
                                     }}
                                 >
                                     #
@@ -186,7 +186,7 @@ const CustomTable = ({
                             {sortedData.map((row) => (
                                 <TableRow
                                     onClick={() => typeof rowOnClick === 'function' && rowOnClick(row)}
-                                    className={`${typeof rowOnClick === 'function' ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                                    className={`${typeof rowOnClick === 'function' ? 'cursor-pointer hover:bg-[#f7f0e0]' : ''}`}
                                     key={row.id || row.dni || row.codigo}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
@@ -220,7 +220,7 @@ const CustomTable = ({
                                                             arrow
                                                             placement='top'
                                                             onClick={item.action}
-                                                            className='cursor-pointer text-gray-500'
+                                                            className='cursor-pointer text-[#a89878]'
                                                         >
                                                             {item.icon}
                                                         </Tooltip>
@@ -298,7 +298,7 @@ const CustomTable = ({
                 </Table>
                 {sortedData.length === 0 && (
                     <div className='flex justify-center py-8 sticky left-0'>
-                        <span className='text-xs sm:text-sm text-gray-500 italic text-center px-4'>{noDataText}</span>
+                        <span className='text-xs sm:text-sm text-[#a89878] italic text-center px-4'>{noDataText}</span>
                     </div>
                 )}
                 </div>
@@ -313,7 +313,7 @@ const CustomTable = ({
             </div>
 
             {legend &&
-                <span className='text-xs text-gray-500 italic'>
+                <span className='text-xs text-[#a89878] italic'>
                     <strong>Leyenda:</strong> {legend}
                 </span>
             }

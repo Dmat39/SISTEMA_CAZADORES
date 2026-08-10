@@ -7,11 +7,11 @@ const CardForm = ({ incidencias = [] }) => {
 
   const formatStatus = (status) => {
     const map = {
+      previous: { text: "En Proceso", color: "bg-blue-100 text-blue-900" },
       process: { text: "En Proceso", color: "bg-blue-100 text-blue-900" },
       completed: { text: "Completado", color: "bg-green-100 text-green-900" },
-      finished: { text: "Rechazado", color: "bg-red-100 text-red-900" },
     };
-    return map[status] || { text: status, color: "bg-gray-100 text-gray-900" };
+    return map[status] || { text: status, color: "bg-[#f0e6d0] text-[#3d2f1f]" };
   };
 
   const handleCardClick = (id) => {
@@ -30,10 +30,10 @@ const CardForm = ({ incidencias = [] }) => {
           <div
             key={inc.id}
             onClick={() => handleCardClick(inc.id)}
-            className="border border-gray-300 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
+            className="border border-[#e8dfc8] rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
           >
             <div className="flex flex-row items-start justify-between mb-3">
-              <h3 className="text-xl line-clamp-2 text-gray-900 font-semibold w-72">
+              <h3 className="text-xl line-clamp-2 text-[#3d2f1f] font-semibold w-72">
                 {inc.name}
               </h3>
               <span className={`text-sm font-medium px-3 py-1 rounded-full ${status.color}`}>
@@ -41,18 +41,18 @@ const CardForm = ({ incidencias = [] }) => {
               </span>
             </div>
 
-            <p className="text-gray-700 mb-3 line-clamp-3">
+            <p className="text-[#7a6a52] mb-3 line-clamp-3">
               {inc.description || "Sin descripción"}
             </p>
 
-            <div className="flex flex-row items-center gap-4 border-b border-gray-200 pb-3">
+            <div className="flex flex-row items-center gap-4 border-b border-[#e8dfc8] pb-3">
               <div className="flex items-center space-x-1">
-                <CalendarDaysIcon className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">{date.format("DD/MM/YYYY")}</span>
+                <CalendarDaysIcon className="h-4 w-4 text-[#a89878]" />
+                <span className="text-sm text-[#7a6a52]">{date.format("DD/MM/YYYY")}</span>
               </div>
               <div className="flex items-center space-x-1">
-                <ClockIcon className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">
+                <ClockIcon className="h-4 w-4 text-[#a89878]" />
+                <span className="text-sm text-[#7a6a52]">
                   {date.format("hh:mm")} {isPM ? "p.m." : "a.m."}
                 </span>
               </div>
@@ -60,14 +60,14 @@ const CardForm = ({ incidencias = [] }) => {
 
             <div className="pt-3 flex items-center justify-between">
               <div className="flex items-center space-x-1">
-                <DocumentTextIcon className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">
+                <DocumentTextIcon className="h-4 w-4 text-[#a89878]" />
+                <span className="text-sm text-[#7a6a52]">
                   {inc.records?.length || 0} Registros
                 </span>
               </div>
               <div className="flex items-center space-x-1">
-                <CameraIcon className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">
+                <CameraIcon className="h-4 w-4 text-[#a89878]" />
+                <span className="text-sm text-[#7a6a52]">
                   Con imágenes
                 </span>
               </div>

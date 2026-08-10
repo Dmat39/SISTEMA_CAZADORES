@@ -10,7 +10,7 @@ function Card({
     <div
       data-slot="card"
       className={cn(
-        "bg-slate-50 dark:bg-[#111827] text-gray-900 dark:text-white flex flex-col gap-6 rounded-xl border border-gray-200 dark:border-white/10 py-6 shadow-sm",
+        "bg-[#fdfbf5] dark:bg-[#111827] text-[#3d2f1f] dark:text-white flex flex-col gap-6 rounded-xl border border-[#e8dfc8] dark:border-white/10 py-6 shadow-sm",
         className
       )}
       {...props} />
@@ -39,7 +39,7 @@ function CardTitle({
   return (
     <div
       data-slot="card-title"
-      className={cn("leading-none font-semibold text-gray-900 dark:text-white", className)}
+      className={cn("leading-none font-semibold text-[#3d2f1f] dark:text-white", className)}
       {...props} />
   );
 }
@@ -51,7 +51,7 @@ function CardDescription({
   return (
     <div
       data-slot="card-description"
-      className={cn("text-gray-600 dark:text-gray-400 text-sm", className)}
+      className={cn("text-[#7a6a52] dark:text-gray-400 text-sm", className)}
       {...props} />
   );
 }

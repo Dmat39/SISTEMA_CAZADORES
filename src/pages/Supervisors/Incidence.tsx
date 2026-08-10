@@ -18,14 +18,15 @@ import StatusFilter from '../../components/Supervisors/StatusFilter.tsx';
 import { isVisualizer } from '../../lib/utils.js';
 import { Search, Plus, AlertCircle } from 'lucide-react';
 import { useSetPageTitle } from '../../contexts/PageTitleContext';
+import { getSoftBadgeClass } from '../../components/Operador/kanban/kanbanConfig';
 
+// Mismos colores y nombres que ve el cazador; "previous" se muestra junto a "process" como "En Proceso"
 const STATUS_BADGE = {
-    previous:  'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-400',
-    process:   'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-400',
-    completed: 'bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400',
-    finished:  'bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-400',
+    previous:  getSoftBadgeClass('process'),
+    process:   getSoftBadgeClass('process'),
+    completed: getSoftBadgeClass('completed'),
 };
-const STATUS_LABEL = { previous: 'En Proceso', process: 'En Proceso', completed: 'Completado', finished: 'Finalizado' };
+const STATUS_LABEL = { previous: 'En Proceso', process: 'En Proceso', completed: 'Completado' };
 
 const Incidence = () => {
     useSetPageTitle('Incidencias', 'Monitoreo · En tiempo real', true);
@@ -156,7 +157,7 @@ const Incidence = () => {
 
     return (
         <div className="p-2 sm:p-4 h-[calc(100vh-5rem)] flex flex-col overflow-hidden">
-            <div className="flex-1 min-h-0 rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-3 sm:p-6 flex flex-col gap-4 overflow-hidden">
+            <div className="flex-1 min-h-0 rounded-xl bg-[#fdfbf5] dark:bg-[#111827] shadow border border-[#e8dfc8] dark:border-white/10 p-3 sm:p-6 flex flex-col gap-4 overflow-hidden">
 
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-3">
@@ -165,13 +166,13 @@ const Incidence = () => {
                         <StatusFilter />
                         <DateRangeFilter />
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#a89878] pointer-events-none" />
                             <input
                                 type="text"
                                 placeholder="Buscar incidencia..."
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
-                                className="h-9 pl-9 pr-3 w-52 text-sm bg-gray-100 dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder-gray-600 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500 outline-none transition-all"
+                                className="h-9 pl-9 pr-3 w-52 text-sm bg-[#fdfbf5] dark:bg-[#1e293b] border border-[#e8dfc8] dark:border-white/10 text-[#3d2f1f] dark:text-white placeholder-[#7a6a52] dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500 outline-none transition-all"
                             />
                         </div>
                         {!isVisualizer(role) && (
@@ -192,56 +193,56 @@ const Incidence = () => {
                     <Loading message="Cargando Incidencias" />
                 ) : incidents.length > 0 ? (
                     <div className="flex flex-col gap-3 flex-1 min-h-0">
-                        <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-gray-200 dark:border-white/8">
-                            <table className="min-w-full divide-y divide-gray-100 dark:divide-white/8">
-                                <thead className="sticky top-0 bg-gray-100 dark:bg-[#1e293b] z-10">
+                        <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-[#e8dfc8] dark:border-white/8">
+                            <table className="min-w-full divide-y divide-[#e8dfc8] dark:divide-white/8">
+                                <thead className="sticky top-0 bg-[#f0e6d0] dark:bg-[#1e293b] z-10">
                                     <tr>
                                         {['Cod.','Nombre','Crimen','Descripción','Placa','Zona','Medio','Fecha','Hora','Estado','Observación','Creado por','Creado en','Actualizado por','Actualizado en','Acciones'].map((h) => (
-                                            <th key={h} className={`px-3 py-2.5 text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap ${h === 'Acciones' ? 'text-center' : 'text-left'}`}>{h}</th>
+                                            <th key={h} className={`px-3 py-2.5 text-xs font-semibold text-[#7a6a52] dark:text-gray-400 uppercase tracking-wider whitespace-nowrap ${h === 'Acciones' ? 'text-center' : 'text-left'}`}>{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="bg-slate-50 dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
+                                <tbody className="bg-[#fdfbf5] dark:bg-[#111827] divide-y divide-[#e8dfc8] dark:divide-white/5">
                                     {incidents.map((item, idx) => (
                                         <tr
                                             key={item.id || idx}
                                             onClick={() => goToDetail(item)}
                                             className="hover:bg-orange-50/50 dark:hover:bg-orange-500/5 cursor-pointer transition-colors"
                                         >
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">{item.code || '—'}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300">{truncate(item.name)}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">{item.crime?.name ?? '—'}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300">{truncate(item.description)}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">{item.plate ?? '—'}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">{item.zone?.name ?? '—'}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">{item.comunication?.name ?? '—'}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">{new Date(item.date).toISOString().split('T')[0]}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">{item.code || '—'}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300">{truncate(item.name)}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">{item.crime?.name ?? '—'}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300">{truncate(item.description)}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">{item.plate ?? '—'}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">{item.zone?.name ?? '—'}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">{item.comunication?.name ?? '—'}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">{new Date(item.date).toISOString().split('T')[0]}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">
                                                 {(() => { const d = new Date(item.date); return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`; })()}
                                             </td>
                                             <td className="px-3 py-2.5 whitespace-nowrap">
-                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_BADGE[item.status] || 'bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300'}`}>
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_BADGE[item.status] || 'bg-[#f0e6d0] text-[#7a6a52] dark:bg-white/10 dark:text-gray-400'}`}>
                                                     {STATUS_LABEL[item.status] || item.status}
                                                 </span>
                                             </td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300">{truncate(item.observation)}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">
-                                                {item.user?.deletedAt ? <del className="text-gray-400">{item.user.username}</del> : (item.user?.username || '—')}
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300">{truncate(item.observation)}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">
+                                                {item.user?.deletedAt ? <del className="text-[#a89878]">{item.user.username}</del> : (item.user?.username || '—')}
                                             </td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">{new Date(item.createdAt).toISOString().split('T')[0]}</td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">
-                                                {item.userWhoUpdated ? (item.userWhoUpdated.deletedAt ? <del className="text-gray-400">{item.userWhoUpdated.username}</del> : item.userWhoUpdated.username) : '—'}
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">{new Date(item.createdAt).toISOString().split('T')[0]}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">
+                                                {item.userWhoUpdated ? (item.userWhoUpdated.deletedAt ? <del className="text-[#a89878]">{item.userWhoUpdated.username}</del> : item.userWhoUpdated.username) : '—'}
                                             </td>
-                                            <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-gray-300 whitespace-nowrap">{new Date(item.updatedAt).toISOString().split('T')[0]}</td>
+                                            <td className="px-3 py-2.5 text-xs text-[#3d2f1f] dark:text-gray-300 whitespace-nowrap">{new Date(item.updatedAt).toISOString().split('T')[0]}</td>
                                             <td className="px-3 py-2.5">
                                                 <div className="flex justify-center gap-0.5">
                                                     {!isVisualizer(role) && (
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); setSelectedIncidenceId(item.id); setSelectedIncidenceName(item.name); setShowAssignedOperators(true); }}
-                                                            title="Operadores asignados"
-                                                            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/8 transition-colors"
+                                                            title="Cazadores asignados"
+                                                            className="p-1.5 rounded-lg hover:bg-[#f0e6d0] dark:hover:bg-white/8 transition-colors"
                                                         >
-                                                            <Icon path={icons.mdiAccountGroup} size={0.8} className="text-gray-500 dark:text-gray-400" />
+                                                            <Icon path={icons.mdiAccountGroup} size={0.8} className="text-[#a89878] dark:text-gray-400" />
                                                         </button>
                                                     )}
                                                     {!isVisualizer(role) && (
@@ -275,9 +276,9 @@ const Incidence = () => {
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-                        <AlertCircle className="h-12 w-12 text-gray-500 dark:text-gray-500" />
-                        <h3 className="text-base font-semibold text-gray-900 dark:text-white">No hay incidencias registradas</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">Aún no se han reportado incidencias por parte de los operadores</p>
+                        <AlertCircle className="h-12 w-12 text-[#a89878] dark:text-gray-500" />
+                        <h3 className="text-base font-semibold text-[#3d2f1f] dark:text-white">No hay incidencias registradas</h3>
+                        <p className="text-sm text-[#a89878] dark:text-gray-400 max-w-sm">Aún no se han reportado incidencias por parte de los cazadores</p>
                         {!isVisualizer(role) && (
                             <button
                                 onClick={() => setShowForm(true)}

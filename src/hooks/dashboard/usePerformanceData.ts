@@ -17,7 +17,6 @@ export interface PerformancePerson {
 export interface GeneralData {
   totalIncidencias: number;
   incidenciasEnProceso: number;
-  incidenciasFinalizadas: number;
   incidenciasCompletadas: number;
   totalCazadores: number;
 }
@@ -70,7 +69,6 @@ export function usePerformanceData() {
   const [generalData, setGeneralData] = useState<GeneralData>({
     totalIncidencias: 0,
     incidenciasEnProceso: 0,
-    incidenciasFinalizadas: 0,
     incidenciasCompletadas: 0,
     totalCazadores: 0,
   });
@@ -85,7 +83,6 @@ export function usePerformanceData() {
         setGeneralData({
           totalIncidencias: d.total || 0,
           incidenciasEnProceso: d.process || 0,
-          incidenciasFinalizadas: d.finished || 0,
           incidenciasCompletadas: d.completed || 0,
           totalCazadores: d.hunters || 0,
         });

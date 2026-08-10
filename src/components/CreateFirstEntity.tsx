@@ -6,10 +6,10 @@ const CreateFirstEntity = ({ onCreate, title, body, button }) => {
         <div className="flex flex-col items-center justify-center max-w-4xl mx-auto h-150">
             <div className="flex flex-col items-center justify-center">
             <Icon path={icons.plus} size={2} />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-[#3d2f1f] mb-2">
                 {title}
             </h3>
-            <p className="text-gray-500 mb-6">
+            <p className="text-[#a89878] mb-6">
                 {body}
             </p>
             <button

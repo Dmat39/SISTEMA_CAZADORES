@@ -15,7 +15,7 @@ const ConfigurationProfile = () => {
 
   const fetchOperatorProfile = async () => {
     if (!operatorId) {
-      toast.error('No se encontró ID de operador');
+      toast.error('No se encontró ID de usuario');
       setIsLoading(false);
       return;
     }
@@ -28,7 +28,7 @@ const ConfigurationProfile = () => {
       if (response.status && response.data) {
         setOperatorData(response.data);
       } else {
-        toast.error('No se pudieron cargar los datos del operador');
+        toast.error('No se pudieron cargar los datos del usuario');
       }
     } catch (error) {
       console.error("Error al obtener datos:", error);
@@ -45,7 +45,7 @@ const ConfigurationProfile = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-lg text-gray-600">Cargando perfil...</div>
+        <div className="text-lg text-[#7a6a52]">Cargando perfil...</div>
       </div>
     );
   }

@@ -72,8 +72,8 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
   };
 
   return (
-    <div className="mt-6 p-4 border rounded-lg bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10">
-      <h3 className="text-md font-semibold mb-4 text-gray-900 dark:text-white">Asignar nuevo cazador</h3>
+    <div className="mt-6 p-4 border rounded-lg bg-[#fdfbf5] dark:bg-white/5 border-[#e8dfc8] dark:border-white/10">
+      <h3 className="text-md font-semibold mb-4 text-[#3d2f1f] dark:text-white">Asignar nuevo cazador</h3>
       <form onSubmit={handleSubmit} >
         <div className="mb-4">
           <Autocomplete
@@ -145,7 +145,7 @@ const CazadorAssignmentForm = ({ onClose, onSubmit, cazadores, incidenceId }) =>
           <button
             type="button"
             onClick={handleCancel}
-            className="px-4 py-2 border rounded-lg cursor-pointer transition-colors border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
+            className="px-4 py-2 border rounded-lg cursor-pointer transition-colors border-[#e8dfc8] dark:border-white/10 text-[#7a6a52] dark:text-gray-300 hover:bg-[#f0e6d0] dark:hover:bg-white/5"
           >
             Cancelar
           </button>

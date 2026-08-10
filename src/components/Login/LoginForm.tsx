@@ -17,7 +17,7 @@ export default function LoginForm({ onSubmit, loading }) {
   };
 
   return (
-    <div className="w-full px-6 py-8 bg-white rounded-2xl shadow-xl border border-gray-200">
+    <div className="w-full px-6 py-8 bg-[#fdfbf5] rounded-2xl shadow-xl border border-[#e8dfc8]">
       <div className="mb-2 flex justify-center">
         <img
           src="/logo-muni.png"
@@ -28,7 +28,7 @@ export default function LoginForm({ onSubmit, loading }) {
       <h2 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
         Iniciar Sesión
       </h2>
-      <p className="text-center text-gray-500 mb-8 text-sm">
+      <p className="text-center text-[#a89878] mb-8 text-sm">
         Bienvenido de vuelta
       </p>
 
@@ -39,12 +39,12 @@ export default function LoginForm({ onSubmit, loading }) {
             placeholder="Usuario"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none transition-all duration-300 placeholder-gray-400 text-gray-700"
+            className="w-full px-4 py-3 border-2 border-[#e8dfc8] rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none transition-all duration-300 placeholder-[#a89878] text-[#7a6a52]"
             required
             disabled={loading}
           />
           <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-            <FaRegUser className="w-5 h-5 text-gray-400" />
+            <FaRegUser className="w-5 h-5 text-[#a89878]" />
           </div>
         </div>
 
@@ -55,16 +55,16 @@ export default function LoginForm({ onSubmit, loading }) {
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none transition-all duration-300 placeholder-gray-400 text-gray-700"
+            className="w-full px-4 py-3 border-2 border-[#e8dfc8] rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none transition-all duration-300 placeholder-[#a89878] text-[#7a6a52]"
             required
             disabled={loading}
           />
           <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
             <button type="button" onClick={togglePasswordVisibility} className="focus:outline-none cursor-pointer">
               {showPassword ? (
-                <FaEyeSlash className="w-5 h-5 text-gray-400" />
+                <FaEyeSlash className="w-5 h-5 text-[#a89878]" />
               ) : (
-                <FaEye className="w-5 h-5 text-gray-400" />
+                <FaEye className="w-5 h-5 text-[#a89878]" />
               )
             }
             </button>

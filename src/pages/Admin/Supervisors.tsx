@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import CreateForm from '../../components/Admin/CreateForm.tsx';
 import { getAllSupervisorApi, addsupervidorServiceApi, deleteSupervisorApi, updateSupervisorApi } from '../../api/supervisor/SupervidorService';
+import { changeUserRoleApi } from '../../api/admin/userApi';
 import UpdateForm from '../../components/Admin/UpdateForm.tsx';
+import ChangeRoleModal from '../../components/Admin/ChangeRoleModal.tsx';
 import { toast } from 'sonner';
 import Icon from '@mdi/react';
 import { icons } from '../../plugins/IconLibrary.js';
@@ -23,6 +25,8 @@ const SupervisorsAdmin = () => {
     const fetched = useRef(false);
     const [dataEdit, setDataEdit] = useState(null);
     const [showUpdate, setShowUpdate] = useState(false);
+    const [dataEditRole, setDataEditRole] = useState(null);
+    const [showChangeRole, setShowChangeRole] = useState(false);
 
     const rowsPerPage = 10;
     const searchParams = new URLSearchParams(location.search);
@@ -30,6 +34,7 @@ const SupervisorsAdmin = () => {
     const limit = parseInt(searchParams.get('limit')) || rowsPerPage;
 
     const openModalEdit = (payload) => { setDataEdit(payload); setShowUpdate(true); };
+    const openModalChangeRole = (payload) => { setDataEditRole(payload); setShowChangeRole(true); };
 
     const fetchSupervisors = async () => {
         try {
@@ -55,7 +60,7 @@ const SupervisorsAdmin = () => {
                 <div className="flex flex-col space-y-2">
                     <p>¿Estás seguro de eliminar a <strong>{payload.name} {payload.lastname}</strong>?</p>
                     <div className="flex justify-center gap-2">
-                        <button onClick={() => toast.dismiss()} className="px-3 py-1 text-sm border rounded hover:bg-gray-100 dark:hover:bg-white/10 dark:border-white/20 dark:text-white">Cancelar</button>
+                        <button onClick={() => toast.dismiss()} className="px-3 py-1 text-sm border rounded hover:bg-[#f0e6d0] dark:hover:bg-white/10 dark:border-white/20 dark:text-white">Cancelar</button>
                         <button
                             onClick={async () => {
                                 toast.dismiss();
@@ -84,6 +89,17 @@ const SupervisorsAdmin = () => {
             toast.success('Supervisor actualizado exitosamente!');
         } catch (error) {
             toast.error(`Error al actualizar el supervisor ${error.message}`);
+        }
+    };
+
+    const handleChangeRole = async (id, role) => {
+        try {
+            await changeUserRoleApi(id, role);
+            await fetchSupervisors();
+            setShowChangeRole(false);
+            toast.success('Rol actualizado exitosamente!');
+        } catch (error) {
+            toast.error(`Error al cambiar el rol: ${error.message}`);
         }
     };
 
@@ -117,19 +133,19 @@ const SupervisorsAdmin = () => {
 
     return (
         <div className="p-2 sm:p-4 h-[calc(100vh-5rem)] flex flex-col">
-            <div className="flex-1 min-h-0 rounded-xl bg-slate-50 dark:bg-[#111827] shadow border border-gray-200 dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
+            <div className="flex-1 min-h-0 rounded-xl bg-[#fdfbf5] dark:bg-[#111827] shadow border border-[#e8dfc8] dark:border-white/10 p-4 sm:p-6 flex flex-col gap-4">
 
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#a89878] pointer-events-none" />
                             <input
                                 type="text"
                                 placeholder="Buscar supervisor..."
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
-                                className="w-full sm:w-64 h-9 pl-9 pr-3 text-sm bg-gray-100 dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder-gray-600 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500 outline-none transition-all"
+                                className="w-full sm:w-64 h-9 pl-9 pr-3 text-sm bg-[#fdfbf5] dark:bg-[#1e293b] border border-[#e8dfc8] dark:border-white/10 text-[#3d2f1f] dark:text-white placeholder-[#7a6a52] dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500 outline-none transition-all"
                             />
                         </div>
                         <button
@@ -145,34 +161,37 @@ const SupervisorsAdmin = () => {
 
                 {/* Content */}
                 {isLoading ? (
-                    <div className="flex items-center justify-center gap-3 py-10 text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center justify-center gap-3 py-10 text-[#a89878] dark:text-gray-400">
                         <div className="h-5 w-5 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
                         <span className="text-sm font-medium">Cargando Supervisores . . .</span>
                     </div>
                 ) : supervisors.length > 0 ? (
                     <div className="flex flex-col gap-3 flex-1 min-h-0">
-                        <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-gray-200 dark:border-white/8">
-                            <table className="min-w-full divide-y divide-gray-100 dark:divide-white/8">
-                                <thead className="bg-gray-100 dark:bg-[#1e293b]">
+                        <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-[#e8dfc8] dark:border-white/8">
+                            <table className="min-w-full divide-y divide-[#e8dfc8] dark:divide-white/8">
+                                <thead className="bg-[#f0e6d0] dark:bg-[#1e293b]">
                                     <tr>
                                         {['Nombre', 'Apellido', 'DNI', 'Teléfono', 'Usuario'].map((h) => (
-                                            <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider">{h}</th>
+                                            <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-[#7a6a52] dark:text-gray-400 uppercase tracking-wider">{h}</th>
                                         ))}
-                                        <th className="px-5 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
+                                        <th className="px-5 py-3 text-center text-xs font-semibold text-[#7a6a52] dark:text-gray-400 uppercase tracking-wider">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-slate-50 dark:bg-[#111827] divide-y divide-gray-100 dark:divide-white/5">
+                                <tbody className="bg-[#fdfbf5] dark:bg-[#111827] divide-y divide-[#e8dfc8] dark:divide-white/5">
                                     {supervisors.map((item, idx) => (
-                                        <tr key={item.id || idx} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.name || '—'}</td>
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.lastname || '—'}</td>
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.dni || '—'}</td>
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.phone || '—'}</td>
-                                            <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-gray-200">{item.username || '—'}</td>
+                                        <tr key={item.id || idx} className="hover:bg-[#f7f0e0] dark:hover:bg-white/5 transition-colors">
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.name || '—'}</td>
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.lastname || '—'}</td>
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.dni || '—'}</td>
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.phone || '—'}</td>
+                                            <td className="px-5 py-3.5 text-sm text-[#3d2f1f] dark:text-gray-200">{item.username || '—'}</td>
                                             <td className="px-5 py-3.5">
                                                 <div className="flex justify-center gap-0.5">
                                                     <button onClick={() => openModalEdit(item)} title="Editar" className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors">
                                                         <Icon path={icons.edit} size={0.85} className="text-blue-500 dark:text-blue-400" />
+                                                    </button>
+                                                    <button onClick={() => openModalChangeRole(item)} title="Cambiar rol" className="p-1.5 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
+                                                        <Icon path={icons.changeRole} size={0.85} className="text-orange-500 dark:text-orange-400" />
                                                     </button>
                                                     <button onClick={() => deleteSupervisor(item)} title="Eliminar" className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
                                                         <Icon path={icons.delete} size={0.85} className="text-red-500 dark:text-red-400" />
@@ -195,9 +214,9 @@ const SupervisorsAdmin = () => {
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-                        <Users className="h-12 w-12 text-gray-500 dark:text-gray-500" />
-                        <h3 className="text-base font-semibold text-gray-900 dark:text-white">No hay supervisores registrados</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs">Aún no se han registrado supervisores en el sistema</p>
+                        <Users className="h-12 w-12 text-[#a89878] dark:text-gray-500" />
+                        <h3 className="text-base font-semibold text-[#3d2f1f] dark:text-white">No hay supervisores registrados</h3>
+                        <p className="text-sm text-[#a89878] dark:text-gray-400 max-w-xs">Aún no se han registrado supervisores en el sistema</p>
                         <button
                             onClick={() => setShowCreate(true)}
                             className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"
@@ -219,6 +238,7 @@ const SupervisorsAdmin = () => {
                 }}
             />
             <CreateForm isOpen={showCreate} onClose={() => setShowCreate(false)} onSubmit={handleCreate} />
+            <ChangeRoleModal isOpen={showChangeRole} onClose={() => setShowChangeRole(false)} data={dataEditRole} onSubmit={handleChangeRole} />
         </div>
     );
 };

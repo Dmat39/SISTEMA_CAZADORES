@@ -208,12 +208,12 @@ export default function DashboardAdmin() {
   }, [generalData.totalIncidencias, generalData.incidenciasEnProceso, generalData.incidenciasCompletadas]);
 
   return (
-    <div className="min-h-full bg-gray-200 dark:bg-[#0a0f1e] transition-colors duration-200">
+    <div className="min-h-full bg-[#f7f2e7] dark:bg-[#0a0f1e] transition-colors duration-200">
       <div className="px-4 py-3 sm:px-5 lg:px-5 space-y-4">
 
         {/* ── Stats bar + Date filter ──────────────────────────────── */}
         <div
-          className="animate-in fade-in-0 fill-mode-both flex items-center gap-4 bg-slate-50 dark:bg-[#111827] shadow-sm rounded-xl border border-gray-200 dark:border-white/10 px-5 py-4"
+          className="animate-in fade-in-0 fill-mode-both flex items-center gap-4 bg-[#fdfbf5] dark:bg-[#111827] shadow-sm rounded-xl border border-[#e8dfc8] dark:border-white/10 px-5 py-4"
           style={{ animationDuration: '400ms', fontFamily: FONT.body }}
         >
           {/* Inline stats — spread evenly */}
@@ -222,15 +222,15 @@ export default function DashboardAdmin() {
               const Icon = tile.icon;
               return (
                 <Fragment key={tile.key}>
-                  {i > 0 && <div className="h-10 w-px bg-gray-100 dark:bg-white/8 shrink-0" />}
+                  {i > 0 && <div className="h-10 w-px bg-[#e8dfc8] dark:bg-white/8 shrink-0" />}
                   <div className="flex items-center justify-center gap-3 flex-1 py-1">
                     <div className={`p-2 rounded-xl ${tile.bg} ${tile.darkBg}`}>
                       <Icon className={`h-5 w-5 ${tile.text} ${tile.darkText}`} strokeWidth={2} />
                     </div>
                     {loadingGeneral ? (
                       <div className="animate-pulse space-y-1.5">
-                        <div className="h-6 w-10 rounded bg-gray-100 dark:bg-white/10" />
-                        <div className="h-2.5 w-16 rounded bg-gray-50 dark:bg-white/5" />
+                        <div className="h-6 w-10 rounded bg-[#f0e6d0] dark:bg-white/10" />
+                        <div className="h-2.5 w-16 rounded bg-[#f0e6d0] dark:bg-white/5" />
                       </div>
                     ) : (
                       <div>
@@ -240,7 +240,7 @@ export default function DashboardAdmin() {
                         >
                           {generalData[tile.key].toLocaleString()}
                         </p>
-                        <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#7a6a52] dark:text-gray-400 mt-1">
                           {tile.label}
                         </p>
                       </div>
@@ -260,11 +260,11 @@ export default function DashboardAdmin() {
         {/* ── Resolution Bar ───────────────────────────────────────── */}
         {!loadingGeneral && resolution.total > 0 ? (
           <div
-            className="flex items-center gap-4 px-4 py-2 bg-slate-50 dark:bg-[#111827] shadow-sm rounded-xl border border-gray-200 dark:border-white/10"
+            className="flex items-center gap-4 px-4 py-2 bg-[#fdfbf5] dark:bg-[#111827] shadow-sm rounded-xl border border-[#e8dfc8] dark:border-white/10"
             style={{ fontFamily: FONT.body }}
           >
             <Zap className="h-4 w-4 text-orange-500 shrink-0" strokeWidth={2.5} />
-            <div className="flex-1 h-2 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden flex">
+            <div className="flex-1 h-2 rounded-full bg-[#f0e6d0] dark:bg-white/10 overflow-hidden flex">
               <div
                 className="h-full bg-amber-400 dark:bg-amber-500 transition-all duration-700"
                 style={{ width: `${resolution.inProcess}%` }}
@@ -275,7 +275,7 @@ export default function DashboardAdmin() {
               />
             </div>
             <div
-              className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 shrink-0"
+              className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-wider text-[#7a6a52] dark:text-gray-400 shrink-0"
             >
               <span className="flex items-center gap-1">
                 <span className="h-2 w-2 rounded-full bg-amber-400 dark:bg-amber-500 inline-block" />
@@ -285,7 +285,7 @@ export default function DashboardAdmin() {
                 <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
                 Finalizadas
               </span>
-              <span className="hidden sm:inline text-gray-600 dark:text-gray-500">
+              <span className="hidden sm:inline text-[#7a6a52] dark:text-gray-500">
                 {resolution.completed}% resuelto
               </span>
             </div>
@@ -305,21 +305,21 @@ export default function DashboardAdmin() {
         {/* ── Performance Table ─────────────────────────────────────── */}
         <div
           className="animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both
-                     bg-slate-50 dark:bg-[#111827] shadow-sm rounded-2xl
-                     border border-gray-200 dark:border-white/10 overflow-hidden"
+                     bg-[#fdfbf5] dark:bg-[#111827] shadow-sm rounded-2xl
+                     border border-[#e8dfc8] dark:border-white/10 overflow-hidden"
           style={{ animationDuration: '500ms', animationDelay: '400ms' }}
         >
           {/* Toolbar */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-5 py-4 border-b border-gray-200 dark:border-white/10">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-5 py-4 border-b border-[#e8dfc8] dark:border-white/10">
             <div>
               <h3
-                className="text-base font-bold text-gray-900 dark:text-white"
+                className="text-base font-bold text-[#3d2f1f] dark:text-white"
                 style={{ fontFamily: FONT.heading }}
               >
                 {showTop3 ? 'Top 3 Cazadores' : 'Rendimiento Individual'}
               </h3>
               <p
-                className="text-xs text-gray-600 dark:text-gray-400 mt-0.5"
+                className="text-xs text-[#7a6a52] dark:text-gray-400 mt-0.5"
                 style={{ fontFamily: FONT.body }}
               >
                 {showTop3
@@ -336,7 +336,7 @@ export default function DashboardAdmin() {
                   transition-all duration-200
                   ${showTop3
                     ? 'bg-orange-500 text-white hover:bg-orange-600'
-                    : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-[#f0e6d0] dark:bg-white/10 text-[#7a6a52] dark:text-gray-300 hover:bg-[#e8dfc8] dark:hover:bg-gray-700'
                   }
                 `}
                 style={{ fontFamily: FONT.body }}
@@ -347,19 +347,19 @@ export default function DashboardAdmin() {
 
               {!showTop3 ? (
                 <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#a89878] pointer-events-none" />
                   <input
                     type="text"
                     placeholder="Buscar cazador..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="h-[34px] pl-8 pr-7 w-48 bg-gray-50 dark:bg-white/10 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 transition-all"
+                    className="h-[34px] pl-8 pr-7 w-48 bg-[#fdfbf5] dark:bg-white/10 border border-[#e8dfc8] dark:border-gray-700 rounded-lg text-sm text-[#7a6a52] dark:text-gray-200 placeholder-[#a89878] focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 transition-all"
                     style={{ fontFamily: FONT.body }}
                   />
                   {searchTerm ? (
                     <button
                       onClick={() => setSearchTerm('')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[#a89878] hover:text-[#7a6a52] dark:hover:text-gray-200 transition-colors"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -375,9 +375,9 @@ export default function DashboardAdmin() {
           <div className="overflow-x-auto" style={{ fontFamily: FONT.body }}>
             <table className="min-w-full">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-white/10">
+                <tr className="border-b border-[#e8dfc8] dark:border-white/10">
                   <th
-                    className="px-4 py-3.5 text-left text-[10px] font-bold text-gray-700 dark:text-gray-400 uppercase tracking-[0.1em]"
+                    className="px-4 py-3.5 text-left text-[10px] font-bold text-[#7a6a52] dark:text-gray-400 uppercase tracking-[0.1em]"
                     style={{ fontFamily: FONT.body }}
                   >
                     Persona
@@ -389,37 +389,37 @@ export default function DashboardAdmin() {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800/40">
+              <tbody className="divide-y divide-[#e8dfc8] dark:divide-gray-800/40">
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="h-9 w-9 rounded-full bg-gray-100 dark:bg-white/10 shrink-0" />
+                          <div className="h-9 w-9 rounded-full bg-[#f0e6d0] dark:bg-white/10 shrink-0" />
                           <div className="space-y-1.5">
-                            <div className="h-3.5 w-28 bg-gray-100 dark:bg-white/10 rounded" />
-                            <div className="h-2.5 w-16 bg-gray-50 dark:bg-white/10/60 rounded" />
+                            <div className="h-3.5 w-28 bg-[#f0e6d0] dark:bg-white/10 rounded" />
+                            <div className="h-2.5 w-16 bg-[#f0e6d0] dark:bg-white/10/60 rounded" />
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5"><div className="h-5 w-16 bg-gray-50 dark:bg-white/10 rounded-lg" /></td>
-                      <td className="px-4 py-3.5 text-right"><div className="h-4 w-8 bg-gray-50 dark:bg-white/10 rounded ml-auto" /></td>
-                      <td className="px-4 py-3.5 text-right"><div className="h-4 w-8 bg-gray-50 dark:bg-white/10 rounded ml-auto" /></td>
-                      <td className="px-4 py-3.5"><div className="h-4 w-20 bg-gray-50 dark:bg-white/10 rounded ml-auto" /></td>
+                      <td className="px-4 py-3.5"><div className="h-5 w-16 bg-[#f0e6d0] dark:bg-white/10 rounded-lg" /></td>
+                      <td className="px-4 py-3.5 text-right"><div className="h-4 w-8 bg-[#f0e6d0] dark:bg-white/10 rounded ml-auto" /></td>
+                      <td className="px-4 py-3.5 text-right"><div className="h-4 w-8 bg-[#f0e6d0] dark:bg-white/10 rounded ml-auto" /></td>
+                      <td className="px-4 py-3.5"><div className="h-4 w-20 bg-[#f0e6d0] dark:bg-white/10 rounded ml-auto" /></td>
                     </tr>
                   ))
                 ) : tableRows.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-4 py-20 text-center">
                       <div className="flex flex-col items-center gap-3">
-                        <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center">
-                          <Search className="h-5 w-5 text-gray-500 dark:text-gray-500" />
+                        <div className="h-12 w-12 rounded-full bg-[#f0e6d0] dark:bg-white/10 flex items-center justify-center">
+                          <Search className="h-5 w-5 text-[#a89878] dark:text-gray-500" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          <p className="text-sm font-medium text-[#a89878] dark:text-gray-400">
                             {searchTerm ? 'Sin resultados' : 'Sin datos'}
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                          <p className="text-xs text-[#7a6a52] dark:text-gray-400 mt-0.5">
                             {searchTerm
                               ? `No se encontraron cazadores para "${searchTerm}"`
                               : 'No hay datos disponibles en este periodo'}
@@ -453,10 +453,10 @@ export default function DashboardAdmin() {
                             </div>
                           )}
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                            <p className="text-sm font-semibold text-[#3d2f1f] dark:text-gray-100 truncate">
                               {person.nombre}
                             </p>
-                            <p className="text-[10px] text-gray-700 dark:text-gray-400 tabular-nums">
+                            <p className="text-[10px] text-[#7a6a52] dark:text-gray-400 tabular-nums">
                               DNI: {person.dni}
                             </p>
                           </div>
@@ -477,7 +477,7 @@ export default function DashboardAdmin() {
                       {/* Assigned */}
                       <td className="px-4 py-3 whitespace-nowrap text-right">
                         <span
-                          className="text-sm font-bold text-gray-800 dark:text-gray-200 tabular-nums"
+                          className="text-sm font-bold text-[#3d2f1f] dark:text-gray-200 tabular-nums"
                           style={{ fontFamily: FONT.numbers, fontSize: '18px', fontVariantNumeric: 'tabular-nums' }}
                         >
                           {person.asignadas}
@@ -487,7 +487,7 @@ export default function DashboardAdmin() {
                       {/* Resolved */}
                       <td className="px-4 py-3 whitespace-nowrap text-right">
                         <span
-                          className="text-sm font-bold text-gray-800 dark:text-gray-200 tabular-nums"
+                          className="text-sm font-bold text-[#3d2f1f] dark:text-gray-200 tabular-nums"
                           style={{ fontFamily: FONT.numbers, fontSize: '18px', fontVariantNumeric: 'tabular-nums' }}
                         >
                           {person.resueltas}
@@ -497,7 +497,7 @@ export default function DashboardAdmin() {
                       {/* Conversion */}
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex items-center justify-end gap-2.5">
-                          <div className="h-1.5 w-14 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden shrink-0">
+                          <div className="h-1.5 w-14 rounded-full bg-[#f0e6d0] dark:bg-white/10 overflow-hidden shrink-0">
                             <div
                               className={`h-full rounded-full transition-all duration-500 ${tier.bar}`}
                               style={{ width: `${Math.min(conv, 100)}%` }}
@@ -517,10 +517,10 @@ export default function DashboardAdmin() {
 
           {/* Footer */}
           <div
-            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-3 border-t border-gray-200 dark:border-white/10"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-3 border-t border-[#e8dfc8] dark:border-white/10"
             style={{ fontFamily: FONT.body }}
           >
-            <div className="flex items-center gap-3 text-[10px] text-gray-600 dark:text-gray-400 font-semibold uppercase tracking-wider">
+            <div className="flex items-center gap-3 text-[10px] text-[#7a6a52] dark:text-gray-400 font-semibold uppercase tracking-wider">
               <span className="flex items-center gap-1"><span className="h-1.5 w-3 rounded-full bg-emerald-500 inline-block" />{'>='}80%</span>
               <span className="flex items-center gap-1"><span className="h-1.5 w-3 rounded-full bg-amber-500 inline-block" />40-80%</span>
               <span className="flex items-center gap-1"><span className="h-1.5 w-3 rounded-full bg-red-500 inline-block" />{'<'}40%</span>
