@@ -9,6 +9,7 @@ import DateRangeFilter from '@/components/Supervisors/DateRangeFilter';
 import CustomTablePagination from '@/components/Pagination/TablePagination';
 import { IncidentChartToggle } from '@/components/Dashboard/incident-chart-toggle.tsx';
 import { CrimeRadarDashboard } from '@/components/Dashboard/crime-radar-dashboard.tsx';
+import { IncidenceDashboardTable } from '@/components/Dashboard/incidence-dashboard-table.tsx';
 import { usePerformanceData, type GeneralData } from '@/hooks/dashboard/usePerformanceData';
 
 // ─── Fonts (inline-only, no CSS) ──────────────────────────────────────────────
@@ -535,6 +536,9 @@ export default function DashboardAdmin() {
             ) : null}
           </div>
         </div>
+
+        {/* ── Incidences By Typology Table ───────────────────────────── */}
+        <IncidenceDashboardTable />
 
       </div>
     </div>
