@@ -83,6 +83,19 @@ export function IncidenceDashboardTable() {
   const truncate = (v: any, n = 50) => 
     typeof v === 'string' && v.length > n ? v.slice(0, n) + '...' : (v || '—');
 
+  const getAvatar = (user: any) => {
+    if (!user) return '?';
+    if (user.name && user.lastname) return `${user.name.charAt(0)}${user.lastname.charAt(0)}`.toUpperCase();
+    if (user.username) return user.username.substring(0, 2).toUpperCase();
+    return '?';
+  };
+
+  const getUserDisplayName = (user: any) => {
+    if (!user) return '—';
+    if (user.name && user.lastname) return `${user.name} ${user.lastname}`;
+    return user.username;
+  };
+
   return (
     <div
       className="animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both
@@ -145,10 +158,10 @@ export function IncidenceDashboardTable() {
               <th className="px-5 py-4 text-left text-[11px] font-bold text-[#7a6a52] dark:text-gray-400 uppercase tracking-widest w-[20%]">
                 Tipología (Crimen)
               </th>
-              <th className="px-5 py-4 text-left text-[11px] font-bold text-[#7a6a52] dark:text-gray-400 uppercase tracking-widest w-[45%]">
+              <th className="px-5 py-4 text-left text-[11px] font-bold text-[#7a6a52] dark:text-gray-400 uppercase tracking-widest w-[35%]">
                 Nombre de Incidencia
               </th>
-              <th className="px-5 py-4 text-left text-[11px] font-bold text-[#7a6a52] dark:text-gray-400 uppercase tracking-widest w-[15%]">
+              <th className="px-5 py-4 text-left text-[11px] font-bold text-[#7a6a52] dark:text-gray-400 uppercase tracking-widest w-[25%]">
                 Creado por
               </th>
               <th className="px-5 py-4 text-left text-[11px] font-bold text-[#7a6a52] dark:text-gray-400 uppercase tracking-widest w-[20%]">
@@ -207,9 +220,32 @@ export function IncidenceDashboardTable() {
                     </span>
                   </td>
                   <td className="px-5 py-4">
-                    <span className="text-[13px] font-medium text-[#7a6a52] dark:text-gray-400">
-                      {item.user?.deletedAt ? <del className="opacity-60">{item.user.username}</del> : (item.user?.username || '—')}
-                    </span>
+                    {item.user ? (
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="flex h-9 w-9 items-center justify-center rounded-full text-white text-[11px] font-bold shrink-0"
+                          style={{ background: 'linear-gradient(135deg, #ea580c, #f97316)' }}
+                        >
+                          {getAvatar(item.user)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className={`text-[13px] font-semibold truncate ${item.user.deletedAt ? 'text-[#7a6a52] dark:text-gray-500 line-through' : 'text-[#3d2f1f] dark:text-gray-100'}`}>
+                            {getUserDisplayName(item.user)}
+                          </p>
+                          {item.user.dni ? (
+                            <p className="text-[10px] text-[#7a6a52] dark:text-gray-400 tabular-nums">
+                              DNI: {item.user.dni}
+                            </p>
+                          ) : (
+                            <p className="text-[10px] text-[#7a6a52] dark:text-gray-400 truncate">
+                              @{item.user.username}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-[13px] font-medium text-[#7a6a52] dark:text-gray-400">—</span>
+                    )}
                   </td>
                   <td className="px-5 py-4">
                     <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
