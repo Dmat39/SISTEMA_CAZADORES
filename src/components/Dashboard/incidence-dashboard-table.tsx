@@ -4,6 +4,7 @@ import { getAllIncidencesApi } from '@/api/operador/incidenceApi.tsx';
 import CustomTablePagination from '@/components/Pagination/TablePagination';
 import FilterCrimer from '@/components/Supervisors/FilterCrimer';
 import StatusFilter from '@/components/Supervisors/StatusFilter';
+import FilterUser from '@/components/Supervisors/FilterUser';
 import { AlertCircle, Search, ShieldAlert } from 'lucide-react';
 
 const STATUS_BADGE: Record<string, string> = {
@@ -40,6 +41,7 @@ export function IncidenceDashboardTable() {
   const end = searchParams.get('end') || '';
   const crimeIds = searchParams.getAll('crimeIds') || [];
   const selectedStatus = searchParams.get('status') || '';
+  const selectedUserId = searchParams.get('userId') || '';
 
   const fetchIncidents = async () => {
     setLoading(true);
@@ -50,6 +52,7 @@ export function IncidenceDashboardTable() {
       if (searchTerm.trim()) params.search = searchTerm.trim();
       if (crimeIds.length > 0) params.crimeIds = crimeIds;
       if (selectedStatus) params.status = selectedStatus;
+      if (selectedUserId) params.userId = selectedUserId;
 
       const response = await getAllIncidencesApi(params);
       setIncidents(response.data.data || []);
@@ -64,12 +67,12 @@ export function IncidenceDashboardTable() {
   useEffect(() => {
     const timer = setTimeout(fetchIncidents, searchTerm ? 500 : 0);
     return () => clearTimeout(timer);
-  }, [page, limit, start, end, searchTerm, JSON.stringify(crimeIds), selectedStatus]);
+  }, [page, limit, start, end, searchTerm, JSON.stringify(crimeIds), selectedStatus, selectedUserId]);
 
   // Reset to page 1 when search or dates change
   useEffect(() => {
     setPage(1);
-  }, [start, end, searchTerm, JSON.stringify(crimeIds), selectedStatus]);
+  }, [start, end, searchTerm, JSON.stringify(crimeIds), selectedStatus, selectedUserId]);
 
   const handlePageLimitChange = (newPage: number, newLimit: number) => {
     if (newLimit !== limit) {
@@ -126,6 +129,9 @@ export function IncidenceDashboardTable() {
           </div>
           <div className="bg-white dark:bg-transparent rounded-lg">
             <StatusFilter />
+          </div>
+          <div className="bg-white dark:bg-transparent rounded-lg">
+            <FilterUser />
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#a89878] pointer-events-none" />
@@ -184,7 +190,7 @@ export function IncidenceDashboardTable() {
                 <td colSpan={4} className="px-5 py-16 text-center">
                   <div className="flex flex-col items-center gap-3">
                     <div className="h-12 w-12 rounded-full bg-[#f0e6d0] dark:bg-white/5 flex items-center justify-center">
-                      {searchTerm || crimeIds.length > 0 || selectedStatus ? (
+                      {searchTerm || crimeIds.length > 0 || selectedStatus || selectedUserId ? (
                         <Search className="h-5 w-5 text-[#a89878] dark:text-gray-500" />
                       ) : (
                         <AlertCircle className="h-5 w-5 text-[#a89878] dark:text-gray-500" />
@@ -192,10 +198,10 @@ export function IncidenceDashboardTable() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-[#3d2f1f] dark:text-gray-300">
-                        {searchTerm || crimeIds.length > 0 || selectedStatus ? 'Sin resultados' : 'Sin datos'}
+                        {searchTerm || crimeIds.length > 0 || selectedStatus || selectedUserId ? 'Sin resultados' : 'Sin datos'}
                       </p>
                       <p className="text-xs text-[#7a6a52] dark:text-gray-500 mt-1">
-                        {searchTerm || crimeIds.length > 0 || selectedStatus
+                        {searchTerm || crimeIds.length > 0 || selectedStatus || selectedUserId
                           ? 'No se encontraron incidencias con los filtros actuales'
                           : 'No hay incidencias registradas en este periodo'}
                       </p>
