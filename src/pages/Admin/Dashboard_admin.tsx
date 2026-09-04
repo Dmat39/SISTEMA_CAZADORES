@@ -7,9 +7,9 @@ import {
 } from 'lucide-react';
 import DateRangeFilter from '@/components/Supervisors/DateRangeFilter';
 import CustomTablePagination from '@/components/Pagination/TablePagination';
-import { IncidentChartToggle } from '@/components/Dashboard/incident-chart-toggle.tsx';
-import { CrimeRadarDashboard } from '@/components/Dashboard/crime-radar-dashboard.tsx';
-import { IncidenceDashboardTable } from '@/components/Dashboard/incidence-dashboard-table.tsx';
+import { IncidentChartToggle } from '@/components/Dashboard/incident-chart-toggle';
+import { CrimeRadarDashboard } from '@/components/Dashboard/crime-radar-dashboard';
+import { IncidenceDashboardTable } from '@/components/Dashboard/incidence-dashboard-table';
 import { usePerformanceData, type GeneralData } from '@/hooks/dashboard/usePerformanceData';
 
 // ─── Fonts (inline-only, no CSS) ──────────────────────────────────────────────
