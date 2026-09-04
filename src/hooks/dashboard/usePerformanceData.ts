@@ -101,7 +101,7 @@ export function usePerformanceData() {
         start: generalStartDate,
         end: generalEndDate,
         userType: 'hunter',
-        limit: 0,
+        limit: 10,
         page: 0,
       };
 
