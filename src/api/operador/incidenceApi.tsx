@@ -63,6 +63,9 @@ export const getAllIncidencesApi = async (params = {}) => {
     // Manejar filtro de estado
     if (params.status) queryParams.append('status', params.status);
 
+    // Manejar filtro de usuario
+    if (params.userId) queryParams.append('userId', params.userId);
+
     const queryString = queryParams.toString();
     const url = queryString ? `/incidence/all?${queryString}` : '/incidence/all';
 
