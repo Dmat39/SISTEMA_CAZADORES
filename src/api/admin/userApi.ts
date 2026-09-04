@@ -12,3 +12,13 @@ export const changeUserRoleApi = async (id: string, role: UserRole) => {
     throw error.response ? error.response.data : new Error('Failed to change user role');
   }
 }
+
+export const getAllUsersApi = async () => {
+  try {
+    const response = await mainApi.get(`/user/all`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching all users:", error);
+    throw error.response ? error.response.data : new Error('Failed to fetch all users');
+  }
+}
