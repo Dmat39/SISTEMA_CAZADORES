@@ -101,15 +101,12 @@ export function usePerformanceData() {
         start: generalStartDate,
         end: generalEndDate,
         userType: 'hunter',
+        limit: 0,
+        page: 0,
       };
 
-      if (top3Mode) {
-        params.limit = 0;
-        params.page = 0;
-      } else {
-        params.limit = limit;
-        params.page = currentPage;
-        if (searchTerm.trim()) params.search = searchTerm.trim();
+      if (!top3Mode && searchTerm.trim()) {
+        params.search = searchTerm.trim();
       }
 
       const response = await dashboardData(params);
@@ -130,8 +127,8 @@ export function usePerformanceData() {
           setTotalCount(3);
         } else {
           setPersonalData(mapped);
-          setTotalPages(perf.totalPages || 1);
-          setTotalCount(perf.totalCount || 0);
+          setTotalCount(mapped.length);
+          setTotalPages(Math.ceil(mapped.length / limit));
         }
       }
     } catch (error) {
@@ -139,7 +136,7 @@ export function usePerformanceData() {
     } finally {
       setLoading(false);
     }
-  }, [generalStartDate, generalEndDate, limit, currentPage, searchTerm]);
+  }, [generalStartDate, generalEndDate, limit, searchTerm]);
 
   useEffect(() => {
     loadGeneralData();
@@ -181,6 +178,12 @@ export function usePerformanceData() {
     }),
     [personalData, sortField, sortDirection]
   );
+
+  const paginatedPersonalData = useMemo(() => {
+    if (showTop3) return sortedPersonalData;
+    const startIndex = (currentPage - 1) * limit;
+    return sortedPersonalData.slice(startIndex, startIndex + limit);
+  }, [sortedPersonalData, currentPage, limit, showTop3]);
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -225,7 +228,7 @@ export function usePerformanceData() {
     setSearchTerm,
     sortField,
     sortDirection,
-    sortedPersonalData,
+    sortedPersonalData: paginatedPersonalData,
     handleSort,
     handleTop3Toggle,
     handlePageLimitChange,
