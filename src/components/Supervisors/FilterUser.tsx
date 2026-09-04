@@ -18,7 +18,7 @@ const FilterUser = () => {
             try {
                 setLoading(true);
                 const response = await getAllUsersApi();
-                setUsers(response || []);
+                setUsers(response?.data || []);
             } catch (error: any) {
                 console.error('Error fetching users:', error);
                 toast.error(`Error al cargar los usuarios: ${error.message}`);
