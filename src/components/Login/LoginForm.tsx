@@ -32,10 +32,12 @@ export default function LoginForm({ onSubmit, loading }) {
         Bienvenido de vuelta
       </p>
 
-      <div className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div className="relative">
           <input
+            name="username"
             type="text"
+            autoComplete="username"
             placeholder="Usuario"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -52,6 +54,7 @@ export default function LoginForm({ onSubmit, loading }) {
           <input
             name="password"
             type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -60,7 +63,12 @@ export default function LoginForm({ onSubmit, loading }) {
             disabled={loading}
           />
           <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-            <button type="button" onClick={togglePasswordVisibility} className="focus:outline-none cursor-pointer">
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              className="focus:outline-none cursor-pointer"
+            >
               {showPassword ? (
                 <FaEyeSlash className="w-5 h-5 text-[#a89878]" />
               ) : (
@@ -72,7 +80,8 @@ export default function LoginForm({ onSubmit, loading }) {
         </div>
 
         <button
-          onClick={handleSubmit}
+          type="submit"
+          disabled={loading}
           className="w-full cursor-pointer bg-gradient-to-r bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-6 rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:ring-4 focus:ring-green-300 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {loading ? (
@@ -103,7 +112,7 @@ export default function LoginForm({ onSubmit, loading }) {
             "Iniciar Sesión"
           )}
         </button>
-      </div>
+      </form>
     </div>
   );
 }
