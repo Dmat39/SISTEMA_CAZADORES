@@ -9,7 +9,7 @@ import { useState } from "react";
 import UpdateFormRecord from "../Record/UpdateFormRecord";
 import { useTheme } from "../../contexts/ThemeContext";
 
-const RegistrosList = ({ records = [], fetchRecords = () => {}, readOnly = false }) => {
+const RegistrosList = ({ records = [], fetchRecords = () => {}, readOnly = false, maxHeightClass = "max-h-[40vh]" }) => {
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -61,7 +61,7 @@ const RegistrosList = ({ records = [], fetchRecords = () => {}, readOnly = false
         Registros ({records.length})
       </h3>
 
-      <div className="space-y-4 overflow-y-auto max-h-[40vh] my-4">
+      <div className={"space-y-4 my-4 " + (maxHeightClass ? "overflow-y-auto " + maxHeightClass : "")}>
         {records.map((rec, idx) => {
           const recordDate = dayjs(rec.date);
           const isPM = recordDate.hour() >= 12;

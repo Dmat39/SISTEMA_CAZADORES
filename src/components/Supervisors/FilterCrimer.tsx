@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { getAllCrimesApi } from '../../api/crime/CrimeApi';
 import { toast } from 'sonner';
 
-const FilterCrimer = () => {
+const FilterCrimer = ({ fullWidth = false }) => {
     const [crimes, setCrimes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCrimes, setSelectedCrimes] = useState([]); // Cambiar a array
@@ -57,6 +57,16 @@ const FilterCrimer = () => {
         navigate({ search: searchParams.toString() });
     };
 
+    const crimeName = (value) => crimes.find(c => c.id === value)?.name || value;
+
+    // A ancho completo (columna angosta) se resume en una línea en vez de chips
+    const renderSummary = (selected) => (
+        <span className="block truncate text-sm">
+            {crimeName(selected[0])}
+            {selected.length > 1 && ` +${selected.length - 1}`}
+        </span>
+    );
+
     // Renderizar los valores seleccionados como chips
     const renderValue = (selected) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -75,15 +85,26 @@ const FilterCrimer = () => {
     );
 
     return (
-        <FormControl size="small" variant="outlined" sx={{ minWidth: 220, marginRight: 2 }}>
-            <InputLabel>Filtrar por Crimen</InputLabel>
+        <FormControl
+            size="small"
+            variant="outlined"
+            sx={fullWidth
+                ? {
+                    width: '100%',
+                    // Igualar tipografía y radio al resto de filtros (Tailwind text-sm / rounded-lg)
+                    '& .MuiInputLabel-root:not(.MuiInputLabel-shrink)': { fontSize: '0.875rem', top: 1 },
+                    '& .MuiInputBase-root': { fontSize: '0.875rem', borderRadius: '8px' },
+                }
+                : { minWidth: 220, marginRight: 2 }}
+        >
+            <InputLabel>{fullWidth ? 'Tipo de crimen' : 'Filtrar por Crimen'}</InputLabel>
             <Select
                 multiple
                 value={selectedCrimes}
                 onChange={handleCrimeChange}
-                label="Filtrar por Crimen"
+                label={fullWidth ? 'Tipo de crimen' : 'Filtrar por Crimen'}
                 disabled={loading}
-                renderValue={renderValue}
+                renderValue={fullWidth ? renderSummary : renderValue}
                 MenuProps={{
                     PaperProps: {
                         style: {
