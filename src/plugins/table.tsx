@@ -137,7 +137,7 @@ const CustomTable = ({
 
                                 <TableRow
                                      onClick={(e) => typeof rowOnClick === 'function' && rowOnClick(e, row)}
-                                    className={⁠ ${typeof rowOnClick === 'function' ? 'cursor-pointer hover:bg-gray-100' : ''} ⁠}
+                                    className={`${typeof rowOnClick === 'function' ? 'cursor-pointer hover:bg-gray-100' : ''}`}
                                     key={row.id || row.dni || row.codigo}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
