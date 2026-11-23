@@ -17,6 +17,7 @@ import { isVisualizer } from '../../lib/utils.js';
 import { ArrowLeft, Plus, Calendar, Clock, Info, Pencil } from 'lucide-react';
 import { useSetPageTitle } from '../../contexts/PageTitleContext';
 import { KANBAN_STATES } from '../../components/Operador/kanban/kanbanConfig';
+import PreviousStatusNotice from '../../components/UI/PreviousStatusNotice';
 
 const formatStatus = (s) => {
     const config = KANBAN_STATES[s];
@@ -106,6 +107,17 @@ const IncidenciaDetalles = () => {
             await fetchIncidencia();
         } catch (err) {
             toast.error('Error al guardar el registro: ' + err.message);
+        }
+    };
+
+    /* Acepta la preincidencia: previous → process */
+    const handleAccept = async () => {
+        try {
+            await updateIncidenceApi({ status: 'process' }, incidencia.id);
+            toast.success('La incidencia pasó a En proceso');
+            await fetchIncidencia();
+        } catch (err: any) {
+            toast.error('No se pudo cambiar el estado: ' + (err?.message || 'Error desconocido'));
         }
     };
 
@@ -201,7 +213,9 @@ const IncidenciaDetalles = () => {
                                 </button>
                                 <button
                                     onClick={() => setShowRegistroForm(true)}
-                                    className="flex items-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+                                    disabled={status !== 'process'}
+                                    title={status !== 'process' ? 'Solo se pueden agregar registros a incidencias en proceso' : undefined}
+                                    className="flex items-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap disabled:bg-[#e8dfc8] disabled:text-[#a89878] dark:disabled:bg-white/10 dark:disabled:text-gray-500 disabled:cursor-not-allowed"
                                 >
                                     <Plus className="h-4 w-4" /> Agregar Registro
                                 </button>
@@ -209,6 +223,10 @@ const IncidenciaDetalles = () => {
                         )}
                     </div>
                 </div>
+
+                {status === 'previous' && (
+                    <PreviousStatusNotice className="mb-6" onAccept={readOnly ? undefined : handleAccept} />
+                )}
 
                 {/* Description */}
                 <div className="rounded-lg bg-[#f0e6d0] dark:bg-[#1e293b] border border-[#e8dfc8] dark:border-white/8 p-4 mb-6">
