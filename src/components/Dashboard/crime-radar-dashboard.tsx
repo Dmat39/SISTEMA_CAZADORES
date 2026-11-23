@@ -14,7 +14,7 @@ type Period = '24H' | '7D' | '30D';
 const PERIODS: Period[] = ['24H', '7D', '30D'];
 
 const CRIME_LABELS: Record<string, string> = {
-  homicidio: 'Homicidio', sicariato: 'Sicariato', secuestro: 'Secuestro',
+  homicidio: 'Homicidio', sicariato: 'Sicariato', secuestro: 'Desaparecido',
   lesiones: 'Lesiones', roboPersona: 'Robo Persona', roboVehiculo: 'Robo Vehículo',
   roboAccesorios: 'Robo Accesorios', extorsion: 'Extorsión', drogas: 'Drogas',
   accidente: 'Accidente', incendio: 'Incendio',

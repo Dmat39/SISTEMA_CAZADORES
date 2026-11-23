@@ -10,7 +10,7 @@ import 'react-date-range/dist/theme/default.css';
 
 interface DropPos { top: number; right: number; }
 
-const DateRangeFilter = ({ containerStyle = {}, sx = {} }: { containerStyle?: React.CSSProperties; sx?: object }) => {
+const DateRangeFilter = ({ containerStyle = {}, sx = {}, fullWidth = false }: { containerStyle?: React.CSSProperties; sx?: object; fullWidth?: boolean }) => {
     const [dateRange, setDateRange]       = useState({ startDate: new Date(), endDate: new Date(), key: 'selection' });
     const [tempDateRange, setTempDateRange] = useState({ startDate: new Date(), endDate: new Date(), key: 'selection' });
     const [isOpen, setIsOpen]             = useState(false);
@@ -241,20 +241,21 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }: { containerStyle?: Re
 
     /* ── Render ───────────────────────────────────────────────────── */
     return (
-        <div className="flex items-center gap-2" style={containerStyle}>
+        <div className={`flex items-center gap-2${fullWidth ? ' w-full' : ''}`} style={containerStyle}>
             {/* Trigger */}
             <div
                 ref={triggerRef}
                 onClick={handleOpen}
                 className={[
-                    'flex items-center gap-2 h-9 px-3 rounded-lg cursor-pointer select-none transition-all text-sm',
+                    'flex items-center gap-2 px-3 rounded-lg cursor-pointer select-none transition-all text-sm',
+                    fullWidth ? 'flex-1 min-w-0 h-10' : 'h-9',
                     isOpen
                         ? 'bg-orange-500 text-white'
                         : 'bg-[#fdfbf5] dark:bg-[#1e293b] border border-[#e8dfc8] dark:border-white/10 text-[#7a6a52] dark:text-gray-300 hover:border-orange-400 dark:hover:border-orange-500',
                 ].join(' ')}
             >
                 <CalendarDays className="h-4 w-4 shrink-0" />
-                <span className="whitespace-nowrap font-medium">
+                <span className="whitespace-nowrap font-medium truncate">
                     {displayValue || 'Rango de fechas'}
                 </span>
             </div>
@@ -264,7 +265,7 @@ const DateRangeFilter = ({ containerStyle = {}, sx = {} }: { containerStyle?: Re
                 <button
                     onClick={clearFilter}
                     title="Limpiar filtro"
-                    className="flex items-center justify-center h-9 w-9 rounded-lg border border-[#e8dfc8] dark:border-white/10 text-[#a89878] hover:text-red-500 hover:border-red-300 dark:hover:border-red-500/50 transition-colors"
+                    className={`flex shrink-0 items-center justify-center ${fullWidth ? 'h-10 w-10' : 'h-9 w-9'} rounded-lg border border-[#e8dfc8] dark:border-white/10 text-[#a89878] hover:text-red-500 hover:border-red-300 dark:hover:border-red-500/50 transition-colors`}
                 >
                     <X className="h-4 w-4" />
                 </button>

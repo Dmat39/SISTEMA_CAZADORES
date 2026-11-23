@@ -55,6 +55,7 @@ const FIELD_LABEL: Record<string, string> = {
   zone:          'Zona',
   camera:        'Cámara',
   cazador:       'Cazador asignado',
+  record:        'Registro',
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -180,9 +181,9 @@ export default function Auditoria() {
                       </td>
 
                       {/* Valor anterior */}
-                      <td className="px-4 py-3 max-w-[130px]">
+                      <td className="px-4 py-3 max-w-[220px]">
                         {log.oldValue
-                          ? <span className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded font-mono">
+                          ? <span title={translateValue(log.field, log.oldValue) ?? ''} className="inline-block max-w-full break-words line-clamp-3 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded font-mono">
                               {translateValue(log.field, log.oldValue)}
                             </span>
                           : <span className="text-[#a89878] dark:text-gray-600 text-sm">—</span>
@@ -190,9 +191,9 @@ export default function Auditoria() {
                       </td>
 
                       {/* Valor nuevo */}
-                      <td className="px-4 py-3 max-w-[130px]">
+                      <td className="px-4 py-3 max-w-[220px]">
                         {log.newValue
-                          ? <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded font-mono">
+                          ? <span title={translateValue(log.field, log.newValue) ?? ''} className="inline-block max-w-full break-words line-clamp-3 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded font-mono">
                               {translateValue(log.field, log.newValue)}
                             </span>
                           : <span className="text-[#a89878] dark:text-gray-600 text-sm">—</span>

@@ -12,7 +12,8 @@ const SidebarContext = createContext<SidebarContextValue | null>(null);
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // El panel lateral arranca oculto (solo iconos); se expande desde su propio botón
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const toggle = useCallback(() => setIsOpen((v) => !v), []);
   const close = useCallback(() => setIsOpen(false), []);
   const toggleCollapse = useCallback(() => setIsCollapsed((v) => !v), []);

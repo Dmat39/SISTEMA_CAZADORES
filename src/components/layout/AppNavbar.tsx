@@ -33,20 +33,45 @@ function LiveClock() {
 }
 
 export default function AppNavbar() {
-  const { toggle } = useSidebar();
+  const { toggle, isCollapsed } = useSidebar();
   const { isDark } = useTheme();
   const { title, subtitle, live } = usePageTitle();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center border-b border-[#e8dfc8] dark:border-white/10 shadow-sm transition-colors duration-200">
 
-      {/* ── Logo (desktop) ── */}
-      <div className="hidden sm:flex items-center justify-center w-60 h-full shrink-0 bg-[#fdfbf5] dark:bg-[#0f172a] border-r border-[#e8dfc8] dark:border-white/10">
+      {/* ── Logo (desktop): acompaña el ancho del sidebar ── */}
+      <div
+        className={[
+          'relative hidden sm:flex items-center justify-center h-full shrink-0 overflow-hidden',
+          'bg-[#fdfbf5] dark:bg-[#0f172a] border-r border-[#e8dfc8] dark:border-white/10',
+          'transition-all duration-300 ease-in-out',
+          isCollapsed ? 'w-[72px]' : 'w-60',
+        ].join(' ')}
+      >
         <img
           src={isDark ? logoDark : logoLight}
           alt="San Juan de Lurigancho"
+          className={[
+            'shrink-0 transition-opacity duration-200',
+            isCollapsed ? 'opacity-0' : 'opacity-100',
+          ].join(' ')}
           style={{ height: 76, width: 'auto', maxWidth: 230, objectFit: 'contain' }}
         />
+        {/* Monograma cuando el sidebar está oculto */}
+        <span
+          aria-hidden={!isCollapsed}
+          title="San Juan de Lurigancho"
+          className={[
+            'absolute inset-0 flex items-center justify-center select-none',
+            'text-xl font-black tracking-tight transition-opacity duration-200',
+            isCollapsed ? 'opacity-100 delay-100' : 'opacity-0 pointer-events-none',
+          ].join(' ')}
+        >
+          <span className="text-[#d7182a]">S</span>
+          <span className="text-[#f4a11d]">J</span>
+          <span className="text-[#2ba3b5]">L</span>
+        </span>
       </div>
 
       {/* ── Navbar body ── */}
