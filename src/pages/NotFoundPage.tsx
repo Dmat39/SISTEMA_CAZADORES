@@ -9,6 +9,7 @@ const NotFoundPage = () => {
   const getRedirectPath = () => {
     switch (role) {
       case 'administrator': return '/dashboard/admin';
+      case 'validator':    return '/dashboard/validator/investigacion';
       case 'visualizer':    return '/dashboard/visualizer/incidencia';
       case 'supervisor':    return '/dashboard/supervisors/incidencia';
       case 'hunter':        return '/dashboard/cazador/incidencia';
