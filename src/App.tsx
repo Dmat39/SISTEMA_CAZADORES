@@ -1,19 +1,13 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { setToken } from '@/api/config';
-import { useAppSelector } from '@/store/hooks';
 import { useTheme } from '@/contexts/ThemeContext';
 import Router from './routes/Router';
 import ToastPortal from './components/ToastPortal.tsx';
 
 function App() {
-  const token = useAppSelector((state) => state.auth.token);
   const { isDark } = useTheme();
 
-  useEffect(() => {
-    setToken(token);
-  }, [token]);
 
   const muiTheme = useMemo(
     () =>

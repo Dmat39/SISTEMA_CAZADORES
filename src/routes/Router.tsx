@@ -15,6 +15,7 @@ import DashboardAdmin from "../pages/Admin/Dashboard_admin";
 import SupervisorsAdmin from "../pages/Admin/Supervisors";
 import CazadoresAdmin from "../pages/Admin/Cazadores";
 import Auditoria from "../pages/Admin/Auditoria";
+import Investigacion from "../pages/Admin/Investigacion";
 
 // PAGES SUPERVISOR
 import CazadoresSupervisor from "../pages/Supervisors/Cazadores";
@@ -54,6 +55,7 @@ export default function Router() {
           <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
           <Route path="cazadores" element={<CazadoresAdmin />} />
           <Route path="auditoria" element={<Auditoria />} />
+          <Route path="investigacion" element={<Investigacion />} />
         </Route>
 
         {/* Rutas protegidas - VISUALIZER (mismas vistas que admin pero solo dashboard + incidencias) */}
@@ -68,6 +70,7 @@ export default function Router() {
           <Route index element={<DashboardAdmin />} />
           <Route path="incidencia" element={<Incidence />} />
           <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
+          <Route path="investigacion" element={<Investigacion />} />
         </Route>
 
         {/* Rutas protegidas - SUPERVISOR */}
@@ -84,6 +87,7 @@ export default function Router() {
           <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
           <Route path="incidencia/configuracion" element={<SupervisorProfile />} />
           <Route path="cazadores" element={<CazadoresSupervisor />} />
+          <Route path="investigacion" element={<Investigacion />} />
         </Route>
 
         {/* Rutas protegidas - CAZADOR */}
@@ -98,6 +102,14 @@ export default function Router() {
           <Route path="incidencia" element={<IncidenciaOperador />} />
           <Route path="incidencia/detalle" element={<IncidenciaDetalle />} />
           <Route path="incidencia/configuracion" element={<ConfigurationProfile />} />
+          <Route path="investigacion" element={<Investigacion />} />
+        </Route>
+
+        <Route path="/dashboard/validator" element={
+          <PrivateRoute requiredRole="validator"><DashboardLayoutAdmin /></PrivateRoute>
+        }>
+          <Route index element={<Navigate to="investigacion" replace />} />
+          <Route path="investigacion" element={<Investigacion />} />
         </Route>
 
         {/* Página 404 */}

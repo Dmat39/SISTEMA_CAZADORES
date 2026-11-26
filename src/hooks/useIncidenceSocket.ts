@@ -2,9 +2,7 @@ import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 // Strip "/api/v1" to get the raw socket server URL
-const SOCKET_URL =
-  (import.meta.env.VITE_API_BASE_URL as string)?.replace('/api/v1', '') ??
-  'http://localhost:3003';
+const SOCKET_URL = (import.meta.env.VITE_SOCKET_URL as string | undefined)?.trim();
 
 /**
  * Connects to the Socket.IO server and calls `onUpdate` whenever
@@ -17,6 +15,7 @@ export function useIncidenceSocket(onUpdate: () => void): void {
   callbackRef.current = onUpdate;
 
   useEffect(() => {
+    if (!SOCKET_URL) return;
     const socket = io(SOCKET_URL, { transports: ['websocket'] });
 
     socket.on('incidence:updated', () => callbackRef.current());

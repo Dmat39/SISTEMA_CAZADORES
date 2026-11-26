@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type UserRole = 'administrator' | 'visualizer' | 'supervisor' | 'hunter';
+export type UserRole = 'administrator' | 'visualizer' | 'supervisor' | 'hunter' | 'validator';
 
 export interface AuthState {
   token: string | null;

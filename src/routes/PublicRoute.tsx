@@ -7,6 +7,7 @@ const PublicRouter = ({ element }: { element: React.ReactNode }) => {
   const getRedirectPath = () => {
     switch (role?.toLowerCase()) {
       case 'administrator': return '/dashboard/admin/incidencia';
+      case 'validator':    return '/dashboard/validator/investigacion';
       case 'visualizer':    return '/dashboard/visualizer/incidencia';
       case 'supervisor':    return '/dashboard/supervisors/incidencia';
       case 'hunter':        return '/dashboard/cazador/incidencia';

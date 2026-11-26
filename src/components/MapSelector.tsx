@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, GeoJSON, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 // Centro y límites de San Juan de Lurigancho (a partir del bounding box de las jurisdicciones)
 const SJL_CENTER = [-11.9771, -76.9905];
@@ -48,9 +51,9 @@ const findJurisdictionAt = (lat, lng, geojson) => {
 // Fix for default markers in react-leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 });
 
 // Custom hook to handle map events and fixes
@@ -154,13 +157,13 @@ const MapSelector = ({
           }, 100);
         }}
       >
-        <TileLayer
+        {import.meta.env.VITE_OSM_TILE_URL && <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url={import.meta.env.VITE_OSM_TILE_URL}
           maxZoom={19}
           tileSize={256}
           zoomOffset={0}
-        />
+        />}
 
         {jurisdictions && (
           <GeoJSON

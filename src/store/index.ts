@@ -47,7 +47,10 @@ const persistedReducer = persistReducer(
           role: inboundState.role,
           authorized: inboundState.authorized,
         }),
-        out: (outboundState: AuthState) => outboundState,
+        out: (outboundState: AuthState) =>
+          outboundState?.token === 'local-preview-only'
+            ? { token: null, username: null, role: null, authorized: false, id: null }
+            : outboundState,
       },
     ],
   },
