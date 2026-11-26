@@ -163,11 +163,11 @@ const IncidenciaDetalles = () => {
                                 >
                                     {code || 'Sin Código'}
                                 </span>
-                                {code && !readOnly && (
+                                {code && !readOnly && import.meta.env.VITE_INCIDENT_DETAIL_BASE_URL && (
                                     <a
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        href={externalId ? `http://10.10.40.10:8081/incidencias/${externalId}` : '#'}
+                                        href={externalId ? `${import.meta.env.VITE_INCIDENT_DETAIL_BASE_URL.replace(/\/+$/, '')}/incidencias/${externalId}` : '#'}
                                         className="text-xs font-medium px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/25 transition-colors"
                                     >
                                         Ver Detalle

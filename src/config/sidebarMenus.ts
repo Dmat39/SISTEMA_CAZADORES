@@ -4,6 +4,7 @@ import {
   ShieldCheck,
   Crosshair,
   ClipboardList,
+  SearchCheck,
   type LucideIcon,
 } from 'lucide-react';
 import type { UserRole } from '@/store/slices/authSlice';
@@ -21,21 +22,25 @@ const adminMenus: MenuItem[] = [
   { icon: ShieldCheck,     label: 'Supervisores', path: '/dashboard/admin/supervisor', end: true },
   { icon: Crosshair,       label: 'Cazadores',    path: '/dashboard/admin/cazadores',  end: true },
   { icon: ClipboardList,   label: 'Auditoría',    path: '/dashboard/admin/auditoria',  end: true },
+  { icon: SearchCheck,     label: 'Investigación', path: '/dashboard/admin/investigacion', end: true },
 ];
 
 const visualizerMenus: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard',   path: '/dashboard/visualizer',            end: true },
   { icon: AlertTriangle,   label: 'Incidencias', path: '/dashboard/visualizer/incidencia', end: true },
+  { icon: SearchCheck, label: 'Investigación', path: '/dashboard/visualizer/investigacion', end: true },
 ];
 
 const supervisorMenus: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard',   path: '/dashboard/supervisors',            end: true },
   { icon: AlertTriangle,   label: 'Incidencias', path: '/dashboard/supervisors/incidencia', end: true },
   { icon: Crosshair,       label: 'Cazadores',   path: '/dashboard/supervisors/cazadores',  end: true },
+  { icon: SearchCheck,     label: 'Investigación', path: '/dashboard/supervisors/investigacion', end: true },
 ];
 
 const hunterMenus: MenuItem[] = [
   { icon: AlertTriangle, label: 'Incidencia', path: '/dashboard/cazador/incidencia', end: true },
+  { icon: SearchCheck, label: 'Investigación', path: '/dashboard/cazador/investigacion', end: true },
 ];
 
 export function getMenuForRole(role: UserRole | null): MenuItem[] {
@@ -43,6 +48,7 @@ export function getMenuForRole(role: UserRole | null): MenuItem[] {
     case 'administrator': return adminMenus;
     case 'visualizer':    return visualizerMenus;
     case 'supervisor':    return supervisorMenus;
+    case 'validator': return [{ icon: SearchCheck, label: 'Investigación', path: '/dashboard/validator/investigacion', end: true }];
     case 'hunter':        return hunterMenus;
     default:              return [];
   }

@@ -2,7 +2,6 @@ import { useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { login as setAuth } from '../../store/slices/authSlice';
 import { login } from '../../api/auth.tsx';
-import { setToken } from '../../api/config';
 
 const useLogin = () => {
  const dispatch = useDispatch();
@@ -34,7 +33,6 @@ const useLogin = () => {
           })
         );
    
-        setToken(token);
         return {success: true, role: user.role.toLowerCase()};
       } else {
         console.error('Login fallido: respuesta inválida', response.data);
